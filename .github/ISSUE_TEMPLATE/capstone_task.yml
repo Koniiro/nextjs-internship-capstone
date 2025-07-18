@@ -1,0 +1,96 @@
+name: Task
+description: File a task card for a feature or improvement.
+title: "[Task]: "
+labels:
+  - setup
+  - auth
+  - database
+  - frontend
+  - backend
+  - testing
+  - deployment
+  - documentation
+assignees:
+  - ingonzales-strat
+projects:
+  - ingonzales-strat/1
+body:
+  - type: input
+    id: feature_name
+    attributes:
+      label: Feature Name
+      description: Enter the name of the feature
+      placeholder: "User Profile Page"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Task Phase
+      description: Select the task phase
+      options:
+        - Phase 1 - Foundation
+        - Phase 2 - Core Features
+        - Phase 3 - Advanced Features
+    validations:
+      required: true
+
+  - type: input
+    id: estimated_time
+    attributes:
+      label: Estimated Time
+      description: How long will this task take? (in hours)
+      placeholder: "e.g. 6 hours"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: week
+    attributes:
+      label: Week Milestone
+      description: Select how many weeks this task will take
+      options:
+        - Week 1-2
+        - Week 3-4
+        - Week 5-6
+        - Week 7-8
+        - Week 9-10
+        - Week 11-12
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Select the task's priority
+      options:
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Clear description of what needs to be implemented.
+      placeholder: I want to code something mayhaps!
+      value: I want to do something
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Define clear, measurable criteria for task completion
+      placeholder: Add acceptance criteria as a checklist
+      value: |
+        - [ ] Specific, measurable criteria
+        - [ ] That define when the task is complete
+        - [ ] Include testing requirements
+    validations:
+      required: true
