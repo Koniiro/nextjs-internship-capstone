@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowRight, CheckCircle, Users, Kanban } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { getData } from "@/actions/actions"
+import { getUserData } from "@/actions/actions"
 
 export default function HomePage() {
 
