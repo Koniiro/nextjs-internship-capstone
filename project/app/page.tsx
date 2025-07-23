@@ -1,8 +1,11 @@
 import Link from "next/link"
 import { ArrowRight, CheckCircle, Users, Kanban } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { getUserData } from "@/actions/actions"
 
 export default function HomePage() {
+
+  console.log("hello");
   return (
     <div className="min-h-screen bg-gradient-to-br from-platinum-900 to-platinum-800 dark:from-outer_space-500 dark:to-payne's_gray-500">
       {/* Header */}
