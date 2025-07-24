@@ -3,9 +3,21 @@
 
 // Placeholder middleware - currently allows all routes for development
 // TODO: Replace with actual Clerk authMiddleware when authentication is implemented
-import { clerkMiddleware } from '@clerk/nextjs/server'
+import { clerkMiddleware, createRouteMatcher, auth } from '@clerk/nextjs/server'
 
-export default clerkMiddleware()
+const isProtectedRoute=createRouteMatcher([
+  '/analytics(.*)',
+  '/calendar(.*)',
+  '/dashboard(.*)',
+  '/projects(.*)',
+  '/team(.*)',
+  '/settings(.*)',
+])
+export default clerkMiddleware(async (auth, req)=>{
+  if(isProtectedRoute(req)){
+    await auth.protect()
+  }
+});
 
 export const config = {
   matcher: [
@@ -23,14 +35,4 @@ TODO: Task 2.2 Implementation Notes for Interns:
 - Configure public routes: ["/", "/sign-in", "/sign-up"]
 - Protect all dashboard routes: ["/dashboard", "/projects"]
 - Add proper redirects for unauthenticated users
-
-Example implementation when ready:
-export default authMiddleware({
-  publicRoutes: ["/", "/sign-in", "/sign-up"],
-  ignoredRoutes: [],
-})
-
-export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
-}
 */
