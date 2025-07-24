@@ -18,9 +18,5 @@ export default function SignUpPage() {
 
 /*
 TODO: Task 2.3 Implementation Notes:
-- Import SignUp from @clerk/nextjs
-- Configure sign-up redirects
-- Style to match design system
-- Add proper error handling
 - Set up webhook for user data sync (Task 2.5)
 */
