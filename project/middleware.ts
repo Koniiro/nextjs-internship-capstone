@@ -1,8 +1,3 @@
-// TODO: Task 2.2 - Configure authentication middleware for route protection
-// import { authMiddleware } from "@clerk/nextjs"
-
-// Placeholder middleware - currently allows all routes for development
-// TODO: Replace with actual Clerk authMiddleware when authentication is implemented
 import { clerkMiddleware, createRouteMatcher, auth } from '@clerk/nextjs/server'
 
 const isProtectedRoute=createRouteMatcher([
@@ -27,12 +22,3 @@ export const config = {
     '/(api|trpc)(.*)',
   ],
 }
-
-/*
-TODO: Task 2.2 Implementation Notes for Interns:
-- Install and configure Clerk
-- Set up authMiddleware to protect routes
-- Configure public routes: ["/", "/sign-in", "/sign-up"]
-- Protect all dashboard routes: ["/dashboard", "/projects"]
-- Add proper redirects for unauthenticated users
-*/
