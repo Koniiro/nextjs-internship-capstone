@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowRight, CheckCircle, Users, Kanban } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { getUserData } from "@/actions/actions"
+import { SignedIn, SignedOut, SignIn, SignInButton, SignUp, SignUpButton, UserButton } from "@clerk/nextjs";
 
 export default function HomePage() {
 
@@ -27,15 +28,20 @@ export default function HomePage() {
               >
                 Projects
               </Link>
-              <Link href="/sign-in" className="text-outer_space-500 dark:text-platinum-500 hover:text-blue_munsell-500">
-                Sign In
-              </Link>
-              <Link
-                href="/sign-up"
-                className="px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600"
-              >
-                Get Started
-              </Link>
+              <SignedIn>
+                <UserButton/>
+              </SignedIn>
+              <SignedOut>
+                <div className="text-outer_space-500 dark:text-platinum-500 hover:text-blue_munsell-500">
+                  <SignInButton/>
+                </div>
+                <div className="px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600">
+                  <SignUpButton>Get Started</SignUpButton>
+                </div>
+                
+              </SignedOut>
+      
+              
             </div>
           </div>
         </div>

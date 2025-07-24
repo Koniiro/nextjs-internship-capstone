@@ -6,6 +6,7 @@ import { useState, Suspense } from "react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Home, FolderOpen, Users, Settings, Menu, X, BarChart3, Calendar, Bell, Search } from "lucide-react"
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home, current: true },
@@ -106,10 +107,20 @@ export default function DashboardLayout({
               </button>
 
               <ThemeToggle />
+              <SignedIn>
+                <UserButton/>
+              </SignedIn>
+              <SignedOut>
+                <div className="text-outer_space-500 dark:text-platinum-500 hover:text-blue_munsell-500">
+                  <SignInButton/>
+                </div>
+                <div className="px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600">
+                  <SignUpButton>Get Started</SignUpButton>
+                </div>
+                
+              </SignedOut>
 
-              <div className="w-8 h-8 bg-blue_munsell-500 rounded-full flex items-center justify-center text-white font-semibold">
-                U
-              </div>
+              
             </div>
           </div>
         </div>
