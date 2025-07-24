@@ -10,7 +10,7 @@ export default function SignUpPage() {
           <p className="text-payne's_gray-500 dark:text-french_gray-400">Join our project management platform</p>
         </div>
 
-        <SignUp/>
+        <SignUp fallback={<div>Loading sign up...</div>}/>
 
     </div>
   )
