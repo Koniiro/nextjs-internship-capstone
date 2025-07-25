@@ -1,11 +1,11 @@
 {
-  "id": "2a94dee8-70b6-4b6a-8db5-53021c832922",
+  "id": "91f9a5e1-001e-42eb-ab88-93199cc8ec75",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.column": {
-      "name": "column",
+    "public.kbColumn": {
+      "name": "kbColumn",
       "schema": "",
       "columns": {
         "id": {
@@ -15,7 +15,7 @@
           "notNull": true,
           "identity": {
             "type": "always",
-            "name": "column_id_seq",
+            "name": "kbColumn_id_seq",
             "schema": "public",
             "increment": "1",
             "startWith": "1",
@@ -47,9 +47,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "column_project_id_project_id_fk": {
-          "name": "column_project_id_project_id_fk",
-          "tableFrom": "column",
+        "kbColumn_project_id_project_id_fk": {
+          "name": "kbColumn_project_id_project_id_fk",
+          "tableFrom": "kbColumn",
           "tableTo": "project",
           "columnsFrom": [
             "project_id"
@@ -231,10 +231,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "task_column_id_column_id_fk": {
-          "name": "task_column_id_column_id_fk",
+        "task_column_id_kbColumn_id_fk": {
+          "name": "task_column_id_kbColumn_id_fk",
           "tableFrom": "task",
-          "tableTo": "column",
+          "tableTo": "kbColumn",
           "columnsFrom": [
             "column_id"
           ],
@@ -308,6 +308,12 @@
             "cycle": false
           }
         },
+        "clerk_id": {
+          "name": "clerk_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "name": {
           "name": "name",
           "type": "varchar(255)",
@@ -319,12 +325,53 @@
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "team_id": {
+          "name": "team_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "users_team_id_team_id_fk": {
+          "name": "users_team_id_team_id_fk",
+          "tableFrom": "users",
+          "tableTo": "team",
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "users_clerk_id_unique": {
+          "name": "users_clerk_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "clerk_id"
+          ]
+        },
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
