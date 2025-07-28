@@ -4,12 +4,6 @@
 /*
 TODO: Implementation Notes for Interns:
 
-1. Install Drizzle ORM dependencies: 
-   - drizzle-orm
-   - drizzle-kit
-   - @vercel/postgres (if using Vercel Postgres)
-   - OR pg + @types/pg (if using regular PostgreSQL)
-
 2. Define schemas for:
    - users (id, clerkId, email, name, createdAt, updatedAt)
    - projects (id, name, description, ownerId, createdAt, updatedAt, dueDate)
@@ -36,6 +30,7 @@ export const users = pgTable('users', {
 // ... other tables
 */
 
+import { uuid } from "drizzle-orm/gel-core";
 import { integer, pgTable, varchar,text,timestamp,boolean,jsonb, primaryKey } from "drizzle-orm/pg-core";
 
 
@@ -44,8 +39,8 @@ export const usersTable = pgTable("users", {
   clerkId: text('clerk_id').notNull().unique(),
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  createdAt: timestamp('created_at').notNull(),
+  updatedAt: timestamp('updated_at').notNull(),
   teamId: integer("team_id").references(() => teamTable.id),
 });
 
