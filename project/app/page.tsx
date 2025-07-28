@@ -6,7 +6,7 @@ import { SignedIn, SignedOut, SignIn, SignInButton, SignUp, SignUpButton, UserBu
 
 export default function HomePage() {
 
-  console.log("hello");
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-platinum-900 to-platinum-800 dark:from-outer_space-500 dark:to-payne's_gray-500">
       {/* Header */}
