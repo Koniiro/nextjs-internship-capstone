@@ -38,8 +38,8 @@ export async function POST(req: NextRequest) {
       console.log('createdAt:', createdAt.toISOString());
       console.log("Primary Email:", email);
       try {
-        const response = await updateUser(clerkID,userName,email,createdAt)
-        console.log("User update response:", response);
+        const response = await createUser(clerkID,userName,email,createdAt)
+        console.log("User Creat response:", response);
       } catch (error) {
         console.error("Failed to create user:", error);
       }
