@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       console.log("Primary Email:", email);
       try {
         const response = await createUser(clerkID,userName,email,createdAt)
-        console.log("User Creat response:", response);
+        console.log("User Create response:", response);
       } catch (error) {
         console.error("Failed to create user:", error);
       }
