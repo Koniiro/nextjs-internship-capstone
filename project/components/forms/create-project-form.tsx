@@ -28,7 +28,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { createProject } from "@/actions/project_actions";
-import { auth } from "@clerk/nextjs/server";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+const colors: Record<string, string> = {
+  Red: "bg-red-500",
+  Blue: "bg-blue-500",
+  Green: "bg-green-500",
+  Yellow: "bg-yellow-500",
+  Purple: "bg-purple-500",
+};
 
 export function CreateProjectForm(){
     const projectschema=projectCreationSchema
@@ -53,6 +67,7 @@ export function CreateProjectForm(){
                     <FormLabel>Project Name</FormLabel>
                     <FormControl>
                         <Input placeholder="a-preposterous-lemming" {...field} />
+                       
                     </FormControl>
                     <FormDescription>
                         This is your public display name.
@@ -65,7 +80,7 @@ export function CreateProjectForm(){
                 control={form.control} name="description"
                 render={({field})=>(
                   <FormItem className="flex flex-col">
-                    <FormLabel >Project Color</FormLabel>
+                    <FormLabel >Project Description</FormLabel>
                     <FormControl>
                         <Textarea placeholder="I want to make something today.." {...field} />
                     </FormControl>
@@ -81,12 +96,24 @@ export function CreateProjectForm(){
                 render={({field})=>(
                   <FormItem className="flex flex-col">
                     <FormLabel >Project Color</FormLabel>
-                    <FormControl>
-                        <Input placeholder="e.g. blue-500" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                        input Color
-                    </FormDescription>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a color for your project" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white">
+                            {Object.entries(colors).map(([name, value]) => (
+                                <SelectItem key={value} value={value} className="cursor-pointer" >
+                                <div className="flex flex-row items-center gap-2">
+                                    <div className={`w-3 h-3 rounded-full ${value}`} />
+                                    {name}
+                                </div>                               
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    
                     <FormMessage className="text-red-600"/>
                   </FormItem>
                 )}

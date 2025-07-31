@@ -54,7 +54,8 @@ export  function CreateProjectModal() {
           </DialogDescription>
         </DialogHeader>
         <CreateProjectForm/>
-        <DialogFooter>
+        
+        <DialogFooter className="flex flex-col gap-3 sm:flex-row">
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
@@ -64,6 +65,7 @@ export  function CreateProjectModal() {
             </Button>
           </DialogClose>
         </DialogFooter>
+        
       </DialogContent>
      
             
