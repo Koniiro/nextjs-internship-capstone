@@ -66,7 +66,7 @@ export const projectTable = pgTable("project", {
   color: varchar("color", { length: 64 }).notNull().default('bg-blue_munsell-500'),
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-  due_date: timestamp("due_date", { withTimezone: true }).notNull(),
+  due_date: timestamp("due_date", { withTimezone: true }),
 
   });
 
