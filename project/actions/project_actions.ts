@@ -4,7 +4,18 @@ import 'dotenv/config';
 import { eq } from "drizzle-orm";
 import { db } from '../lib/db/index';
 import { projectMembers, projectTable } from '../lib/db/schema';
+export const   projectFormPrinter=async (formData:FormData,)=> {
+    const data = {
+        userName: formData.get('userName') as string,
+        firstName: formData.get('firstName') as string,
+        lastName: formData.get('lastName') as string,
+        newEmail: formData.get('email') as string,
+      };
 
+      
+    
+    console.log(data)
+  }
 export const createProject=async (
   userID:string,
   name:string,
