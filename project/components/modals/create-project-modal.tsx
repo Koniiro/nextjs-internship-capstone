@@ -1,6 +1,7 @@
 // TODO: Task 4.1 - Implement project CRUD operations
 // TODO: Task 4.4 - Build task creation and editing functionality
 
+
 /*
 TODO: Implementation Notes for Interns:
 
@@ -30,19 +31,43 @@ Integration:
 - Handle errors gracefully
 */
 
-export function CreateProjectModal() {
+import {  Plus } from "lucide-react";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { CreateProjectForm } from '../forms/create-project-form';
+import { Button } from "../ui/button";
+
+
+
+export  function CreateProjectModal() {
+  
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-outer_space-500 rounded-lg p-6 w-full max-w-md mx-4">
-        <h3 className="text-lg font-semibold text-outer_space-500 dark:text-platinum-500 mb-4">
-          TODO: Create Project Modal
-        </h3>
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded border border-yellow-200 dark:border-yellow-800">
-          <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            📋 Implement project creation form with validation
-          </p>
-        </div>
-      </div>
-    </div>
+    <Dialog>
+        <DialogTrigger className="inline-flex items-center px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600 transition-colors">
+            <Plus size={20} className="mr-2" />
+            New Project
+        </DialogTrigger>
+        <DialogContent className="bg-white">
+        <DialogHeader>
+          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Create a New Project</DialogTitle>
+          <DialogDescription className="text-payne's_gray-500 dark:text-french_gray-500 mt-2">
+            Ready to start a new project?
+          </DialogDescription>
+        </DialogHeader>
+        <CreateProjectForm/>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-project-form">
+              Save changes
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+     
+            
+    </Dialog>
+    
   )
 }
