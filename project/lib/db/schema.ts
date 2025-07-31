@@ -30,12 +30,13 @@ export const users = pgTable('users', {
 // ... other tables
 */
 
-import { uuid } from "drizzle-orm/gel-core";
-import { integer, pgTable, varchar,text,timestamp,boolean,jsonb, primaryKey } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+
+import { integer, pgTable, varchar,text,timestamp,boolean,jsonb, primaryKey,uuid, check } from "drizzle-orm/pg-core";
 
 
 export const usersTable = pgTable("users", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey().notNull(),
   clerkId: text('clerk_id').notNull().unique(),
   name: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
@@ -53,23 +54,46 @@ export const teamTable = pgTable("team", {
 
 
 
-export const projectTable = pgTable("project", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  teamID:integer('team_id').notNull().references(()=>teamTable.id, {onDelete: 'cascade'}),
-  name: varchar({ length: 255 }).notNull()
 
+export const projectTable = pgTable("project", {
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey().notNull(),
+  projectOwner:uuid('projectOwner').notNull().references(()=>usersTable.id, {onDelete: 'cascade'}),
+  name: varchar('name',{ length: 255 }).notNull().unique(),
+  statusId: integer("status_id")
+    .references(() => statusTable.id, { onDelete: "set null" })
+    .notNull(),
+  description:text("description"),
+  color: varchar("color", { length: 64 }).notNull().default('bg-blue_munsell-500'),
+  created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  due_date: timestamp("due_date", { withTimezone: true }).notNull(),
+
+  });
+
+export const projectMembers = pgTable("project_members", {
+  userId: uuid("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").notNull().references(() => projectTable.id, { onDelete: "cascade" }),
+  role: varchar("role", { length: 32 }).notNull().default("member"), // optional metadata
+  joinedAt: timestamp("joined_at").defaultNow() // optional
 });
+
+export const statusTable=pgTable("projStatus",{
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar("name", { length: 255 }).notNull().unique(), // e.g. 'In Progress'
+  description: text("description"),
+})
+
 export const columnTable = pgTable("kbColumn", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  projectID: integer("project_id").notNull().references(() => projectTable.id, { onDelete: "cascade" }),
+  projectID: uuid("project_id").notNull().references(() => projectTable.id, { onDelete: "cascade" }),
   name: varchar({ length: 255 }).notNull(), // e.g. "To Do", "In Progress"
   order: integer("order").default(0), // controls column order
 });
 
 export const taskTable = pgTable("task", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  projectID:integer('project_ID').notNull().references(()=>projectTable.id, {onDelete: 'cascade'}),
-  assignedUserID:integer('assigned_user_ID').references(()=>usersTable.id, {onDelete: 'cascade'}),
+  projectID:uuid('project_ID').notNull().references(()=>projectTable.id, {onDelete: 'cascade'}),
+  assignedUserID:uuid('assigned_user_ID').references(()=>usersTable.id, {onDelete: 'cascade'}),
   name: varchar({ length: 255 }).notNull(),
   description:text("description"),
   column_id: integer("column_id").notNull().references(() => columnTable.id, { onDelete: "cascade" }),
