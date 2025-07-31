@@ -23,7 +23,7 @@ export default function ProjectsPage() {
           <CreateProjectModal/>
         </div>
 
-        {/* Implementation Tasks Banner */}
+        {/* Implementation Tasks Banner 
         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
           <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">
             📋 Projects Page Implementation Tasks
@@ -33,8 +33,7 @@ export default function ProjectsPage() {
             <li>• Task 4.2: Create project listing and dashboard interface</li>
             <li>• Task 4.5: Design and implement project cards and layouts</li>
             <li>• Task 4.6: Add project and task search/filtering capabilities</li>
-          </ul>
-        </div>
+        */}
 
         {/* Search and Filter Bar */}
         <div className="flex flex-col sm:flex-row gap-4">

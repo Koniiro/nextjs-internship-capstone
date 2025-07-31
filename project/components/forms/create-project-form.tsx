@@ -3,7 +3,6 @@ import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
-import { projectFormPrinter } from "@/actions/project_actions"
 
 import { useForm } from "react-hook-form"
 
@@ -28,6 +27,8 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { createProject } from "@/actions/project_actions";
+import { auth } from "@clerk/nextjs/server";
 
 export function CreateProjectForm(){
     const projectschema=projectCreationSchema
@@ -35,8 +36,11 @@ export function CreateProjectForm(){
         resolver: zodResolver(projectschema),
     })
 
-    function onSubmit(data: z.infer<typeof projectschema>) {
+    async function onSubmit(data: z.infer<typeof projectschema>) {
+        
         console.log(data)
+        const response=await createProject(data.name,data.description,data.color,data.dueDate)
+        console.log("User Creat response:", response);
         
     }
     return(
