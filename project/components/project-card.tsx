@@ -1,3 +1,4 @@
+import { Project } from '../types/index';
 // TODO: Task 4.5 - Design and implement project cards and layouts
 
 /*
@@ -34,11 +35,40 @@ Features to implement:
 - Error states
 */
 
-export function ProjectCard() {
+export interface ProjectCardProps {
+  project: {
+    id: string
+    name: string
+    description?: string
+    progress: number
+    memberCount: number
+    dueDate?: Date
+    status: 'active' | 'completed' | 'on-hold'
+  }
+  onEdit?: (id: string) => void
+  onDelete?: (id: string) => void
+}
+
+export default function ProjectCard({project}:ProjectCardProps) {
   return (
     <div className="bg-white dark:bg-outer_space-500 p-6 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
       <p className="text-center text-payne's_gray-500 dark:text-french_gray-400">
-        TODO: Implement ProjectCard component
+        {project.name}
+      </p>
+      <p className="text-center text-payne's_gray-500 dark:text-french_gray-400">
+        {project.description}
+      </p>
+      <p className="text-center text-payne's_gray-500 dark:text-french_gray-400">
+        {project.memberCount}
+      </p>
+      <p className="text-center text-payne's_gray-500 dark:text-french_gray-400">
+        {project.progress}
+      </p>
+      <p className="text-center text-payne's_gray-500 dark:text-french_gray-400">
+        {project.dueDate?.toLocaleString()}
+      </p>
+      <p className="text-center text-payne's_gray-500 dark:text-french_gray-400">
+        {project.status}
       </p>
     </div>
   )
