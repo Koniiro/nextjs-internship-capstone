@@ -7,7 +7,6 @@ import { projectMembers, projectTable } from '../lib/db/schema';
 
 export const createProject=async (
   userID:string,
-
   name:string,
   description:string,
   color: string,
@@ -24,7 +23,8 @@ export const createProject=async (
   }).returning();
   await db.insert(projectMembers).values({
     userId:userID,
-    projectId:n
+    projectId:newProject.id,
+    role:"Project Owner",
   })
 
   return { success: true }
