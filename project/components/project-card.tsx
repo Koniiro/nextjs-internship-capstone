@@ -37,16 +37,16 @@ Features to implement:
 - Error states
 */
 
+const statusI=["Review","In Progress", "On-hold","Completed","Starting"]
 export interface ProjectCardProps {
   project: {
     id: string
     name: string
-    description?: string
+    description?: string 
     progress: number
-    memberCount: number
     dueDate?: Date
     color:string
-    status:  'Completed' | 'On-hold' | 'In Progress' | 'Review'
+    status:number
   }
   onEdit?: (id: string) => void
   onDelete?: (id: string) => void
@@ -73,7 +73,7 @@ export default function ProjectCard({project}:ProjectCardProps) {
       <div className="flex items-center justify-between text-sm text-payne's_gray-500 dark:text-french_gray-400 mb-4">
         <div className="flex items-center">
           <Users size={16} className="mr-1" />
-          {project.memberCount} members
+          X members
         </div>
         <div className="flex items-center">
           <Calendar size={16} className="mr-1" />
@@ -97,16 +97,16 @@ export default function ProjectCard({project}:ProjectCardProps) {
       <div className="flex items-center justify-between">
         <span
           className={`px-2 py-1 text-xs font-medium rounded-full ${
-              project.status === "In Progress"
+              project.status === 2
                 ? "bg-blue_munsell-100 text-blue_munsell-700 dark:bg-blue_munsell-900 dark:text-blue_munsell-300"
-                : project.status === "Review"
+                : project.status === 1
                 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-                : project.status === "Completed"
+                : project.status === 4
                 ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
                 : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
           }`}
         >
-          {project.status}
+          {statusI[project.status-1]}
         </span>
       </div>
     </div>

@@ -1,8 +1,13 @@
 import { Calendar, Users, MoreHorizontal } from "lucide-react"
 import ProjectCard, { ProjectCardProps } from "./project-card"
+import { Project } from "@/types";
 
 
-type Project = ProjectCardProps['project']
+
+type ProjectGridProps = {
+  uProject: Project[];
+};
+/*
 const projects:Project[] = [
   {
     id: "1",
@@ -64,12 +69,26 @@ const projects:Project[] = [
     status:  'In Progress',
     color: "bg-indigo-500",
   },
-]
+]*/
 
-export function ProjectGrid() {
+export function mapProjectsToCardProjects(projects: Project[]): ProjectCardProps["project"][] {
+  
+  return projects.map((proj) => ({
+    id: proj.id,
+    name: proj.name,
+    description: proj.description ?? undefined,
+    progress: 0, // or compute from another source
+    dueDate: proj.due_date,
+    color: proj.color,
+    status: proj.statusId, // assuming this is number
+  }));
+}
+export async function ProjectGrid({ uProject }: ProjectGridProps) {
+  const cardData=mapProjectsToCardProjects(uProject);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {projects.map((project) => (
+      {cardData.map((project) => (
         <ProjectCard key={project.id} project={project}/>
       ))}
     </div>

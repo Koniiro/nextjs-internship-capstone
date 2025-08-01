@@ -30,7 +30,7 @@ export const users = pgTable('users', {
 // ... other tables
 */
 
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 import { integer, pgTable, varchar,text,timestamp,boolean,jsonb, primaryKey,uuid, check } from "drizzle-orm/pg-core";
 
@@ -45,11 +45,7 @@ export const usersTable = pgTable("users", {
   teamId: integer("team_id").references(() => teamTable.id),
 });
 
-export const teamTable = pgTable("team", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar({ length: 255 }).notNull(),
 
-});
 
 
 
@@ -70,11 +66,43 @@ export const projectTable = pgTable("project", {
 
   });
 
-export const projectMembers = pgTable("project_members", {
+export const projectMembers = pgTable("projectMembers", {
   userId: uuid("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
   projectId: uuid("project_id").notNull().references(() => projectTable.id, { onDelete: "cascade" }),
   role: varchar("role", { length: 32 }).notNull().default("member"), // optional metadata
   joinedAt: timestamp("joined_at").defaultNow() // optional
+
+},
+  (table) => [
+  primaryKey({ columns: [table.userId, table.projectId] }),
+
+])
+
+export const projectRelation=relations(projectTable,({ many }) => ({
+  members: many(projectMembers),
+}));
+export const userRelations = relations(usersTable, ({ many }) => ({
+  projectMemberships: many(projectMembers),
+}));
+
+export const projectMemberRelations = relations(projectMembers, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [projectMembers.userId],
+    references: [usersTable.id],
+  }),
+  project: one(projectTable, {
+    fields: [projectMembers.projectId],
+    references: [projectTable.id],
+  }),
+}));
+
+
+
+
+export const teamTable = pgTable("team", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar({ length: 255 }).notNull(),
+
 });
 
 export const statusTable=pgTable("projStatus",{

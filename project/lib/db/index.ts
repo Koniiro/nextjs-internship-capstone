@@ -41,7 +41,7 @@ export const queries = {
 import {config} from "dotenv";
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
-import { createProject } from "@/actions/project_actions";
+import { createProject, getProjects } from "@/actions/project_actions";
 import { ProjectCreator } from "@/types";
 import { NextResponse } from 'next/server'
 
@@ -50,9 +50,8 @@ export const db = drizzle(process.env.DATABASE_URL!,{schema});
 
 export const queries = {
   projects: {
-    getAll: () => {
-      console.log("TODO: Task 4.1 - Implement project CRUD operations")
-      return []
+    getAll: async () => {
+      return await getProjects();
     },
     getById: (id: string) => {
       console.log(`TODO: Get project by ID: ${id}`)

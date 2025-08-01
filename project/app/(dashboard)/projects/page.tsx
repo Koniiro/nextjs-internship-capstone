@@ -1,17 +1,15 @@
 import { Plus, Search, Filter } from "lucide-react"
-import { DashboardLayout } from "@/components/dashboard-layout"
 import { ProjectGrid } from "@/components/project-grid"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { CreateProjectModal } from "@/components/modals/create-project-modal"
+import { getUserProjects } from "@/actions/project_actions";
+import { use } from "react";
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const userProj= await getUserProjects()
+  if (!userProj.success) {
+    console.error(userProj.error);
+    return <div>Error: {userProj.error}</div>; // or redirect, or empty fallback
+  }
   return (
 
       <div className="space-y-6">
@@ -55,7 +53,7 @@ export default function ProjectsPage() {
         </div>
 
    
-        <ProjectGrid/>
+        <ProjectGrid uProject={userProj.projects} />
 
         {/* Component Placeholders */}
         <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
