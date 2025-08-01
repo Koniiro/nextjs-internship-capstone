@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { queries } from "@/lib/db";
 
 const colors: Record<string, string> = {
   Red: "bg-red-500",
@@ -52,8 +53,8 @@ export function CreateProjectForm(){
 
     async function onSubmit(data: z.infer<typeof projectschema>) {
         
-        console.log(data)
-        const response=await createProject(data.name,data.description,data.color,data.dueDate)
+
+        const response=queries.projects.create(data)
         console.log("User Creat response:", response);
         
     }

@@ -20,6 +20,12 @@ export interface Project {
   dueDate?: Date
   lists: List[]
 }
+export interface ProjectCreator {
+  name: string
+  description?: string
+  color?:string
+  dueDate?: Date
+}
 
 export interface List {
   id: string

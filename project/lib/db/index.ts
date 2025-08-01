@@ -41,6 +41,9 @@ export const queries = {
 import {config} from "dotenv";
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
+import { createProject } from "@/actions/project_actions";
+import { ProjectCreator } from "@/types";
+import { NextResponse } from 'next/server'
 
 config({path:".env"});
 export const db = drizzle(process.env.DATABASE_URL!,{schema});
@@ -55,9 +58,14 @@ export const queries = {
       console.log(`TODO: Get project by ID: ${id}`)
       return null
     },
-    create: (data: any) => {
-      console.log("TODO: Create project", data)
-      return null
+    create: async (data: ProjectCreator) => {
+      try {
+        const result = await createProject(data.name,data.description,data.color,data.dueDate)
+        return NextResponse.json({ success: true, data: result });
+      } catch (err) {
+        console.error("Failed to create project:", err);
+        return NextResponse.json({ success: false, error: "Server error" }, { status: 500 });
+      }
     },
     update: (id: string, data: any) => {
       console.log(`TODO: Update project ${id}`, data)
