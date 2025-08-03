@@ -1,15 +1,11 @@
 import { Plus, Search, Filter } from "lucide-react"
-import { ProjectGrid } from "@/components/project-grid"
+import  ProjectGrid  from "@/components/project-grid"
 import { CreateProjectModal } from "@/components/modals/create-project-modal"
 import { getUserProjects } from "@/actions/project_actions";
 import { use } from "react";
 
 export default async function ProjectsPage() {
-  const userProj= await getUserProjects()
-  if (!userProj.success) {
-    console.error(userProj.error);
-    return <div>Error: {userProj.error}</div>; // or redirect, or empty fallback
-  }
+ 
   return (
 
       <div className="space-y-6">
@@ -52,8 +48,8 @@ export default async function ProjectsPage() {
           </button>
         </div>
 
-   
-        <ProjectGrid uProject={userProj.projects} />
+  
+        <ProjectGrid/>
 
         {/* Component Placeholders */}
         <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">

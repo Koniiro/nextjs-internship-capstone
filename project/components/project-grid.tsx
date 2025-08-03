@@ -1,12 +1,10 @@
+
 import { Calendar, Users, MoreHorizontal } from "lucide-react"
-import ProjectCard, { ProjectCardProps } from "./project-card"
-import { Project } from "@/types";
+import ProjectCard from "./project-card"
+import { getUserProjects } from "@/actions/project_actions";
+import { mapProjectsToCardProjects } from "@/lib/mappers";
 
 
-
-type ProjectGridProps = {
-  uProject: Project[];
-};
 /*
 const projects:Project[] = [
   {
@@ -71,26 +69,24 @@ const projects:Project[] = [
   },
 ]*/
 
-export function mapProjectsToCardProjects(projects: Project[]): ProjectCardProps["project"][] {
-  
-  return projects.map((proj) => ({
-    id: proj.id,
-    name: proj.name,
-    description: proj.description ?? undefined,
-    progress: 0, // or compute from another source
-    dueDate: proj.due_date,
-    color: proj.color,
-    status: proj.statusId, // assuming this is number
-  }));
-}
-export async function ProjectGrid({ uProject }: ProjectGridProps) {
-  const cardData=mapProjectsToCardProjects(uProject);
+
+
+
+export default async function ProjectGrid() {
+  const userProj = await getUserProjects();
+
+  if (!userProj.success) {
+    console.error(userProj.error);
+    return <div>Error: {userProj.error}</div>;
+  }
+
+  const cardData = mapProjectsToCardProjects(userProj.projects);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {cardData.map((project) => (
-        <ProjectCard key={project.id} project={project}/>
+        <ProjectCard key={project.id} project={project} />
       ))}
     </div>
-  )
+  );
 }

@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { queries } from "@/lib/db";
+//import { queries } from "@/lib/db";
 
 const colors: Record<string, string> = {
   Red: "bg-red-500",
@@ -54,7 +54,7 @@ export function CreateProjectForm(){
     async function onSubmit(data: z.infer<typeof projectschema>) {
         
 
-        const response=queries.projects.create(data)
+        const response=createProject(data.name,data.description,data.color,data.dueDate)
         console.log("User Creat response:", response);
         
     }
@@ -97,7 +97,7 @@ export function CreateProjectForm(){
                 render={({field})=>(
                   <FormItem className="flex flex-col">
                     <FormLabel >Project Color</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a color for your project" />

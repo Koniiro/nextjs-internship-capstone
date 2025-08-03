@@ -15,11 +15,11 @@ export interface Project {
   projectOwner: string
   name: string
   statusId:number
-  description?: string|null
+  description?: string |null
   color:string
   created_at: Date
   updated_at: Date
-  due_date?: Date
+  due_date?: Date |null
 }
 export interface ProjectCreator {
   name: string

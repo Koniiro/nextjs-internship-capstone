@@ -45,9 +45,10 @@ import { createProject, getProjects } from "@/actions/project_actions";
 import { ProjectCreator } from "@/types";
 import { NextResponse } from 'next/server'
 
+
 config({path:".env"});
 export const db = drizzle(process.env.DATABASE_URL!,{schema});
-
+/*
 export const queries = {
   projects: {
     getAll: async () => {
@@ -94,3 +95,4 @@ export const queries = {
     },
   },
 }
+*/

@@ -1,3 +1,4 @@
+'use client'
 import { Project } from '../types/index';
 import { Calendar, Users, MoreHorizontal } from "lucide-react"
 
