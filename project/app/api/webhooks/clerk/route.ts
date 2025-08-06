@@ -1,7 +1,7 @@
 import { verifyWebhook, } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
 import {headers} from 'next/headers'
-import { createUser, deleteUser, updateUser } from '@/actions/actions'
+import { createUser, deleteUser, updateUser } from '@/actions/user_actions'
 
 export async function POST(req: NextRequest) {
   const webhk_scrt=process.env.CLERK_WEBHOOK_SIGNING_SECRET

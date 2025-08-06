@@ -12,13 +12,20 @@ export interface User {
 
 export interface Project {
   id: string
+  projectOwner: string
+  name: string
+  statusId:number
+  description?: string |null
+  color:string
+  created_at: Date
+  updated_at: Date
+  due_date?: Date |null
+}
+export interface ProjectCreator {
   name: string
   description?: string
-  ownerId: string
-  createdAt: Date
-  updatedAt: Date
+  color?:string
   dueDate?: Date
-  lists: List[]
 }
 
 export interface List {

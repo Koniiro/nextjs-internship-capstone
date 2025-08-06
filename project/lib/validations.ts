@@ -1,5 +1,7 @@
 // TODO: Task 3.6 - Set up data validation with Zod schemas
 
+import z from "zod"
+
 /*
 TODO: Implementation Notes for Interns:
 
@@ -34,7 +36,14 @@ export const taskSchema = z.object({
 */
 
 // Placeholder exports to prevent import errors
-export const projectSchema = "TODO: Implement project validation schema"
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+export const projectCreationSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  description: z.string().max(500, 'Description too long').optional(),
+  color: z.string().max(50, 'Color too long').optional(),
+  dueDate: z.date().min(today, 'Due date must today or be in future').optional(),
+})
 export const taskSchema = "TODO: Implement task validation schema"
 export const userSchema = "TODO: Implement user validation schema"
 export const listSchema = "TODO: Implement list validation schema"

@@ -1,6 +1,5 @@
 // app/actions.ts
 "use server";
-import { neon } from "@neondatabase/serverless";
 import 'dotenv/config';
 import { db } from "@/lib/db"
 import { usersTable } from "@/lib/db/schema";
