@@ -30,15 +30,21 @@ Integration:
 - Update project list optimistically
 - Handle errors gracefully
 */
-
+"use client"
 import {  Plus } from "lucide-react";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { CreateProjectForm } from '../forms/create-project-form';
 import { Button } from "../ui/button";
+import { useProjects } from "@/hooks/use-projects";
 
 
 
 export  function CreateProjectModal() {
+    const {
+
+      isCreating
+
+    } = useProjects();
   
   return (
     <Dialog>
@@ -60,8 +66,8 @@ export  function CreateProjectModal() {
             <Button variant="outline">Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-project-form">
-              Save changes
+            <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-project-form">
+              {isCreating ? "Creating..." : "Create Project"}
             </Button>
           </DialogClose>
         </DialogFooter>

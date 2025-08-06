@@ -1,5 +1,5 @@
 'use client'
-import { Project } from '../types/index';
+import { Project, ProjectCreator } from '../types/index';
 import { Calendar, Users, MoreHorizontal } from "lucide-react"
 import { Button } from './ui/button';
 
@@ -54,7 +54,7 @@ export interface ProjectCardProps {
   onDelete?: (id: string) => void
 }
 
-export default function ProjectCard({project}:ProjectCardProps) {
+export default function ProjectCard({project,onDelete,onEdit}:ProjectCardProps,) {
   return (
     <div key={project.id}
           className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6 hover:shadow-lg transition-shadow cursor-pointer"
@@ -111,8 +111,8 @@ export default function ProjectCard({project}:ProjectCardProps) {
           {statusI[project.status-1]}
         </span>
         <div>
-          <Button>Delete</Button>
-          <Button>Update</Button>
+          <Button variant="default" onClick={() => onDelete?.(project.id)}>Delete</Button>
+          <Button variant="default" onClick={() => onEdit?.(project.id)}>Update</Button>
         </div>
       </div>
     </div>

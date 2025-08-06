@@ -59,7 +59,7 @@ Dependencies to install:
 "use client"
 import { ProjectCreator } from "@/types"
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { createProject, getUserProjects } from "@/actions/project_actions";
+import { createProject, deleteProject, getUserProjects } from "@/actions/project_actions";
 export function useProjects() {
   const queryClient = useQueryClient()
 
@@ -79,11 +79,11 @@ export function useProjects() {
   
 
   //Create Projects
-    const{
-      mutate: useCreateProject,
-      isPending: isCreating,
-      error: createError,
-    }  = useMutation({
+  const{
+    mutate: useCreateProject,
+    isPending: isCreating,
+    error: createError,
+  }  = useMutation({
     mutationFn: async (data:ProjectCreator) => {
       console.log('Creating Project',data)
       const res = await createProject(data);
@@ -92,6 +92,24 @@ export function useProjects() {
     },
     onSuccess: () => {
       console.log("Project Creation Success",)
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+    }
+  })
+
+  //Delete Project
+  const{
+    mutate: useDeleteProject,
+    isPending: isDeleting,
+    error: deleteError,
+  }  = useMutation({
+    mutationFn: async (projectId:string) => {
+      console.log('Deleting Project',projectId)
+      const res = await deleteProject(projectId);
+      if (!res.success) throw new Error(res.error);
+      return res.data;
+    },
+    onSuccess: () => {
+      console.log("Project Deletion Success",)
       queryClient.invalidateQueries({ queryKey: ['projects'] })
     }
   })
@@ -107,7 +125,7 @@ export function useProjects() {
     createError:createError,
 
     createProject: (data: ProjectCreator) => useCreateProject(data),
-    updateProject: (id: string, data: any) => console.log(`TODO: Update project ${id}`, data),
-    deleteProject: (id: string) => console.log(`TODO: Delete project ${id}`),
+    updateProject: (id: string) => console.log(`TODO: Update project ${id}`),
+    deleteProject: (id: string) => useDeleteProject(id),
   }
 }

@@ -43,6 +43,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
 import { ProjectCreator } from "@/types";
 import { projectMembers, projectTable } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 config({path:".env"});
 export const db = drizzle(process.env.DATABASE_URL!,{schema});
@@ -73,7 +74,6 @@ export const queries = {
       return null
     },
     create: async (projectOwner:string,projectData:ProjectCreator) => {
-      console.log("create")
       const data={
         projectOwner:projectOwner,
         name:projectData.name,
@@ -103,9 +103,9 @@ export const queries = {
       console.log(`TODO: Update project ${id}`, data)
       return null
     },
-    delete: (id: string) => {
-      console.log(`TODO: Delete project ${id}`)
-      return null
+    delete: async (id: string) => {
+      const res =await  db.delete(projectTable).where(eq(projectTable.id,id)).returning({ deletedId: projectTable.id});; 
+      return res
     },
   },
   tasks: {

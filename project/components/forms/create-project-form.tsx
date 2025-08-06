@@ -27,7 +27,6 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { createProject, getProjects } from "@/actions/project_actions";
 import {
   Select,
   SelectContent,
@@ -35,7 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { queries } from "@/lib/db";
 import { useProjects } from "@/hooks/use-projects";
 import { ProjectCreator } from "@/types";
 //import { queries } from "@/lib/db";
@@ -51,8 +49,6 @@ const colors: Record<string, string> = {
 export function CreateProjectForm(){
     const {
       createProject,
-      isCreating,
-      createError
     } = useProjects();
 
     const form = useForm<z.infer<typeof projectCreationSchema>>({

@@ -29,13 +29,13 @@ export const getUserProjects=async()=>{
       const clerkID = (await auth()).userId;
 
       if (!clerkID) {
-        return { success: false, error: "Not authenticated" };
+        throw new Error("User not Authenticated.");
       }
 
       const internalUser = await queries.users.getById(clerkID)
 
       if (!internalUser) {
-        return { success: false, error: "User not found" };
+        throw new Error("User not found.");
       }
 
       const memberships = await queries.projects.getByUser(internalUser.id)
@@ -56,14 +56,12 @@ export const getUserProjects=async()=>{
 }
 
 export const createProject=async (
-
   data:ProjectCreator
-
 )=>{
   try {
     const clerkID=  (await auth()).userId
     if (!clerkID) {
-      return { success: false, error: "Not authenticated" };
+      throw new Error("User not Authenticated.");
     }
 
     // Get internal user UUID from your `usersTable`
@@ -72,16 +70,41 @@ export const createProject=async (
       throw new Error("User not found.");
     }
 
-    
     const [newProject] =await queries.projects.create(internalUser.id,data);
-
     await queries.projects.projectUserLink(newProject.id,internalUser.id,"Project Owner")
-    //revalidatePath('/projects')
 
     return { success: true, data:newProject }
     
   } catch (error) {
     console.error("❌ Error creating project =>", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+
+}
+
+export const deleteProject=async(projectId:string)=>{
+  try {
+    const clerkID=  (await auth()).userId
+    if (!clerkID) {
+      throw new Error("User not Authenticated.");
+    }
+    const deletedId =await queries.projects.delete(projectId)
+
+    if (!deletedId) {
+      throw new Error("Project could not be deleted or was not found.");
+    }
+
+    return {
+      success: true,
+      data: deletedId,
+    };
+
+  } catch (error) {
+    console.error(`❌ Error deleting project ${projectId} =>`, error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
