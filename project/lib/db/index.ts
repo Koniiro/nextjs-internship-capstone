@@ -41,31 +41,63 @@ export const queries = {
 import {config} from "dotenv";
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
-import { createProject, getProjects } from "@/actions/project_actions";
 import { ProjectCreator } from "@/types";
-import { NextResponse } from 'next/server'
-
+import { projectMembers, projectTable } from "@/lib/db/schema";
 
 config({path:".env"});
 export const db = drizzle(process.env.DATABASE_URL!,{schema});
-/*
+
 export const queries = {
+  users:{
+    getById: async (clerkId: string) => {
+        return await db.query.usersTable.findFirst({
+        where: (u, { eq }) => eq(u.clerkId, clerkId),
+      });
+    },
+
+  },
   projects: {
     getAll: async () => {
-      return await getProjects();
+      return await db.select().from(schema.projectTable);
+    },
+    getByUser:async(userId: string)=>{
+      return  await db.query.projectMembers.findMany({
+        where: (pm, { eq }) => eq(pm.userId, userId),
+        with: {
+          project: true,
+        },
+    });
     },
     getById: (id: string) => {
       console.log(`TODO: Get project by ID: ${id}`)
       return null
     },
-    create: async (data: ProjectCreator) => {
-      try {
-        const result = await createProject(data.name,data.description,data.color,data.dueDate)
-        return NextResponse.json({ success: true, data: result });
-      } catch (err) {
-        console.error("Failed to create project:", err);
-        return NextResponse.json({ success: false, error: "Server error" }, { status: 500 });
+    create: async (projectOwner:string,projectData:ProjectCreator) => {
+      console.log("create")
+      const data={
+        projectOwner:projectOwner,
+        name:projectData.name,
+        statusId:projectData.statusId,
+        description:projectData.description,
+        color:projectData.color,
+        due_date:projectData.dueDate
       }
+
+      const newProject=await db.insert(projectTable).values(data).returning()
+      return newProject
+    },
+    projectUserLink:async (projectId:string, userId:string,role:string)=>{
+        try {
+          await db.insert(projectMembers).values({
+            userId,
+            projectId,
+            role,
+          });
+          return true; // success
+        } catch (error) {
+          console.error("Error linking user to project:", error);
+          return false; // failure
+        }
     },
     update: (id: string, data: any) => {
       console.log(`TODO: Update project ${id}`, data)
@@ -95,4 +127,3 @@ export const queries = {
     },
   },
 }
-*/

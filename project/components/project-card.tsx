@@ -1,6 +1,7 @@
 'use client'
 import { Project } from '../types/index';
 import { Calendar, Users, MoreHorizontal } from "lucide-react"
+import { Button } from './ui/button';
 
 // TODO: Task 4.5 - Design and implement project cards and layouts
 
@@ -95,7 +96,7 @@ export default function ProjectCard({project}:ProjectCardProps) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-row items-center justify-between">
         <span
           className={`px-2 py-1 text-xs font-medium rounded-full ${
               project.status === 2
@@ -109,6 +110,10 @@ export default function ProjectCard({project}:ProjectCardProps) {
         >
           {statusI[project.status-1]}
         </span>
+        <div>
+          <Button>Delete</Button>
+          <Button>Update</Button>
+        </div>
       </div>
     </div>
   )

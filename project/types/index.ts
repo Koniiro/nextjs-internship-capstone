@@ -24,9 +24,12 @@ export interface Project {
 export interface ProjectCreator {
   name: string
   description?: string
+  statusId:number
   color?:string
   dueDate?: Date
 }
+
+
 
 export interface List {
   id: string

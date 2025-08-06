@@ -27,7 +27,7 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { createProject } from "@/actions/project_actions";
+import { createProject, getProjects } from "@/actions/project_actions";
 import {
   Select,
   SelectContent,
@@ -35,6 +35,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { queries } from "@/lib/db";
+import { useProjects } from "@/hooks/use-projects";
+import { ProjectCreator } from "@/types";
 //import { queries } from "@/lib/db";
 
 const colors: Record<string, string> = {
@@ -46,18 +49,36 @@ const colors: Record<string, string> = {
 };
 
 export function CreateProjectForm(){
-    const projectschema=projectCreationSchema
-    const form = useForm<z.infer<typeof projectschema>>({
-        resolver: zodResolver(projectschema),
+    const {
+      createProject,
+      isCreating,
+      createError
+    } = useProjects();
+
+    const form = useForm<z.infer<typeof projectCreationSchema>>({
+        resolver: zodResolver(projectCreationSchema),
+          defaultValues: {
+          name: "",
+          description: "",
+          color: "",
+          dueDate: new Date(), // or `new Date()` if you want to set today's date
+        }
     })
 
-    async function onSubmit(data: z.infer<typeof projectschema>) {
-        
-
-        const response=createProject(data.name,data.description,data.color,data.dueDate)
-        console.log("User Creat response:", response);
+    async function onSubmit(data: z.infer<typeof projectCreationSchema>) {
+      const newProjData:ProjectCreator={
+        name:data.name,
+        description:data.description,
+        color:data.color,
+        dueDate:data.dueDate,
+        statusId:5,
+      }
+      const res=createProject(newProjData)
+      //const response= await queries.projects.getAll()
+      //console.log("User Create response:", response);
         
     }
+
     return(
          <Form {...form}>
             <form id="create-project-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
