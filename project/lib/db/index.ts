@@ -43,7 +43,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
 import { ProjectCreator } from "@/types";
 import { projectMembers, projectTable } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 config({path:".env"});
 export const db = drizzle(process.env.DATABASE_URL!,{schema});
@@ -59,19 +59,24 @@ export const queries = {
   },
   projects: {
     getAll: async () => {
-      return await db.select().from(schema.projectTable);
+      return await db.select().from(projectTable);
     },
     getByUser:async(userId: string)=>{
       return  await db.query.projectMembers.findMany({
-        where: (pm, { eq }) => eq(pm.userId, userId),
-        with: {
-          project: true,
-        },
-    });
+          where: (pm, { eq }) => eq(pm.userId, userId),
+          with: {
+            project: true,
+          },
+      });
     },
-    getById: (id: string) => {
-      console.log(`TODO: Get project by ID: ${id}`)
-      return null
+    getById: async (projectId: string) => {
+      const result = await db
+          .select()
+          .from(projectTable)
+          .where(eq(projectTable.id, projectId))
+          .limit(1); 
+
+      return result[0] ?? null;
     },
     create: async (projectOwner:string,projectData:ProjectCreator) => {
       const data={
@@ -99,9 +104,16 @@ export const queries = {
           return false; // failure
         }
     },
-    update: (id: string, data: any) => {
-      console.log(`TODO: Update project ${id}`, data)
-      return null
+    update: (id: string, projectData: ProjectCreator) => {
+      return db.update(projectTable)
+        .set({
+          name:projectData.name,
+          description:projectData.description,
+          color:projectData.color,
+          due_date:projectData.dueDate,
+          statusId:projectData.statusId,
+          updated_at:sql`now()`
+        }).where(eq(projectTable.id,id));
     },
     delete: async (id: string) => {
       const res =await  db.delete(projectTable).where(eq(projectTable.id,id)).returning({ deletedId: projectTable.id});; 

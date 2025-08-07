@@ -6,7 +6,7 @@ import { Calendar } from "@/components/ui/calendar"
 
 import { useForm } from "react-hook-form"
 
-import { projectCreationSchema } from "@/lib/validations";
+import { projectCreationSchema, projectUpdateSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod";
 import { CalendarIcon, Plus } from "lucide-react";
@@ -35,44 +35,45 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useProjects } from "@/hooks/use-projects";
-import { ProjectCreator } from "@/types";
-import { colors } from "@/lib/constants";
-//import { queries } from "@/lib/db";
+import { Project, ProjectCreator } from "@/types";
+import { colors, projectStatus } from "@/lib/constants";
 
+type UpdateProjectFormProps = {
+  projectData: Project;
+};
 
+export function UpdateProjectForm({ projectData }: UpdateProjectFormProps){
 
-export function CreateProjectForm(){
+  
     const {
-      createProject,
+      updateProject,
     } = useProjects();
 
-    const form = useForm<z.infer<typeof projectCreationSchema>>({
-        resolver: zodResolver(projectCreationSchema),
+    const form = useForm<z.infer<typeof projectUpdateSchema>>({
+        resolver: zodResolver(projectUpdateSchema),
           defaultValues: {
-          name: "",
-          description: "",
-          color: "",
-          dueDate: new Date(), // or `new Date()` if you want to set today's date
+          name: projectData.name,
+          description: projectData.description||"",
+          color: projectData.color,
+          dueDate: projectData.due_date ? new Date(projectData.due_date) : new Date(),
+          statusId:projectData.statusId
         }
     })
 
-    async function onSubmit(data: z.infer<typeof projectCreationSchema>) {
+    async function onSubmit(data: z.infer<typeof projectUpdateSchema>) {
       const newProjData:ProjectCreator={
         name:data.name,
         description:data.description,
         color:data.color,
         dueDate:data.dueDate,
-        statusId:5,
+        statusId:data.statusId||5,
       }
-      const res=createProject(newProjData)
-      //const response= await queries.projects.getAll()
-      //console.log("User Create response:", response);
-        
+      const res=updateProject(projectData.id,newProjData)
     }
 
     return(
          <Form {...form}>
-            <form id="create-project-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form id={`update-project-form-${projectData.id}`} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                <FormField
                 control={form.control} name="name"
                 render={({field})=>(
@@ -120,6 +121,32 @@ export function CreateProjectForm(){
                                 <SelectItem key={value} value={value} className="cursor-pointer" >
                                 <div className="flex flex-row items-center gap-2">
                                     <div className={`w-3 h-3 rounded-full ${value}`} />
+                                    {name}
+                                </div>                               
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    
+                    <FormMessage className="text-red-600"/>
+                  </FormItem>
+                )}
+              /> 
+              <FormField
+                control={form.control} name="statusId"
+                render={({field})=>(
+                  <FormItem className="flex flex-col">
+                    <FormLabel >Project Status</FormLabel>
+                    <Select onValueChange={(val) => field.onChange(Number(val))} value={String(field.value)} >
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a color for your project" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white">
+                            {Object.entries(projectStatus).map(([name, value]) => (
+                                <SelectItem key={value} value={String(value)} className="cursor-pointer" >
+                                <div className="flex flex-row items-center gap-2">
                                     {name}
                                 </div>                               
                                 </SelectItem>

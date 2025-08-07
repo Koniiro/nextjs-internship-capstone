@@ -2,6 +2,8 @@
 import { Project, ProjectCreator } from '../types/index';
 import { Calendar, Users, MoreHorizontal } from "lucide-react"
 import { Button } from './ui/button';
+import { projectStatus } from '@/lib/constants';
+import { UpdateProjectModal } from './modals/update-project-modal';
 
 // TODO: Task 4.5 - Design and implement project cards and layouts
 
@@ -39,20 +41,12 @@ Features to implement:
 - Error states
 */
 
-const statusI=["Review","In Progress", "On-hold","Completed","Starting"]
 export interface ProjectCardProps {
-  project: {
-    id: string
-    name: string
-    description?: string 
-    progress: number
-    dueDate?: Date
-    color:string
-    status:number
-  }
-  onEdit?: (id: string) => void
+  project: Project
+  onEdit?: (id: string,data:ProjectCreator) => void
   onDelete?: (id: string) => void
 }
+const statusI=["Review","In Progress", "On-hold","Completed","Starting"]
 
 export default function ProjectCard({project,onDelete,onEdit}:ProjectCardProps,) {
   return (
@@ -79,19 +73,19 @@ export default function ProjectCard({project,onDelete,onEdit}:ProjectCardProps,)
         </div>
         <div className="flex items-center">
           <Calendar size={16} className="mr-1" />
-          {project.dueDate?.toDateString()}
+          {project.due_date?.toDateString()}
         </div>
       </div>
 
       <div className="mb-4">
         <div className="flex items-center justify-between text-sm mb-2">
           <span className="text-payne's_gray-500 dark:text-french_gray-400">Progress</span>
-          <span className="text-outer_space-500 dark:text-platinum-500 font-medium">{project.progress}%</span>
+          <span className="text-outer_space-500 dark:text-platinum-500 font-medium">{0}%</span>
         </div>
         <div className="w-full bg-french_gray-300 dark:bg-payne's_gray-400 rounded-full h-2">
           <div
             className={`h-2 rounded-full transition-all duration-300 ${project.color}`}
-            style={{ width: `${project.progress}%` }}
+            style={{ width: `0%` }}
           />
         </div>
       </div>
@@ -99,20 +93,20 @@ export default function ProjectCard({project,onDelete,onEdit}:ProjectCardProps,)
       <div className="flex flex-row items-center justify-between">
         <span
           className={`px-2 py-1 text-xs font-medium rounded-full ${
-              project.status === 2
+              project.statusId === 2
                 ? "bg-blue_munsell-100 text-blue_munsell-700 dark:bg-blue_munsell-900 dark:text-blue_munsell-300"
-                : project.status === 1
+                : project.statusId === 1
                 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-                : project.status === 4
+                : project.statusId === 4
                 ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
                 : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
           }`}
         >
-          {statusI[project.status-1]}
+          {statusI[project.statusId-1]}
         </span>
         <div>
           <Button variant="default" onClick={() => onDelete?.(project.id)}>Delete</Button>
-          <Button variant="default" onClick={() => onEdit?.(project.id)}>Update</Button>
+          <UpdateProjectModal projectData={project}/>
         </div>
       </div>
     </div>

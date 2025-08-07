@@ -59,7 +59,7 @@ Dependencies to install:
 "use client"
 import { ProjectCreator } from "@/types"
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { createProject, deleteProject, getUserProjects } from "@/actions/project_actions";
+import { createProject, deleteProject, getProjectsById, getUserProjects, updateProject } from "@/actions/project_actions";
 export function useProjects() {
   const queryClient = useQueryClient()
 
@@ -113,19 +113,41 @@ export function useProjects() {
       queryClient.invalidateQueries({ queryKey: ['projects'] })
     }
   })
+  
+
+  //Update Project
+  const{
+    mutate: useUpdateProject,
+    isPending: isUpdating,
+    error: updateError,
+  }  = useMutation({
+    mutationFn: async ({ projectId, updateData }: { projectId: string; updateData: ProjectCreator }) => {
+      console.log('Updating Project',projectId,updateData)
+      const res = await updateProject(projectId,updateData);
+      if (!res.success) throw new Error(res.error);
+      return res.data;
+    },
+    onSuccess: () => {
+      console.log("Project Update Success",)
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+    }
+  })
 
 
   return {
     projects: projects,
     isLoading: isLoading,
     error: error,
-
-
+    
     isCreating:isCreating,
     createError:createError,
 
+    isUpdating:isUpdating,
+    updateError:updateError,
+
     createProject: (data: ProjectCreator) => useCreateProject(data),
-    updateProject: (id: string) => console.log(`TODO: Update project ${id}`),
+    updateProject: (id: string, data:ProjectCreator) => useUpdateProject({projectId:id,updateData:data}),
     deleteProject: (id: string) => useDeleteProject(id),
   }
 }
+

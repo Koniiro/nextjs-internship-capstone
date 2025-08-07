@@ -3,17 +3,41 @@ import 'dotenv/config';
 
 import { queries } from '../lib/db/index';
 import { auth } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
 import { Project, ProjectCreator } from '@/types';
 
 
 export const getProjects = async () => {
   try {
+    const clerkID = (await auth()).userId;
+
+    if (!clerkID) {
+      throw new Error("User not Authenticated.");
+    }
     const projects = await queries.projects.getAll();
     return {
       success: true,
       data: projects,
+    };
+  } catch (error) {
+    console.error("❌ Error fetching projects:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+};
+
+export const getProjectsById = async (projectId:string) => {
+  try {
+    const clerkID = (await auth()).userId;
+
+    if (!clerkID) {
+      throw new Error("User not Authenticated.");
+    }
+    const project = await queries.projects.getById(projectId)
+    return {
+      success: true,
+      data: project,
     };
   } catch (error) {
     console.error("❌ Error fetching projects:", error);
@@ -105,6 +129,37 @@ export const deleteProject=async(projectId:string)=>{
 
   } catch (error) {
     console.error(`❌ Error deleting project ${projectId} =>`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+
+}
+
+export const updateProject=async (
+  projectId:string,
+  data:ProjectCreator
+)=>{
+  try {
+    const clerkID=  (await auth()).userId
+    if (!clerkID) {
+      throw new Error("User not Authenticated.");
+    }
+    const updatedProject = await queries.projects.update(projectId,data).returning()
+    
+    if (!updatedProject) {
+      throw new Error("Project could not be updated or was not found.");
+    }
+
+
+
+
+    return { success: true, data:updatedProject }
+    
+  } catch (error) {
+    console.error("❌ Error creating project =>", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
