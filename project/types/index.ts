@@ -46,18 +46,18 @@ export interface ColumnCreate {
 }
 
 export interface Task {
-  id: string
-  columnId?: string //TODO CONVERT TO REQUIRED
-  assigneeId?: string
+  id: number
+  columnId?: number //TODO CONVERT TO REQUIRED
+  assigneeId: string|null
 
   title: string
-  description?: string
+  description: string|null
   priority: "low" | "medium" | "high"
-  position: number
+  position: number |null
   
   created_at: Date
   updated_at: Date
-  due_date?: Date
+  due_date?: Date|null
   //comments: Comment[]
 }
 export interface TaskCreate {

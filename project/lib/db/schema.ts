@@ -32,7 +32,7 @@ export const users = pgTable('users', {
 
 import { relations, sql } from "drizzle-orm";
 
-import { integer, pgTable, varchar,text,timestamp,boolean,jsonb, primaryKey,uuid, check } from "drizzle-orm/pg-core";
+import { integer, pgTable, varchar,text,timestamp,boolean,jsonb, primaryKey,uuid, check, pgEnum } from "drizzle-orm/pg-core";
 
 
 export const usersTable = pgTable("users", {
@@ -120,7 +120,7 @@ export const columnTable = pgTable("kbColumn", {
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
-
+export const priorityEnum = pgEnum("priority", ["low", "medium", "high"]);
 export const taskTable = pgTable("task", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   columnId: integer("column_Id").notNull().references(() => columnTable.id, { onDelete: "cascade" }),
@@ -128,7 +128,7 @@ export const taskTable = pgTable("task", {
   
   title: varchar({ length: 255 }).notNull(),
   description:text("description"),
-  priority: varchar({ length: 20 }).notNull(),
+  priority: priorityEnum("priority").notNull(),
   position: integer("order").default(0),
 
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
