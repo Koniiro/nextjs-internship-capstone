@@ -36,38 +36,39 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { CreateProjectForm } from '../forms/create-project-form';
 import { Button } from "../ui/button";
 import { useProjects } from "@/hooks/use-projects";
+import { UpdateProjectForm } from "../forms/update-project-form";
+import { Project } from "@/types";
 
+type UpdateProjectModalProps = {
+  projectData: Project;
+};
 
-
-export  function CreateProjectModal() {
+export  function UpdateProjectModal( { projectData }: UpdateProjectModalProps) {
     const {
-
-      isCreating
-
+      isUpdating
     } = useProjects();
   
   return (
     <Dialog>
         <DialogTrigger className="inline-flex items-center px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600 transition-colors">
-            <Plus size={20} className="mr-2" />
-            New Project
+            Update Project
         </DialogTrigger>
         <DialogContent className="bg-white">
         <DialogHeader>
-          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Create a New Project</DialogTitle>
+          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Update your project</DialogTitle>
           <DialogDescription className="text-payne's_gray-500 dark:text-french_gray-500 mt-2">
-            Ready to start a new project?
+            Need to change a few things?
           </DialogDescription>
         </DialogHeader>
-        <CreateProjectForm/>
+        <UpdateProjectForm projectData={projectData}/>
         
         <DialogFooter className="flex flex-col gap-3 sm:flex-row">
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-project-form">
-              {isCreating ? "Creating..." : "Create Project"}
+            <Button disabled={isUpdating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`update-project-form-${projectData.id}`}>
+              {isUpdating ? "Updating..." : "Update Project"}
             </Button>
           </DialogClose>
         </DialogFooter>

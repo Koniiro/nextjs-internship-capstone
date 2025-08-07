@@ -1,104 +1,151 @@
 "use server";
 import 'dotenv/config';
 
-import { eq } from "drizzle-orm";
-import { db } from '../lib/db/index';
-import { projectMembers, projectTable, usersTable, } from '../lib/db/schema';
+import { queries } from '../lib/db/index';
 import { auth } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
-import { Project } from '@/types';
+import { Project, ProjectCreator } from '@/types';
+import { clerkAuthCheck } from '@/lib/utils';
 
-export const getProjects = async()=>{
-  try{
-    const projects = await db.select().from(projectTable) 
-    return { success: true, data:projects}
-  }catch (e){
-    console.error("Error fetching projects:", e);
 
+export const getProjects = async () => {
+  try {
+    clerkAuthCheck()
+    const projects = await queries.projects.getAll();
+    return {
+      success: true,
+      data: projects,
+    };
+  } catch (error) {
+    console.error("❌ Error fetching projects:", error);
     return {
       success: false,
-      error: "Failed to fetch projects",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
-  
-}
+};
 
-export const getUserProjects=async(): Promise<
-  | { success: true; projects: Project[] }
-  | { success: false; error: string }
->=>{
-try {
-    const clerkID = (await auth()).userId;
-
-    if (!clerkID) {
-      return { success: false, error: "Not authenticated" };
-    }
-
-    const internalUser = await db.query.usersTable.findFirst({
-      where: (u, { eq }) => eq(u.clerkId, clerkID),
-    });
-
-    if (!internalUser) {
-      return { success: false, error: "User not found" };
-    }
-
-    const memberships = await db.query.projectMembers.findMany({
-      where: (pm, { eq }) => eq(pm.userId, internalUser.id),
-      with: {
-        project: true,
-      },
-    });
-
-    const userProjects = memberships.map((m) => m.project);
-
-    return { success: true, projects: userProjects };
-  } catch (error: any) {
-    console.error("getUserProjects error:", error);
-    return { success: false, error: "Internal server error" };
+export const getProjectsById = async (projectId:string) => {
+  try {
+    clerkAuthCheck()
+    const project = await queries.projects.getById(projectId)
+    return {
+      success: true,
+      data: project,
+    };
+  } catch (error) {
+    console.error("❌ Error fetching projects:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
+};
 
+export const getUserProjects=async()=>{
+  try {
+      const clerkID= await clerkAuthCheck()
+
+      const internalUser = await queries.users.getById(clerkID)
+
+      if (!internalUser) {
+        throw new Error("User not found.");
+      }
+
+      const memberships = await queries.projects.getByUser(internalUser.id)
+
+      const userProjects = memberships.map((m) => m.project);
+
+      return {success: true,data: userProjects}
+    
+  } catch (error) {
+
+    console.error("❌ Error fetching user's projects:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
 }
 
 export const createProject=async (
-
-  name:string,
-  description:string|undefined,
-  color: string|undefined,
-  dueDate: Date|undefined,
-
+  data:ProjectCreator
 )=>{
-  const clerkID=  (await auth()).userId
-  if (!clerkID) {
-     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  try {
+    const clerkID= await clerkAuthCheck()
+
+    // Get internal user UUID from your `usersTable`
+    const internalUser = await await queries.users.getById(clerkID)
+    if (!internalUser) {
+      throw new Error("User not found.");
+    }
+
+    const [newProject] =await queries.projects.create(internalUser.id,data);
+    await queries.projects.projectUserLink(newProject.id,internalUser.id,"Project Owner")
+
+    return { success: true, data:newProject }
+    
+  } catch (error) {
+    console.error("❌ Error creating project =>", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
   }
 
+}
 
-  // Get internal user UUID from your `usersTable`
-  const internalUser = await db.query.usersTable.findFirst({
-    where: (u, { eq }) => eq(u.clerkId, clerkID),
-  });
+export const deleteProject=async(projectId:string)=>{
+  try {
+    clerkAuthCheck()
+    const deletedId =await queries.projects.delete(projectId)
 
-  if (!internalUser) {
-    throw new Error("User not found.");
+    if (!deletedId) {
+      throw new Error("Project could not be deleted or was not found.");
+    }
+
+    return {
+      success: true,
+      data: deletedId,
+    };
+
+  } catch (error) {
+    console.error(`❌ Error deleting project ${projectId} =>`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
   }
-  
-  const [newProject] =await db.insert(projectTable).values({
-    projectOwner:internalUser.id,
-    name:name,
-    description:description,
-    statusId:5,
-    due_date:dueDate,
-    color:color
-  }).returning();
 
-  await db.insert(projectMembers).values({
-    userId:internalUser.id,
-    projectId:newProject.id,
-    role:"Project Owner",
-  })
-  revalidatePath('/projects')
+}
 
-  return { success: true }
+export const updateProject=async (
+  projectId:string,
+  data:ProjectCreator
+)=>{
+  try {
+    clerkAuthCheck()
+
+    const updatedProject = await queries.projects.update(projectId,data).returning()
+    
+    if (!updatedProject) {
+      throw new Error("Project could not be updated or was not found.");
+    }
+
+
+
+
+    return { success: true, data:updatedProject }
+    
+  } catch (error) {
+    console.error("❌ Error creating project =>", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
 
 }
