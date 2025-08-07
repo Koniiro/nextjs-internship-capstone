@@ -1,5 +1,9 @@
 // TODO: Task 4.4 - Build task creation and editing functionality
 // TODO: Task 5.4 - Implement optimistic UI updates for smooth interactions
+"use client"
+import { createTask, getTasks } from "@/actions/task-col_actions";
+import { TaskCreate } from "@/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 /*
 TODO: Implementation Notes for Interns:
@@ -62,15 +66,62 @@ export function useTasks(projectId: string) {
 */
 
 // Placeholder to prevent import errors
-export function useTasks(projectId: string) {
-  console.log(`TODO: Implement useTasks hook for project ${projectId}`)
+export function useTasks(colId: number) {
+  const queryClient = useQueryClient()
+  const {
+      data: tasks,
+      isLoading,
+      error
+  } = useQuery({
+      queryKey: ['tasks',colId],
+      queryFn: async () => {
+      const res = await getTasks(colId);
+      if (!res.success) throw new Error(res.error);
+      return res.data;
+      },
+  })
+
+  //Create Column
+  const{
+      mutate: useCreateTask,
+      isPending: isCreating,
+      error: createError,
+    }  = useMutation({
+      mutationFn: async (data:TaskCreate) => {
+        console.log('Creating Task',data)
+        const res = await createTask(data);
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+      },
+      onSuccess: () => {
+        console.log("Task Creation Success",)
+        queryClient.invalidateQueries({ queryKey: ['task',colId] })
+      }
+    })
+  const{
+    mutate: useDeleteTask,
+    isPending: isDeleting,
+    error: deleteError,
+  }  = useMutation({
+    mutationFn: async (taskId:number) => {
+      console.log('Deleting Task',taskId)
+      //const res = await deleteCol(colId);
+      //if (!res.success) throw new Error(res.error);
+      //return res.data;
+    },
+    onSuccess: () => {
+      console.log("Task deletion Success",)
+      queryClient.invalidateQueries({ queryKey: ['task',colId] })
+    }
+  })
+  
   return {
-    tasks: [],
-    isLoading: false,
-    error: null,
-    createTask: (data: any) => console.log("TODO: Create task", data),
+    tasks,
+    isLoading,
+    error,
+    createTask: (data: TaskCreate) => useCreateTask(data),
     updateTask: (id: string, data: any) => console.log(`TODO: Update task ${id}`, data),
-    deleteTask: (id: string) => console.log(`TODO: Delete task ${id}`),
+    deleteTask: (id: number) => useDeleteTask(id),
     moveTask: (taskId: string, newListId: string, position: number) =>
       console.log(`TODO: Move task ${taskId} to list ${newListId} at position ${position}`),
   }

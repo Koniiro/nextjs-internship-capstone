@@ -12,14 +12,14 @@ export function useColumns(projectId:string){
         isLoading,
         error
     } = useQuery({
-        queryKey: ['columns'],
+        queryKey: ['columns',projectId],
         queryFn: async () => {
         const res = await getProjectColumns(projectId);
         if (!res.success) throw new Error(res.error);
         return res.data;
         },
     })
-      //Create Projects
+      //Create Column
     const{
         mutate: useCreateColumn,
         isPending: isCreating,
@@ -33,10 +33,12 @@ export function useColumns(projectId:string){
         },
         onSuccess: () => {
           console.log("Column Creation Success",)
-          queryClient.invalidateQueries({ queryKey: ['columns'] })
+          queryClient.invalidateQueries({ queryKey: ['columns',projectId] })
         }
       })
-        const{
+      
+      //Delete Column
+      const{
           mutate: useDeleteCol,
           isPending: isDeleting,
           error: deleteError,
@@ -49,7 +51,7 @@ export function useColumns(projectId:string){
           },
           onSuccess: () => {
             console.log(" Column deletion Success",)
-            queryClient.invalidateQueries({ queryKey: ['columns'] })
+            queryClient.invalidateQueries({ queryKey: ['columns',projectId] })
           }
         })
 

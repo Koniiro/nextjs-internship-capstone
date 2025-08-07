@@ -65,8 +65,28 @@ export const deleteCol=async(colId:number)=>{
     
   }
 }
-
 //Task Actions
+
+export const createTask=async(taskData:TaskCreate)=>{
+  try {
+      clerkAuthCheck()
+
+      const newTask=await queries.tasks.create(taskData)
+
+      return {success: true,data: newTask}
+    
+  } catch (error) {
+
+    console.error("❌ Error creating new task:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+}
+
+
 export const getTasks=async(colId:number)=>{
   try {
       clerkAuthCheck()
@@ -85,6 +105,10 @@ export const getTasks=async(colId:number)=>{
     
   }
 }
+
+
+
+
 export const deleteTask=async(taskId:number)=>{
   try {
       clerkAuthCheck()
