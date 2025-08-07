@@ -4,15 +4,12 @@ import 'dotenv/config';
 import { queries } from '../lib/db/index';
 import { auth } from '@clerk/nextjs/server';
 import { Project, ProjectCreator } from '@/types';
+import { clerkAuthCheck } from '@/lib/utils';
 
 
 export const getProjects = async () => {
   try {
-    const clerkID = (await auth()).userId;
-
-    if (!clerkID) {
-      throw new Error("User not Authenticated.");
-    }
+    clerkAuthCheck()
     const projects = await queries.projects.getAll();
     return {
       success: true,
@@ -29,11 +26,7 @@ export const getProjects = async () => {
 
 export const getProjectsById = async (projectId:string) => {
   try {
-    const clerkID = (await auth()).userId;
-
-    if (!clerkID) {
-      throw new Error("User not Authenticated.");
-    }
+    clerkAuthCheck()
     const project = await queries.projects.getById(projectId)
     return {
       success: true,
@@ -50,11 +43,7 @@ export const getProjectsById = async (projectId:string) => {
 
 export const getUserProjects=async()=>{
   try {
-      const clerkID = (await auth()).userId;
-
-      if (!clerkID) {
-        throw new Error("User not Authenticated.");
-      }
+      const clerkID= await clerkAuthCheck()
 
       const internalUser = await queries.users.getById(clerkID)
 
@@ -83,10 +72,7 @@ export const createProject=async (
   data:ProjectCreator
 )=>{
   try {
-    const clerkID=  (await auth()).userId
-    if (!clerkID) {
-      throw new Error("User not Authenticated.");
-    }
+    const clerkID= await clerkAuthCheck()
 
     // Get internal user UUID from your `usersTable`
     const internalUser = await await queries.users.getById(clerkID)
@@ -112,10 +98,7 @@ export const createProject=async (
 
 export const deleteProject=async(projectId:string)=>{
   try {
-    const clerkID=  (await auth()).userId
-    if (!clerkID) {
-      throw new Error("User not Authenticated.");
-    }
+    clerkAuthCheck()
     const deletedId =await queries.projects.delete(projectId)
 
     if (!deletedId) {
@@ -143,10 +126,8 @@ export const updateProject=async (
   data:ProjectCreator
 )=>{
   try {
-    const clerkID=  (await auth()).userId
-    if (!clerkID) {
-      throw new Error("User not Authenticated.");
-    }
+    clerkAuthCheck()
+
     const updatedProject = await queries.projects.update(projectId,data).returning()
     
     if (!updatedProject) {
