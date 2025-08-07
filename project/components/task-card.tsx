@@ -1,6 +1,13 @@
 // TODO: Task 5.6 - Create task detail modals and editing interfaces
 
 import { Task } from "@/types"
+import { MoreHorizontal } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 /*
 TODO: Implementation Notes for Interns:
@@ -63,9 +70,19 @@ export function TaskCard( {task }: TaskCardProps) {
     <div 
         className="p-4 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-pointer hover:shadow-md transition-shadow"
       >
-        <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
-         {task.title}
-        </h4>
+        <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
+                        {task.title}
+                      </h4>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger><MoreHorizontal size={16} /></DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-white">
+                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+        
         <p className="text-xs text-payne's_gray-500 dark:text-french_gray-400 mb-3">
           {task.description}
         </p>

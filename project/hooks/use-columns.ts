@@ -44,10 +44,10 @@ export function useColumns(projectId:string){
           error: deleteError,
         }  = useMutation({
           mutationFn: async (colId:number) => {
-            console.log('Deleting Column',projectId)
-            //const res = await deleteCol(colId);
-            //if (!res.success) throw new Error(res.error);
-            //return res.data;
+            console.log('Deleting Column',colId)
+            const res = await deleteCol(colId);
+            if (!res.success) throw new Error(res.error);
+            return res.data;
           },
           onSuccess: () => {
             console.log(" Column deletion Success",)
