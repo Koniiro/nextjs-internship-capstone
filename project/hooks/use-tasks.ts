@@ -95,7 +95,7 @@ export function useTasks(colId: number) {
       },
       onSuccess: () => {
         console.log("Task Creation Success",)
-        queryClient.invalidateQueries({ queryKey: ['task',colId] })
+        queryClient.invalidateQueries({ queryKey: ['tasks',colId] })
       }
     })
   const{
@@ -111,7 +111,7 @@ export function useTasks(colId: number) {
     },
     onSuccess: () => {
       console.log("Task deletion Success",)
-      queryClient.invalidateQueries({ queryKey: ['task',colId] })
+      queryClient.invalidateQueries({ queryKey: ['tasks',colId] })
     }
   })
   
@@ -119,6 +119,8 @@ export function useTasks(colId: number) {
     tasks,
     isLoading,
     error,
+
+    isCreating:isCreating,
     createTask: (data: TaskCreate) => useCreateTask(data),
     updateTask: (id: string, data: any) => console.log(`TODO: Update task ${id}`, data),
     deleteTask: (id: number) => useDeleteTask(id),

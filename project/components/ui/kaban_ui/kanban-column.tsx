@@ -1,8 +1,9 @@
+import { CreateTaskModal } from "@/components/modals/create-task-modal";
 import { TaskCard } from "@/components/task-card";
 import { useTasks } from "@/hooks/use-tasks";
 import { Column } from "@/types";
 import { MoreHorizontal } from "lucide-react";
-
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 export interface KanbanColumnProps {
   column: Column
@@ -34,14 +35,17 @@ export default function KanbanColumn({column}:KanbanColumnProps){
                   </div>
 
                   <div className="p-4 space-y-3 min-h-[400px]">
-                    {tasks.map((task,key) => (
-                      <TaskCard key={key} task={task}/>
+                    <ScrollArea className="h-80 ">
+                      <div className="flex flex-col gap-2">
+                        {tasks.map((task,key) => (
+                        <TaskCard key={key} task={task}/>
+                      ))}
+                      </div>
                       
-                    ))}
-
-                    <button className="w-full p-3 border-2 border-dashed border-french_gray-300 dark:border-payne's_gray-400 rounded-lg text-payne's_gray-500 dark:text-french_gray-400 hover:border-blue_munsell-500 hover:text-blue_munsell-500 transition-colors">
-                      + Add task
-                    </button>
+       
+                    </ScrollArea>
+                    
+                    <CreateTaskModal colId={column.id}/>
                   </div>
                 </div>
               </div>

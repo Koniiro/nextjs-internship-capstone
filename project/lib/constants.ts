@@ -15,3 +15,12 @@ export const projectStatus: Record<string, number> = {
 };
 
 export const statusArray=["Review","In Progress", "On-hold","Completed","Starting"]
+
+
+
+export const taskPriority: Record<string, string> = {
+  'low':'low',
+  'medium':'medium',
+  'high':'high',
+
+};

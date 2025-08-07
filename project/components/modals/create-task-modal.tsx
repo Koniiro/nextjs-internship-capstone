@@ -33,19 +33,52 @@ Integration:
 - Real-time updates for comments
 */
 
-export function CreateTaskModal() {
+"use client"
+import {  Plus } from "lucide-react";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { CreateProjectForm } from '../forms/create-project-form';
+import { Button } from "../ui/button";
+import { useTasks } from "@/hooks/use-tasks";
+import { CreateTaskForm } from "../forms/create-task-form";
+
+type CreateTaskModalpProps = {
+  colId: number;
+};
+
+
+export  function CreateTaskModal({ colId }: CreateTaskModalpProps) {
+    const {
+
+      isCreating
+
+    } = useTasks(colId);
+  
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-outer_space-500 rounded-lg p-6 w-full max-w-2xl mx-4">
-        <h3 className="text-lg font-semibold text-outer_space-500 dark:text-platinum-500 mb-4">
-          TODO: Create/Edit Task Modal
-        </h3>
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded border border-yellow-200 dark:border-yellow-800">
-          <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            📋 Implement task creation/editing form with rich features
-          </p>
-        </div>
-      </div>
-    </div>
+    <Dialog>
+        <DialogTrigger className="w-full p-3 border-2 border-dashed border-french_gray-300 dark:border-payne's_gray-400 rounded-lg text-payne's_gray-500 dark:text-french_gray-400 hover:border-blue_munsell-500 hover:text-blue_munsell-500 transition-colors">
+          + Add Task
+        </DialogTrigger>
+        <DialogContent className="bg-white">
+        <DialogHeader>
+          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">New Task</DialogTitle>
+        </DialogHeader>
+        <CreateTaskForm colId={colId}/>
+        
+        <DialogFooter className="flex flex-col gap-3 sm:flex-row">
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`create-project-form-${colId}`}>
+              {isCreating ? "Creating..." : "Add Task"}
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+        
+      </DialogContent>
+     
+            
+    </Dialog>
+    
   )
 }
