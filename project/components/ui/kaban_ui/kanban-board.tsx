@@ -1,6 +1,9 @@
 "use client"
 
+import { useColumns } from "@/hooks/use-columns"
+import { MoreHorizontal } from "lucide-react"
 import { useState } from "react"
+import KanbanColumn from "./kanban-column"
 
 // TODO: Task 5.1 - Design responsive Kanban board layout
 // TODO: Task 5.2 - Implement drag-and-drop functionality with dnd-kit
@@ -121,7 +124,13 @@ const initialColumns = [
 ]
 
 export function KanbanBoard({ projectId }: { projectId: string }) {
-  const [columns, setColumns] = useState(initialColumns)
+  const{columns,isLoading,error}=useColumns(projectId)
+  //const [columns, setColumns] = useState(initialColumns)
+  console.log("Columns found",columns)
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Failed to load columns {error.message}</p>;
+  if (!columns) return <p>Failed to load columns</p>;
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -137,16 +146,12 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6">
-      <div className="text-center text-payne's_gray-500 dark:text-french_gray-400">
-        <h3 className="text-lg font-semibold mb-2">TODO: Implement Kanban Board</h3>
-        <p className="text-sm mb-4">Project ID: {projectId}</p>
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded border border-yellow-200 dark:border-yellow-800">
-          <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            📋 This will be the main interactive Kanban board with drag-and-drop functionality
-          </p>
+            <div className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6">
+          <div className="flex space-x-6 overflow-x-auto pb-4">
+            {columns.map((col,key) => (
+              <KanbanColumn column={col} key={key}/>
+            ))}
+          </div>
         </div>
-      </div>
-    </div>
   )
 }

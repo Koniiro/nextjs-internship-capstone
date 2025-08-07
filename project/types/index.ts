@@ -32,14 +32,12 @@ export interface ProjectCreator {
 
 
 export interface Column {
-  id: string
+  id: number
   name: string
   projectId: string
-  position: number
-
-  createdAt: Date
-  updatedAt: Date
-  tasks: Task[]
+  position: number|null
+  created_at: Date
+  updated_at: Date
 }
 export interface ColumnCreate {
   name: string

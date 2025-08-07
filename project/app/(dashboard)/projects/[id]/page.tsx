@@ -1,17 +1,31 @@
 "use client"
 import { ArrowLeft, Settings, Users, Calendar, MoreHorizontal } from "lucide-react"
 import Link from "next/link"
-import { DashboardLayout } from "@/components/dashboard-layout"
 import { useSpecProject } from "@/hooks/use-projects"
 
 import { use } from 'react'
 import ProjectStatusChip from "@/components/project-status-chip"
+import { Button } from '@/components/ui/button';
+import { KanbanBoard } from "@/components/ui/kaban_ui/kanban-board"
+import { useColumns } from "@/hooks/use-columns"
+import { ColumnCreate } from "@/types"
 
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params); // or `use(params)`
+  const { id } = use(params); 
   const { project, isLoading, error } = useSpecProject(id);
+  const {createCol}=useColumns(id)
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load projects {error.message}</p>;
+  if (!project) return <p>Failed to load projects</p>;
+  const placeholder:ColumnCreate={
+    name:"placeholder X",
+    projectId:id,
+  }
+  const createColHandler = async () => { 
+      createCol(placeholder)
+   }
+
+  
   return (
       <div className="space-y-6">
         {/* Project Header */}
@@ -67,11 +81,13 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
             <li>• Task 5.6: Create task detail modals and editing interfaces</li>
           </ul>
         </div>
+        <Button onClick={createColHandler}className="w-full p-3 border-2 border-dashed border-french_gray-300 dark:border-payne's_gray-400 rounded-lg text-payne's_gray-500 dark:text-french_gray-400 hover:border-blue_munsell-500 hover:text-blue_munsell-500 transition-colors">
+                      + Add Column
+        </Button>
 
         {/* Kanban Board Placeholder */}
-        <div className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6">
-          <div className="flex space-x-6 overflow-x-auto pb-4">
-            {/*{["To Do", "In Progress", "Review", "Done"].map((columnTitle, columnIndex) => (
+        <KanbanBoard projectId={project?.id}/>
+                    {/*{["To Do", "In Progress", "Review", "Done"].map((columnTitle, columnIndex) => (
               <div key={columnTitle} className="flex-shrink-0 w-80">
                 <div className="bg-platinum-800 dark:bg-outer_space-400 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
                   <div className="p-4 border-b border-french_gray-300 dark:border-payne's_gray-400">
@@ -118,55 +134,6 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
                 </div>
               </div>
             ))}*/}
-            
-              <div className="flex-shrink-0 w-80">
-                <div className="bg-platinum-800 dark:bg-outer_space-400 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
-                  <div className="p-4 border-b border-french_gray-300 dark:border-payne's_gray-400">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
-                        Sample
-                        <span className="ml-2 px-2 py-1 text-xs bg-french_gray-300 dark:bg-payne's_gray-400 rounded-full">
-                          0
-                        </span>
-                      </h3>
-                      <button className="p-1 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded">
-                        <MoreHorizontal size={16} />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="p-4 space-y-3 min-h-[400px]">
-                    {[1, 2, 3].map((taskIndex) => (
-                      <div
-                        key={taskIndex}
-                        className="p-4 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-pointer hover:shadow-md transition-shadow"
-                      >
-                        <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
-                          Sample Task {taskIndex}
-                        </h4>
-                        <p className="text-xs text-payne's_gray-500 dark:text-french_gray-400 mb-3">
-                          This is a placeholder task description
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue_munsell-100 text-blue_munsell-700 dark:bg-blue_munsell-900 dark:text-blue_munsell-300">
-                            Medium
-                          </span>
-                          <div className="w-6 h-6 bg-blue_munsell-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                            U
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-
-                    <button className="w-full p-3 border-2 border-dashed border-french_gray-300 dark:border-payne's_gray-400 rounded-lg text-payne's_gray-500 dark:text-french_gray-400 hover:border-blue_munsell-500 hover:text-blue_munsell-500 transition-colors">
-                      + Add task
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-          </div>
-        </div>
 
         {/* Component Implementation Guide 
         <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
