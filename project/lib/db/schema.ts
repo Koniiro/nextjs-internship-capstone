@@ -115,25 +115,43 @@ export const columnTable = pgTable("kbColumn", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   projectID: uuid("project_id").notNull().references(() => projectTable.id, { onDelete: "cascade" }),
   name: varchar({ length: 255 }).notNull(), // e.g. "To Do", "In Progress"
-  order: integer("order").default(0), // controls column order
+  position: integer("order").default(0), // controls column order
+
+  created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const taskTable = pgTable("task", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  projectID:uuid('project_ID').notNull().references(()=>projectTable.id, {onDelete: 'cascade'}),
-  assignedUserID:uuid('assigned_user_ID').references(()=>usersTable.id, {onDelete: 'cascade'}),
-  name: varchar({ length: 255 }).notNull(),
+  columnId: integer("column_Id").notNull().references(() => columnTable.id, { onDelete: "cascade" }),
+  assigneeId:uuid('assignee_Id').references(()=>usersTable.id, {onDelete: 'cascade'}),
+  
+  title: varchar({ length: 255 }).notNull(),
   description:text("description"),
-  column_id: integer("column_id").notNull().references(() => columnTable.id, { onDelete: "cascade" }),
+  priority: varchar({ length: 20 }).notNull(),
+  position: integer("order").default(0),
+
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-  order: integer("order").default(0),
-  metadata: jsonb("metadata").default({})
+  due_date: timestamp("due_date", { withTimezone: true }),
+
 
 
 
 });
 
-export const lists = "TODO: Implement lists table schema"
+export const taskRelations = relations(taskTable, ({ one }) => ({
+  column: one(columnTable, {
+    fields: [taskTable.columnId],
+    references: [columnTable.id],
+  }),
+  assignee: one(usersTable, {
+    fields: [taskTable.assigneeId],
+    references: [usersTable.id],
+  }),
+}));
+export const columnRelations = relations(columnTable, ({ many }) => ({
+  tasks: many(taskTable),
+}));
 
 export const comments = "TODO: Implement comments table schema"
