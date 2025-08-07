@@ -113,7 +113,7 @@ export const statusTable=pgTable("projStatus",{
 
 export const columnTable = pgTable("kbColumn", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  projectID: uuid("project_id").notNull().references(() => projectTable.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").notNull().references(() => projectTable.id, { onDelete: "cascade" }),
   name: varchar({ length: 255 }).notNull(), // e.g. "To Do", "In Progress"
   position: integer("order").default(0), // controls column order
 

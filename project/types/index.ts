@@ -31,28 +31,45 @@ export interface ProjectCreator {
 
 
 
-export interface List {
+export interface Column {
   id: string
   name: string
   projectId: string
   position: number
+
   createdAt: Date
   updatedAt: Date
   tasks: Task[]
 }
+export interface ColumnCreate {
+  name: string
+  projectId: string
+  position?:number
+}
 
 export interface Task {
   id: string
+  columnId?: string //TODO CONVERT TO REQUIRED
+  assigneeId?: string
+
   title: string
   description?: string
-  listId: string
-  assigneeId?: string
   priority: "low" | "medium" | "high"
-  dueDate?: Date
   position: number
-  createdAt: Date
-  updatedAt: Date
-  comments: Comment[]
+  
+  created_at: Date
+  updated_at: Date
+  due_date?: Date
+  //comments: Comment[]
+}
+export interface TaskCreate {
+  columnId: number //TODO CONVERT TO REQUIRED
+  assigneeId?: string
+  title: string
+  description?: string
+  priority: "low" | "medium" | "high"
+  position:number
+  due_date?: Date
 }
 
 export interface Comment {
