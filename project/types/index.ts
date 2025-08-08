@@ -34,6 +34,8 @@ export interface ProjectCreator {
 export interface Column {
   id: number
   name: string
+  description?: string
+  color?:string
   projectId: string
   position: number|null
   created_at: Date
@@ -41,23 +43,25 @@ export interface Column {
 }
 export interface ColumnCreate {
   name: string
+  description?: string
   projectId: string
+  color?:string
   position?:number
 }
 
 export interface Task {
   id: number
-  columnId?: number //TODO CONVERT TO REQUIRED
+  columnId: number
   assigneeId: string|null
 
   title: string
-  description: string|null
+  description: string |null
   priority: "low" | "medium" | "high"
   position: number |null
   
   created_at: Date
   updated_at: Date
-  due_date?: Date|null
+  due_date: Date|null
   //comments: Comment[]
 }
 export interface TaskCreate {
