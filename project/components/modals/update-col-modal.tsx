@@ -17,11 +17,7 @@ export  function UpdateColumnModal({column}:UpdateColumnModalpProps) {
     } = useColumns(column.projectId);
   
   return (
-    <Dialog>
-        <DialogTrigger className="">
-            Edit Column
-        </DialogTrigger>
-        <DialogContent className="bg-white">
+    <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Column</DialogTitle>
 
@@ -39,10 +35,6 @@ export  function UpdateColumnModal({column}:UpdateColumnModalpProps) {
           </DialogClose>
         </DialogFooter>
         
-      </DialogContent>
-     
-            
-    </Dialog>
-    
+    </DialogContent>
   )
 }

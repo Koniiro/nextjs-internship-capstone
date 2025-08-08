@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useColumns } from "@/hooks/use-columns";
 import { UpdateColumnModal } from "@/components/modals/update-col-modal";
+import { Dialog, DialogTrigger } from "../dialog";
+
 
 export interface KanbanColumnProps {
   column: Column
@@ -48,25 +50,31 @@ export default function KanbanColumn({column}:KanbanColumnProps){
                           {tasks.length}
                         </div>
                       </div>
+                      <Dialog>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="p-1 rounded hover:bg-muted">
+                              <MoreHorizontal size={16} />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="bg-white dark:bg-zinc-900 text-sm">
+                            <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
+                              <DialogTrigger className="">
+                                  Edit Column
+                              </DialogTrigger>
+                              
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={delColHandler}
+                              className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <UpdateColumnModal column={column}/>
+                      </Dialog>
                       
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="p-1 rounded hover:bg-muted">
-                            <MoreHorizontal size={16} />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-white dark:bg-zinc-900 text-sm">
-                          <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
-                            <UpdateColumnModal column={column}/>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={delColHandler}
-                            className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
                     </div>
                     <p className="mt-2 text-xs text-payne's_gray-500 dark:text-french_gray-400 ">
                       {column.description}

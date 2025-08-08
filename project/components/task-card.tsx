@@ -9,6 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { UpdateTaskModal } from "./modals/update-task-modal"
+import { useState } from "react"
+import { Dialog, DialogTrigger } from "./ui/dialog"
 
 /*
 TODO: Implementation Notes for Interns:
@@ -80,20 +82,25 @@ export function TaskCard( {task }: TaskCardProps) {
                       <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
                         {task.title}
                       </h4>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger><MoreHorizontal size={16} /></DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-white">
-                          <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
-                            <UpdateTaskModal task={task}/>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={delTaskHandler}
-                            className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
-                            >
-                              Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Dialog>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger><MoreHorizontal size={16} /></DropdownMenuTrigger>
+                          <DropdownMenuContent className="bg-white">
+                            <DropdownMenuItem  className="cursor-pointer hover:bg-muted">
+                              <DialogTrigger className="">
+                                Edit Task
+                              </DialogTrigger> 
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={delTaskHandler}
+                              className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                              >
+                                Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <UpdateTaskModal task={task}/>
+                      </Dialog>
                     </div>
         
         <p className="text-xs text-payne's_gray-500 dark:text-french_gray-400 mb-3">
@@ -107,6 +114,7 @@ export function TaskCard( {task }: TaskCardProps) {
             U
           </div>
         </div>
+        
       </div>
   )
 }

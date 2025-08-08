@@ -37,7 +37,6 @@ Integration:
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useTasks } from "@/hooks/use-tasks";
-import { CreateTaskForm } from "../forms/create-task-form";
 import { Task } from "@/types";
 import { UpdateTaskForm } from "../forms/update-task-form";
 
@@ -54,11 +53,7 @@ export  function UpdateTaskModal({ task }: UpdateTaskModalpProps) {
     } = useTasks(task.id);
   
   return (
-    <Dialog>
-        <DialogTrigger className="">
-          Edit Task
-        </DialogTrigger>
-        <DialogContent className="bg-white">
+      <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Task</DialogTitle>
         </DialogHeader>
@@ -76,8 +71,5 @@ export  function UpdateTaskModal({ task }: UpdateTaskModalpProps) {
         </DialogFooter>
         
       </DialogContent>
- 
-    </Dialog>
-    
   )
 }
