@@ -33,23 +33,22 @@ export default function KanbanColumn({column}:KanbanColumnProps){
                 <div className="bg-gray-100 dark:bg-outer_space-400 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
                   <div className="p-3 border-b border-french_gray-300 dark:border-payne's_gray-400">
                     <div className="flex gap-2 items-center justify-between">
-                      <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
-                        <span
-                            className={`w-5 h-3 
-                              border-2 border-${column.color} 
-                              bg-${column.color}/20 
-                              dark:border-payne's_gray-400 
-                              dark:bg-payne's_gray-400/20 
+                      <div className="flex flex-row gap-2 items-center">
+                        <div className={`w-5 h-5 
+                              bg-${column.color}/40
+                              border-${column.color}
+                              border-2
                               rounded-full 
-                              mr-2`}
-                              
-                            
+                              `}
                           />
-                        {column.name}
-                        <span className="ml-2 p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
+                        <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
+                          {column.name}
+                        </h3>
+                        <div className=" p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
                           {tasks.length}
-                        </span>
-                      </h3>
+                        </div>
+                      </div>
+                      
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button className="p-1 rounded hover:bg-muted">
