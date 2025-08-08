@@ -1,5 +1,5 @@
 import { Plus, Search, Filter } from "lucide-react"
-import  ProjectGrid  from "@/components/project-grid"
+import  ProjectGrid  from "@/components/project/project-grid"
 import { CreateProjectModal } from "@/components/modals/create-project-modal"
 
 export default async function ProjectsPage() {

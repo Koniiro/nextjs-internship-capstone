@@ -1,4 +1,4 @@
-import { ProjectCardProps } from "@/components/project-card";
+import { ProjectCardProps } from "@/components/project/project-card";
 import { Project } from "@/types";
 
 export function mapProjectsToCardProjects(projects: Project[]): ProjectCardProps["project"][] {

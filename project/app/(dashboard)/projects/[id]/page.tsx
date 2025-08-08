@@ -2,19 +2,15 @@
 import { ArrowLeft, Settings, Users, Calendar, MoreHorizontal } from "lucide-react"
 import Link from "next/link"
 import { useSpecProject } from "@/hooks/use-projects"
-
 import { use } from 'react'
-import ProjectStatusChip from "@/components/project-status-chip"
-import { Button } from '@/components/ui/button';
+import ProjectStatusChip from "@/components/project/project-status-chip"
 import { KanbanBoard } from "@/components/ui/kaban_ui/kanban-board"
-import { useColumns } from "@/hooks/use-columns"
-import { ColumnCreate } from "@/types"
 import { CreateColumnModal } from "@/components/modals/create-col-modal"
+import { ProjectHeader } from "@/components/project/project-header"
 
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params); 
   const { project, isLoading, error } = useSpecProject(id);
-  const {createCol}=useColumns(id)
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load projects {error.message}</p>;
   if (!project) return <p>Failed to load projects</p>;
@@ -25,45 +21,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   return (
       <div className="space-y-6">
         {/* Project Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link
-              href="/projects"
-              className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors"
-            >
-              <ArrowLeft size={20} />
-            </Link>
-            <div>
-              <h1 className="text-3xl font-bold text-outer_space-500 dark:text-platinum-500">Project: {project?.name}</h1>
-              <p className="text-payne's_gray-500 dark:text-french_gray-500 mt-1">
-                {project?.description}
-              </p>
-              <p className="text-payne's_gray-500 dark:text-french_gray-500 mt-1">
-                Due Date: {project?.due_date ? project.due_date.toLocaleDateString() : "No due date set"}
-              </p>
-              <p className="text-payne's_gray-500 dark:text-french_gray-500 mt-1">
-                Created On: {project?.created_at.toLocaleDateString()}  Last Updated: {project?.updated_at.toLocaleDateString()}
-              </p>
-            </div>
-
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <ProjectStatusChip statusId={project?.statusId||5} />
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
-              <Users size={20} />
-            </button>
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
-              <Calendar size={20} />
-            </button>
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
-              <Settings size={20} />
-            </button>
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
-              <MoreHorizontal size={20} />
-            </button>
-          </div>
-        </div>
+        <ProjectHeader project={project}/>
 
         {/* Implementation Tasks Banner */}
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
