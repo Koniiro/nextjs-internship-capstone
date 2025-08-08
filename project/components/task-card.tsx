@@ -8,6 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { deleteTask } from "@/actions/task-col_actions"
+import { UpdateTaskModal } from "./modals/update-task-modal"
 
 /*
 TODO: Implementation Notes for Interns:
@@ -66,6 +68,11 @@ export function TaskCard( {task }: TaskCardProps) {
         return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
     }
   }
+
+  const delTaskHandler = async () => { 
+    console.log("deleting",task.id)  
+    //deleteTask(task.id)
+   }
   return (
     <div 
         className="p-4 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-pointer hover:shadow-md transition-shadow"
@@ -77,8 +84,15 @@ export function TaskCard( {task }: TaskCardProps) {
                       <DropdownMenu>
                         <DropdownMenuTrigger><MoreHorizontal size={16} /></DropdownMenuTrigger>
                         <DropdownMenuContent className="bg-white">
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Delete</DropdownMenuItem>
+                          <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
+                            <UpdateTaskModal task={task}/>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={delTaskHandler}
+                            className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                            >
+                              Delete
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>

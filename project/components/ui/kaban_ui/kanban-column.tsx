@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useColumns } from "@/hooks/use-columns";
+import { UpdateColumnModal } from "@/components/modals/update-col-modal";
 
 export interface KanbanColumnProps {
   column: Column
@@ -29,38 +30,51 @@ export default function KanbanColumn({column}:KanbanColumnProps){
     
     return(
         <div className="flex-shrink-0 w-80">
-                <div className="bg-gray-300 dark:bg-outer_space-400 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
-                  <div className="p-4 border-b border-french_gray-300 dark:border-payne's_gray-400">
-                    <div className="flex items-center justify-between">
+                <div className="bg-gray-100 dark:bg-outer_space-400 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
+                  <div className="p-3 border-b border-french_gray-300 dark:border-payne's_gray-400">
+                    <div className="flex gap-2 items-center justify-between">
                       <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
+                        <span
+                            className={`w-5 h-3 
+                              border-2 border-${column.color} 
+                              bg-${column.color}/20 
+                              dark:border-payne's_gray-400 
+                              dark:bg-payne's_gray-400/20 
+                              rounded-full 
+                              mr-2`}
+                              
+                            
+                          />
                         {column.name}
-                        <span className="ml-2 px-2 py-1 text-xs bg-french_gray-300 dark:bg-payne's_gray-400 rounded-full">
+                        <span className="ml-2 p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
                           {tasks.length}
                         </span>
                       </h3>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="p-1 rounded hover:bg-muted">
-                        <MoreHorizontal size={16} />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white dark:bg-zinc-900 text-sm">
-                      <DropdownMenuItem className="cursor-pointer hover:bg-muted">
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={delColHandler}
-                        className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
-                      >
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="p-1 rounded hover:bg-muted">
+                            <MoreHorizontal size={16} />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-white dark:bg-zinc-900 text-sm">
+                          <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
+                            <UpdateColumnModal column={column}/>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={delColHandler}
+                            className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
+                    <p className="mt-2 text-xs text-payne's_gray-500 dark:text-french_gray-400 ">
+                      {column.description}
+                    </p>
                   </div>
 
-                  <div className="p-4 space-y-3 min-h-[400px]">
+                  <div className="p-3 space-y-2 min-h-[400px]">
                     <ScrollArea className="h-85 ">
                       <div className="flex flex-col gap-2">
                         {tasks.map((task,key) => (
