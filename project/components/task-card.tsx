@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { deleteTask } from "@/actions/task-col_actions"
 import { UpdateTaskModal } from "./modals/update-task-modal"
 
 /*

@@ -1,29 +1,18 @@
 'use client'
-import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns"
-import { Calendar } from "@/components/ui/calendar"
 
 import { useForm } from "react-hook-form"
 
-import { colSchema, projectCreationSchema } from "@/lib/validations";
+import { colSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod";
-import { CalendarIcon, Plus } from "lucide-react";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -34,25 +23,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useProjects } from "@/hooks/use-projects";
-import { Column, ColumnCreate, ProjectCreator } from "@/types";
+import { Column, ColumnCreate } from "@/types";
 import { colors } from "@/lib/constants";
 import { useColumns } from "@/hooks/use-columns";
-//import { queries } from "@/lib/db";
 
-type CreateColumnFormProps = {
+type UpdateColumnFormProps = {
   column: Column;
 };
 
 
-export function UpdateColumnForm({column}:CreateColumnFormProps){
+export function UpdateColumnForm({column}:UpdateColumnFormProps){
     const {updateCol} = useColumns(column.projectId);
 
     const form = useForm<z.infer<typeof colSchema>>({
         resolver: zodResolver(colSchema),
           defaultValues: {
             name:column.name,
-            description:column.description || "",
+            description:column.description||"",
             color:column.color,
         }
     })

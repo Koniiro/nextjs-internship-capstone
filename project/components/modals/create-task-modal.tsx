@@ -34,9 +34,7 @@ Integration:
 */
 
 "use client"
-import {  Plus } from "lucide-react";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { CreateProjectForm } from '../forms/create-project-form';
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useTasks } from "@/hooks/use-tasks";
 import { CreateTaskForm } from "../forms/create-task-form";
