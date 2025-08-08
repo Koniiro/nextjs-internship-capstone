@@ -34,7 +34,7 @@ export interface ProjectCreator {
 export interface Column {
   id: number
   name: string
-  description?: string
+  description: string|null
   color?:string
   projectId: string
   position: number|null
