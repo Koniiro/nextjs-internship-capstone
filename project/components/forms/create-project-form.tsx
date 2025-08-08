@@ -52,7 +52,7 @@ export function CreateProjectForm(){
           name: "",
           description: "",
           color: "",
-          dueDate: new Date(), // or `new Date()` if you want to set today's date
+          dueDate: new Date(), 
         }
     })
 
@@ -119,7 +119,7 @@ export function CreateProjectForm(){
                             {Object.entries(colors).map(([name, value]) => (
                                 <SelectItem key={value} value={value} className="cursor-pointer" >
                                 <div className="flex flex-row items-center gap-2">
-                                    <div className={`w-3 h-3 rounded-full ${value}`} />
+                                    <div className={`w-3 h-3 rounded-full bg-${value}`} />
                                     {name}
                                 </div>                               
                                 </SelectItem>
