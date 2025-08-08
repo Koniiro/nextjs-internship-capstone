@@ -11,6 +11,7 @@ import {
 import { UpdateTaskModal } from "./modals/update-task-modal"
 import { useState } from "react"
 import { Dialog, DialogTrigger } from "./ui/dialog"
+import { useTasks } from "@/hooks/use-tasks"
 
 /*
 TODO: Implementation Notes for Interns:
@@ -57,6 +58,7 @@ interface TaskCardProps {
 
 
 export function TaskCard( {task }: TaskCardProps) {
+  const{deleteTask,isDeleting,deleteError}=useTasks(task.columnId)
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":
@@ -71,9 +73,8 @@ export function TaskCard( {task }: TaskCardProps) {
   }
 
   const delTaskHandler = async () => { 
-    console.log("deleting",task.id)  
-    //deleteTask(task.id)
-   }
+    deleteTask(task.id)
+  }
   return (
     <div 
         className="p-4 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-pointer hover:shadow-md transition-shadow"

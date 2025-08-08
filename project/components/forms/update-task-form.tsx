@@ -45,7 +45,7 @@ type UpdateTaskFormProps = {
 export function UpdateTaskForm({task}:UpdateTaskFormProps){
     const {
       updateTask,
-    } = useTasks(task.id);
+    } = useTasks(task.columnId);
 
     const form = useForm<z.infer<typeof taskSchema>>({
         resolver: zodResolver(taskSchema),
