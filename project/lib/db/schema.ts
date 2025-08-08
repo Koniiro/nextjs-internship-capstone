@@ -59,7 +59,7 @@ export const projectTable = pgTable("project", {
     .references(() => statusTable.id, { onDelete: "set null" })
     .notNull(),
   description:text("description"),
-  color: varchar("color", { length: 64 }).notNull().default('bg-blue_munsell-500'),
+  color: varchar("color", { length: 64 }).notNull().default('blue-500'),
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   due_date: timestamp("due_date", { withTimezone: true }),
@@ -114,12 +114,17 @@ export const statusTable=pgTable("projStatus",{
 export const columnTable = pgTable("kbColumn", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   projectId: uuid("project_id").notNull().references(() => projectTable.id, { onDelete: "cascade" }),
+  
   name: varchar({ length: 255 }).notNull(), // e.g. "To Do", "In Progress"
+  description: text("description"),
+  color: varchar("color", { length: 64 }).notNull().default('blue-500'),
+
   position: integer("order").default(0), // controls column order
 
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
 export const priorityEnum = pgEnum("priority", ["low", "medium", "high"]);
 export const taskTable = pgTable("task", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),

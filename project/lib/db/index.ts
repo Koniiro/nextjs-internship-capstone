@@ -156,7 +156,9 @@ export const queries = {
       return db.update(columnTable)
         .set({
           name:colData.name,
+          description:colData.description,
           position:colData.position,
+          color:colData.color,
           updated_at:sql`now()`
         }).where(eq(columnTable.id,colId));
     },
