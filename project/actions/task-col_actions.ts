@@ -28,6 +28,7 @@ export const getProjectColumns=async(projectId:string)=>{
     
   }
 }
+
 export const createColumn=async(colData:ColumnCreate)=>{
   try {
       clerkAuthCheck()
@@ -65,6 +66,28 @@ export const deleteCol=async(colId:number)=>{
     
   }
 }
+
+export const updateCol=async(coldId:number,coldData:ColumnCreate)=>{
+  try {
+    clerkAuthCheck()
+
+    const updatedCol = await queries.cols.update(coldId,coldData).returning()
+    
+    if (!updatedCol) {
+      throw new Error("Column could not be updated or was not found.");
+    }
+
+    return { success: true, data:updatedCol }
+    
+  } catch (error) {
+    console.error("❌ Error updating column =>", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
 //Task Actions
 
 export const createTask=async(taskData:TaskCreate)=>{
@@ -106,7 +129,26 @@ export const getTasks=async(colId:number)=>{
   }
 }
 
+export const updateTask=async(taskId:number,taskUpdateData:TaskCreate)=>{
+  try {
+    clerkAuthCheck()
 
+    const updatedCol = await queries.tasks.update(taskId,taskUpdateData).returning()
+    
+    if (!updatedCol) {
+      throw new Error("Column could not be updated or was not found.");
+    }
+
+    return { success: true, data:updatedCol }
+    
+  } catch (error) {
+    console.error("❌ Error updating column =>", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
 
 
 export const deleteTask=async(taskId:number)=>{

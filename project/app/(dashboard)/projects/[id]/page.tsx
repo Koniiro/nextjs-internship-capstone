@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { KanbanBoard } from "@/components/ui/kaban_ui/kanban-board"
 import { useColumns } from "@/hooks/use-columns"
 import { ColumnCreate } from "@/types"
+import { CreateColumnModal } from "@/components/modals/create-col-modal"
 
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params); 
@@ -17,13 +18,8 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load projects {error.message}</p>;
   if (!project) return <p>Failed to load projects</p>;
-  const placeholder:ColumnCreate={
-    name:"placeholder X",
-    projectId:id,
-  }
-  const createColHandler = async () => { 
-      createCol(placeholder)
-   }
+
+
 
   
   return (
@@ -81,9 +77,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
             <li>• Task 5.6: Create task detail modals and editing interfaces</li>
           </ul>
         </div>
-        <Button onClick={createColHandler}className="w-full p-3 border-2 border-dashed border-french_gray-300 dark:border-payne's_gray-400 rounded-lg text-payne's_gray-500 dark:text-french_gray-400 hover:border-blue_munsell-500 hover:text-blue_munsell-500 transition-colors">
-                      + Add Column
-        </Button>
+        <CreateColumnModal projectId={id}/>
 
         {/* Kanban Board Placeholder */}
         <KanbanBoard projectId={project?.id}/>

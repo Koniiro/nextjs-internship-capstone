@@ -1,5 +1,5 @@
 "use client"
-import { createColumn, deleteCol, getProjectColumns } from "@/actions/task-col_actions"
+import { createColumn, deleteCol, getProjectColumns, updateCol } from "@/actions/task-col_actions"
 import { ColumnCreate, ProjectCreator } from "@/types"
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -54,6 +54,23 @@ export function useColumns(projectId:string){
             queryClient.invalidateQueries({ queryKey: ['columns',projectId] })
           }
         })
+      //update Column
+      const{
+          mutate: useUpdateCol,
+          isPending: isUpdating,
+          error: updateError,
+        }  = useMutation({
+          mutationFn: async ({ colId, colUpdateData }: { colId: number; colUpdateData: ColumnCreate }) => {
+            console.log('Updating Column',colId)
+            const res = await updateCol(colId,colUpdateData);
+            if (!res.success) throw new Error(res.error);
+            return res.data;
+          },
+          onSuccess: () => {
+            console.log(" Column update Success",)
+            queryClient.invalidateQueries({ queryKey: ['columns',projectId] })
+          }
+        })
 
 
     return {
@@ -63,9 +80,13 @@ export function useColumns(projectId:string){
 
         isDeleting:isDeleting,
         deleteError:deleteError,
+
+        isCreating:isCreating,
+        createError:createError,
+
         
         createCol: (data: ColumnCreate) =>useCreateColumn(data),
-        updateCol: (id: string) => console.log(`TODO: Update Col ${id}`),
+        updateCol: (colId:number,colUpdateData: ColumnCreate) => useUpdateCol({colId,colUpdateData}),
         deleteCol: (id: number) => useDeleteCol(id),
     }
 }
