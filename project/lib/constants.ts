@@ -1,9 +1,9 @@
 export const colors: Record<string, string> = {
-  Red: "bg-red-500",
-  Blue: "bg-blue-500",
-  Green: "bg-green-500",
-  Yellow: "bg-yellow-500",
-  Purple: "bg-purple-500",
+  Red: "red-500",
+  Blue: "blue-500",
+  Green: "green-500",
+  Yellow: "yellow-500",
+  Purple: "purple-500",
 };
 
 export const projectStatus: Record<string, number> = {
@@ -15,3 +15,12 @@ export const projectStatus: Record<string, number> = {
 };
 
 export const statusArray=["Review","In Progress", "On-hold","Completed","Starting"]
+
+
+
+export const taskPriority: Record<string, string> = {
+  'low':'low',
+  'medium':'medium',
+  'high':'high',
+
+};

@@ -55,7 +55,7 @@ export default function ProjectCard({project,onDelete,onEdit}:ProjectCardProps,)
           className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6 hover:shadow-lg transition-shadow cursor-pointer"
     >
       <div className="flex items-start justify-between mb-4">
-        <div className={`w-3 h-3 rounded-full ${project.color}`} />
+        <div className={`w-3 h-3 rounded-full bg-${project.color}`} />
         <button className="p-1 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded">
           <MoreHorizontal size={16} />
         </button>
@@ -86,7 +86,7 @@ export default function ProjectCard({project,onDelete,onEdit}:ProjectCardProps,)
         </div>
         <div className="w-full bg-french_gray-300 dark:bg-payne's_gray-400 rounded-full h-2">
           <div
-            className={`h-2 rounded-full transition-all duration-300 ${project.color}`}
+            className={`h-2 rounded-full transition-all duration-300 bg-${project.color}`}
             style={{ width: `0%` }}
           />
         </div>
