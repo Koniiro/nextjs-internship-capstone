@@ -22,24 +22,24 @@ export function ProjectHeader({project}:ProjectHeaderProps) {
               <ArrowLeft size={20} />
             </Link>
               <div className="w-3 h-3 bg-blue_munsell-500 rounded-full" />
-              <h1 className="text-2xl font-bold text-outer_space-500 dark:text-platinum-500">Website Redesign</h1>
+              <h1 className="text-2xl font-bold text-outer_space-500 dark:text-platinum-500">{project.name}</h1>
             </div>
 
           <p className="text-payne's_gray-500 dark:text-french_gray-400 mb-4">
-            Complete overhaul of company website with modern design and improved user experience
+            {project.description}
           </p>
 
           <div className="flex items-center space-x-6 text-sm text-payne's_gray-500 dark:text-french_gray-400">
             <div className="flex items-center">
-              <Users size={16} className="mr-2" />5 members
+              <Users size={16} className="mr-2" />X members
             </div>
             <div className="flex items-center">
               <Calendar size={16} className="mr-2" />
-              Due Feb 15, 2024
+              Due {project.due_date?.toLocaleDateString()}
             </div>
             <div className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
-              75% complete
+              0% complete
             </div>
           </div>
         </div>
