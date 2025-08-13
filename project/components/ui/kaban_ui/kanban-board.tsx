@@ -172,6 +172,28 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
     });
 
   }
+  function leftButtonHandler(colId:number){
+    console.log("left button pressed",colId-1)
+    const originalPos = getColPos(colId);
+    if (originalPos!==dragColumns.length-1) {
+      setDragColumns((dragcols) => {
+      const newArr = arrayMove(dragcols, originalPos, originalPos-1);
+      colOrderUpdate(newArr);
+      return newArr;
+    });
+    } 
+  }
+  function rightButtonHandler(colId:number){
+    console.log("right button pressed",colId+1)
+    const originalPos = getColPos(colId);
+    if (originalPos!==dragColumns.length-1) {
+      setDragColumns((dragcols) => {
+      const newArr = arrayMove(dragcols, originalPos, originalPos+1);
+      colOrderUpdate(newArr);
+      return newArr;
+    });
+    } 
+  }
 
   const handleDragEnd = useCallback((event: { active: any; over: any }) => {
     const { active, over } = event;
@@ -182,7 +204,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
       const newPos = getColPos(over.id);
       const newArr = arrayMove(dragcols, originalPos, newPos);
       
-
+      console.log("new smth",newArr)
       colOrderUpdate(newArr);
       return newArr;
     });
@@ -199,7 +221,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         <div className="flex space-x-6 overflow-x-auto pb-4">
           <SortableContext items={dragColumns} strategy={horizontalListSortingStrategy}>
             {dragColumns.map((col) => (
-            <KanbanColumn id={col.id} column={col} key={col.id}/>
+            <KanbanColumn id={col.id} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
           ))}
           </SortableContext>
           

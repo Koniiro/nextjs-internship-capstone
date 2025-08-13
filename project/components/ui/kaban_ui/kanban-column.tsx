@@ -1,13 +1,17 @@
 import { CreateTaskModal } from "@/components/modals/create-task-modal";
 import { TaskCard } from "@/components/task-card";
 import { useTasks } from "@/hooks/use-tasks";
-import { Column } from "@/types";
-import { MoreHorizontal } from "lucide-react";
+import { Column, ColumnCreate } from "@/types";
+import {  MoreHorizontal,ArrowRight, ArrowLeft } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useColumns } from "@/hooks/use-columns";
@@ -15,15 +19,20 @@ import { UpdateColumnModal } from "@/components/modals/update-col-modal";
 import { Dialog, DialogTrigger } from "../dialog";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Button } from "../button";
 
 export interface KanbanColumnProps {
   id:number,
-  column: Column
+  colArrayLength:number,
+  column: Column,
+  leftHandler: () => void;
+  rightHandler: () => void;
+
 }
 
-export default function KanbanColumn({id,column}:KanbanColumnProps){
+export default function KanbanColumn({id,colArrayLength,column, leftHandler, rightHandler}:KanbanColumnProps){
     const{tasks,isLoading,error}=useTasks(column.id)
-    const{deleteCol}=useColumns(column.projectId)
+    const{deleteCol,updateCol}=useColumns(column.projectId)
 
     const {attributes, listeners, setNodeRef, transform, transition} =useSortable({id})
     const style = {
@@ -37,7 +46,14 @@ export default function KanbanColumn({id,column}:KanbanColumnProps){
 
     const delColHandler = async () => { 
       deleteCol(column.id)
-   }
+    }
+    const disableCheckLeft = column.position === 0;
+
+
+    const disableCheckRight = column.position === colArrayLength-1;
+ 
+
+ 
     
     return(
         <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="flex-shrink-0 w-80 column">
@@ -67,18 +83,36 @@ export default function KanbanColumn({id,column}:KanbanColumnProps){
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="bg-white dark:bg-zinc-900 text-sm">
-                      <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
+
+                      <DropdownMenuLabel>Column</DropdownMenuLabel>
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
                         <DialogTrigger className="">
                             Edit Column
                         </DialogTrigger>
                         
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={delColHandler}
-                        className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
-                      >
-                        Delete
-                      </DropdownMenuItem>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={delColHandler}
+                          className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel>Position</DropdownMenuLabel>
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem className="cursor-pointer" disabled={disableCheckLeft} onClick={leftHandler}>
+                          <ArrowLeft size={12}/> Move Left
+                          
+                        </DropdownMenuItem>
+                        <DropdownMenuItem  className="cursor-pointer" disabled={disableCheckRight} onClick={rightHandler}>
+                         <ArrowRight size={12}/> Move Right
+                          
+                        </DropdownMenuItem>
+
+                      </DropdownMenuGroup>
+                    
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <UpdateColumnModal column={column}/>
@@ -93,8 +127,8 @@ export default function KanbanColumn({id,column}:KanbanColumnProps){
             <div className="p-3 space-y-2 min-h-[400px]">
               <ScrollArea className="h-72">
                 {tasks.map((task) => (
-                  <div className="my-2">
-                    <TaskCard key={task.id} task={task}/>
+                  <div className="my-2" key={task.id} >
+                    <TaskCard task={task}/>
                   </div>
                 ))}
               </ScrollArea>
