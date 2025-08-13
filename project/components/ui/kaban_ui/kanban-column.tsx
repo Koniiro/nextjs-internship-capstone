@@ -91,14 +91,12 @@ export default function KanbanColumn({id,column}:KanbanColumnProps){
             </div>
 
             <div className="p-3 space-y-2 min-h-[400px]">
-              <ScrollArea className="h-85 ">
-                <div className="flex flex-col gap-2">
-                  {tasks.map((task) => (
-                  <TaskCard key={task.id} task={task}/>
+              <ScrollArea className="h-72">
+                {tasks.map((task) => (
+                  <div className="my-2">
+                    <TaskCard key={task.id} task={task}/>
+                  </div>
                 ))}
-                </div> 
-                
-  
               </ScrollArea>
               
               <CreateTaskModal colId={column.id}/>
