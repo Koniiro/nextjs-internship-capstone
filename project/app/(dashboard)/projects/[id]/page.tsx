@@ -25,23 +25,8 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
       <div className="space-y-6">
         {/* Project Header */}
         <ProjectHeader project={project}/>
-
-        {/* Implementation Tasks Banner */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
-            🎯 Kanban Board Implementation Tasks
-          </h3>
-          <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-            <li>• Task 5.1: Design responsive Kanban board layout</li>
-            <li>• Task 5.2: Implement drag-and-drop functionality with dnd-kit</li>
-            <li>• Task 5.4: Implement optimistic UI updates for smooth interactions</li>
-            <li>• Task 5.6: Create task detail modals and editing interfaces</li>
-          </ul>
-        </div>
         <CreateColumnModal projectId={id}/>
-          <KanbanBoard projectId={project?.id}/>
-        
-          
+        <KanbanBoard projectId={project?.id}/>
       </div>
   )
 }
