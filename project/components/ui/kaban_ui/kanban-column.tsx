@@ -13,16 +13,25 @@ import {
 import { useColumns } from "@/hooks/use-columns";
 import { UpdateColumnModal } from "@/components/modals/update-col-modal";
 import { Dialog, DialogTrigger } from "../dialog";
-
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export interface KanbanColumnProps {
+  id:number,
   column: Column
 }
 
-export default function KanbanColumn({column}:KanbanColumnProps){
+export default function KanbanColumn({id,column}:KanbanColumnProps){
     const{tasks,isLoading,error}=useTasks(column.id)
     const{deleteCol}=useColumns(column.projectId)
-     if (isLoading) return <p>Loading...</p>;
+
+    const {attributes, listeners, setNodeRef, transform, transition} =useSortable({id})
+    const style = {
+      transition,
+      transform: CSS.Transform.toString(transform),
+    };
+
+    if (isLoading) return <p>Loading...</p>;
     if (error) return <p>Failed to load tasks {error.message}</p>;
     if (!tasks) return <p>Failed to load tasks</p>;
 
@@ -31,70 +40,70 @@ export default function KanbanColumn({column}:KanbanColumnProps){
    }
     
     return(
-        <div className="flex-shrink-0 w-80">
-                <div className="bg-gray-100 dark:bg-outer_space-400 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
-                  <div className="p-3 border-b border-french_gray-300 dark:border-payne's_gray-400">
-                    <div className="flex gap-2 items-center justify-between">
-                      <div className="flex flex-row gap-2 items-center">
-                        <div className={`w-5 h-5 
-                              bg-${column.color}/40
-                              border-${column.color}
-                              border-2
-                              rounded-full 
-                              `}
-                          />
-                        <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
-                          {column.name}
-                        </h3>
-                        <div className=" p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
-                          {tasks.length}
-                        </div>
-                      </div>
-                      <Dialog>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button className="p-1 rounded hover:bg-muted">
-                              <MoreHorizontal size={16} />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="bg-white dark:bg-zinc-900 text-sm">
-                            <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
-                              <DialogTrigger className="">
-                                  Edit Column
-                              </DialogTrigger>
-                              
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={delColHandler}
-                              className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
-                            >
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        <UpdateColumnModal column={column}/>
-                      </Dialog>
-                      
-                    </div>
-                    <p className="mt-2 text-xs text-payne's_gray-500 dark:text-french_gray-400 ">
-                      {column.description}
-                    </p>
-                  </div>
-
-                  <div className="p-3 space-y-2 min-h-[400px]">
-                    <ScrollArea className="h-85 ">
-                      <div className="flex flex-col gap-2">
-                        {tasks.map((task,key) => (
-                        <TaskCard key={key} task={task}/>
-                      ))}
-                      </div>
-                      
-       
-                    </ScrollArea>
-                    
-                    <CreateTaskModal colId={column.id}/>
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="flex-shrink-0 w-80 column">
+          <div className="bg-gray-100 dark:bg-outer_space-400 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
+            <div className="p-3 border-b border-french_gray-300 dark:border-payne's_gray-400">
+              <div className="flex gap-2 items-center justify-between">
+                <div className="flex flex-row gap-2 items-center">
+                  <div className={`w-5 h-5 
+                        bg-${column.color}/40
+                        border-${column.color}
+                        border-2
+                        rounded-full 
+                        `}
+                    />
+                  <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
+                    {column.name}
+                  </h3>
+                  <div className=" p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
+                    {tasks.length}
                   </div>
                 </div>
+                <Dialog>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-1 rounded hover:bg-muted">
+                        <MoreHorizontal size={16} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white dark:bg-zinc-900 text-sm">
+                      <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
+                        <DialogTrigger className="">
+                            Edit Column
+                        </DialogTrigger>
+                        
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={delColHandler}
+                        className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                      >
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <UpdateColumnModal column={column}/>
+                </Dialog>
+                
               </div>
+              <p className="mt-2 text-xs text-payne's_gray-500 dark:text-french_gray-400 ">
+                {column.description}
+              </p>
+            </div>
+
+            <div className="p-3 space-y-2 min-h-[400px]">
+              <ScrollArea className="h-85 ">
+                <div className="flex flex-col gap-2">
+                  {tasks.map((task) => (
+                  <TaskCard key={task.id} task={task}/>
+                ))}
+                </div> 
+                
+  
+              </ScrollArea>
+              
+              <CreateTaskModal colId={column.id}/>
+            </div>
+          </div>
+        </div>
     )
 }

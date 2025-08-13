@@ -37,7 +37,7 @@ export interface Column {
   description: string
   color?:string
   projectId: string
-  position: number|null
+  position: number
   created_at: Date
   updated_at: Date
 }
@@ -46,7 +46,7 @@ export interface ColumnCreate {
   description: string 
   projectId: string
   color?:string
-  position?:number
+  position:number
 }
 
 export interface Task {
