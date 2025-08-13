@@ -63,7 +63,7 @@ export function UpdateProjectForm({ projectData }: UpdateProjectFormProps){
     async function onSubmit(data: z.infer<typeof projectUpdateSchema>) {
       const newProjData:ProjectCreator={
         name:data.name,
-        description:data.description,
+        description:data.description||'',
         color:data.color,
         dueDate:data.dueDate,
         statusId:data.statusId||5,

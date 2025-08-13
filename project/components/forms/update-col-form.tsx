@@ -47,7 +47,7 @@ export function UpdateColumnForm({column}:UpdateColumnFormProps){
     async function onSubmit(data: z.infer<typeof colSchema>) {
       const upColData:ColumnCreate={
         name:data.name,
-        description:data.description,
+        description:data.description||'',
         color:data.color,
         projectId:column.projectId
 

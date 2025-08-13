@@ -62,7 +62,7 @@ export function CreateTaskForm({colId}:CreateTaskFormProps){
         position:0, //TODO ACCOUNT FOR TASK POSITION
         columnId:colId,
         title:data.title,
-        description:data.description,
+        description:data.description||'',
         due_date:data.dueDate,
         priority:data.priority,
       }

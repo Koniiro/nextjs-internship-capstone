@@ -59,7 +59,7 @@ export function CreateProjectForm(){
     async function onSubmit(data: z.infer<typeof projectCreationSchema>) {
       const newProjData:ProjectCreator={
         name:data.name,
-        description:data.description,
+        description:data.description || '',
         color:data.color,
         dueDate:data.dueDate,
         statusId:5,
