@@ -7,7 +7,9 @@ import KanbanColumn from "./kanban-column"
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable"
 import { Column, ColumnCreate } from "@/types"
 import {DndContext,PointerSensor,closestCorners, useSensor, useSensors} from "@dnd-kit/core"
-
+import {
+  restrictToHorizontalAxis,
+} from '@dnd-kit/modifiers';
 // TODO: Task 5.1 - Design responsive Kanban board layout
 // TODO: Task 5.2 - Implement drag-and-drop functionality with dnd-kit
 
@@ -130,7 +132,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
   const { columns, isLoading, error, updateCol } = useColumns(projectId);
 
   const [dragColumns, setDragColumns] = useState<Column[]>([]);
-  const [hasLocalChanges, setHasLocalChanges] = useState(false);
+
   useEffect(() => {
     if (!columns) return;
 
@@ -142,7 +144,6 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
     if (differentContent) {
       console.log("Updating columns")
       setDragColumns(columns);
-      setHasLocalChanges(false); // reset because server update took over
     }
   }, [columns]);
 
@@ -181,7 +182,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
       const newPos = getColPos(over.id);
       const newArr = arrayMove(dragcols, originalPos, newPos);
       
-      setHasLocalChanges(true);
+
       colOrderUpdate(newArr);
       return newArr;
     });
@@ -192,7 +193,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
   if (!columns) return <p>Failed to load columns</p>;
 
   return (
-    <DndContext collisionDetection={closestCorners} sensors={sensors} onDragEnd={handleDragEnd}>
+    <DndContext modifiers={[restrictToHorizontalAxis]} collisionDetection={closestCorners} sensors={sensors} onDragEnd={handleDragEnd}>
 
       <div className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6">
         <div className="flex space-x-6 overflow-x-auto pb-4">
