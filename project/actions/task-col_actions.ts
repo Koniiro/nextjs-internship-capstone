@@ -2,9 +2,6 @@
 
 "use server";
 import 'dotenv/config';
-import { db } from "@/lib/db"
-import { taskTable } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 import { queries } from '../lib/db/index';
 import { clerkAuthCheck } from '@/lib/server_util';
 import { ColumnCreate, TaskCreate } from '@/types';
@@ -93,6 +90,7 @@ export const updateCol=async(coldId:number,coldData:ColumnCreate)=>{
 export const createTask=async(taskData:TaskCreate)=>{
   try {
       clerkAuthCheck()
+      console.log("new task",taskData)
 
       const newTask=await queries.tasks.create(taskData)
 
