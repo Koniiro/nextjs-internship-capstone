@@ -49,7 +49,8 @@ export function UpdateColumnForm({column}:UpdateColumnFormProps){
         name:data.name,
         description:data.description||'',
         color:data.color,
-        projectId:column.projectId
+        projectId:column.projectId,
+        position:column.position
 
       }
       const res=updateCol(column.id,upColData)

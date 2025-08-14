@@ -57,7 +57,7 @@ export interface Task {
   title: string
   description: string 
   priority: "low" | "medium" | "high"
-  position: number |null
+  position: number
   
   created_at: Date
   updated_at: Date
