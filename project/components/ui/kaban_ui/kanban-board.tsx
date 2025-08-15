@@ -2,9 +2,14 @@
 
 import { useColumns } from "@/hooks/use-columns"
 import { MoreHorizontal } from "lucide-react"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import KanbanColumn from "./kanban-column"
-
+import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable"
+import { Column, ColumnCreate } from "@/types"
+import {DndContext,PointerSensor,closestCorners, useSensor, useSensors} from "@dnd-kit/core"
+import {
+  restrictToHorizontalAxis,
+} from '@dnd-kit/modifiers';
 // TODO: Task 5.1 - Design responsive Kanban board layout
 // TODO: Task 5.2 - Implement drag-and-drop functionality with dnd-kit
 
@@ -124,23 +129,83 @@ const initialColumns = [
 ]
 
 export function KanbanBoard({ projectId }: { projectId: string }) {
-  const{columns,isLoading,error}=useColumns(projectId)
-  //const [columns, setColumns] = useState(initialColumns)
+  const { columns, isLoading, error, updateCol } = useColumns(projectId);
 
+  const [dragColumns, setDragColumns] = useState<Column[]>([]);
+
+  useEffect(() => {
+    if (!columns) return;
+
+    const sortedServer = [...columns].sort((a, b) => a.position - b.position);
+    const sortedLocal = [...dragColumns].sort((a, b) => a.position - b.position);
+
+    const differentContent = JSON.stringify(sortedServer) !== JSON.stringify(sortedLocal);
+
+    if (differentContent) {
+      console.log("Updating columns")
+      setDragColumns(columns);
+    }
+  }, [columns]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+    activationConstraint: {
+      distance: {x: 15}, // px before drag starts
+      },
+    })
+  );
+
+  const getColPos = useCallback((id: number) =>
+    dragColumns.findIndex(col => col.id === id),
+    [dragColumns]
+  );
+
+  function colOrderUpdate(cols:Column[]){
+
+    cols.forEach((col, index) => {
+      const colData:ColumnCreate = {
+        ...col,
+        position: index // or whatever position field you use
+      };
+   
+      updateCol(col.id, colData);
+    });
+
+  }
+
+  const handleDragEnd = useCallback((event: { active: any; over: any }) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setDragColumns((dragcols) => {
+      const originalPos = getColPos(active.id);
+      const newPos = getColPos(over.id);
+      const newArr = arrayMove(dragcols, originalPos, newPos);
+      
+
+      colOrderUpdate(newArr);
+      return newArr;
+    });
+  }, [getColPos]);
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load columns {error.message}</p>;
   if (!columns) return <p>Failed to load columns</p>;
 
-
-
   return (
-            <div className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6">
-          <div className="flex space-x-6 overflow-x-auto pb-4">
-            {columns.map((col,key) => (
-              <KanbanColumn column={col} key={key}/>
-            ))}
-          </div>
-        </div>
+    <DndContext modifiers={[restrictToHorizontalAxis]} collisionDetection={closestCorners} sensors={sensors} onDragEnd={handleDragEnd}>
+
+      <div className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6">
+        <div className="flex space-x-6 overflow-x-auto pb-4">
+          <SortableContext items={dragColumns} strategy={horizontalListSortingStrategy}>
+            {dragColumns.map((col) => (
+            <KanbanColumn id={col.id} column={col} key={col.id}/>
+          ))}
+          </SortableContext>
+          
+        </div> 
+      </div>
+    </DndContext>
+     
   )
 }

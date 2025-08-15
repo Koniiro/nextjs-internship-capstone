@@ -62,7 +62,7 @@ export function UpdateTaskForm({task}:UpdateTaskFormProps){
         position:0, //TODO ACCOUNT FOR TASK POSITION
         columnId:task.columnId,
         title:data.title,
-        description:data.description,
+        description:data.description||'',
         due_date:data.dueDate,
         priority:data.priority,
       }

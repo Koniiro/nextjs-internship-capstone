@@ -80,30 +80,30 @@ export function TaskCard( {task }: TaskCardProps) {
         className="p-4 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-pointer hover:shadow-md transition-shadow"
       >
         <div className="flex items-center justify-between">
-                      <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
-                        {task.title}
-                      </h4>
-                      <Dialog>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger><MoreHorizontal size={16} /></DropdownMenuTrigger>
-                          <DropdownMenuContent className="bg-white">
-                            <DropdownMenuItem  className="cursor-pointer hover:bg-muted">
-                              <DialogTrigger className="">
-                                Edit Task
-                              </DialogTrigger> 
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={delTaskHandler}
-                              className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
-                              >
-                                Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        <UpdateTaskModal task={task}/>
-                      </Dialog>
-                    </div>
-        
+          <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
+            {task.title}
+          </h4>
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger><MoreHorizontal size={16} /></DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-white">
+                <DropdownMenuItem  className="cursor-pointer hover:bg-muted">
+                  <DialogTrigger className="">
+                    Edit Task
+                  </DialogTrigger> 
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={delTaskHandler}
+                  className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                  >
+                    Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <UpdateTaskModal task={task}/>
+          </Dialog>
+        </div>
+      
         <p className="text-xs text-payne's_gray-500 dark:text-french_gray-400 mb-3">
           {task.description}
         </p>

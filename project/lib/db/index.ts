@@ -43,7 +43,7 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
 import { ColumnCreate, ProjectCreator, TaskCreate } from "@/types";
 import { columnTable, projectMembers, projectTable, taskTable } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import { create } from "domain";
 
 config({path:".env"});
@@ -146,7 +146,10 @@ export const queries = {
   },
   cols:{
     getByProject: async(projectId: string) => {
-      return db.select().from(columnTable).where(eq(columnTable.projectId,projectId))
+      return db.query.columnTable.findMany({
+        where:eq(columnTable.projectId,projectId),
+        orderBy:[asc(columnTable.position)]
+      })
     },
     create: async(colData: ColumnCreate)=>{
       const newProject=await db.insert(columnTable).values(colData).returning()

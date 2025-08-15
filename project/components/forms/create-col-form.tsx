@@ -34,8 +34,14 @@ type CreateColumnFormProps = {
 
 
 export function CreateColumnForm({projectId}:CreateColumnFormProps){
-    const {createCol} = useColumns(projectId);
-
+    const {columns,createCol} = useColumns(projectId);
+    var nextPosition=0;
+    if (!columns) {
+      nextPosition=0
+    }else{
+      nextPosition=columns.length
+    }
+    
     const form = useForm<z.infer<typeof colSchema>>({
         resolver: zodResolver(colSchema),
           defaultValues: {
@@ -48,9 +54,10 @@ export function CreateColumnForm({projectId}:CreateColumnFormProps){
     async function onSubmit(data: z.infer<typeof colSchema>) {
       const newColData:ColumnCreate={
         name:data.name,
-        description:data.description,
+        description:data.description||'',
         color:data.color,
-        projectId:projectId
+        projectId:projectId,
+        position:nextPosition,
 
       }
       const res=createCol(newColData)

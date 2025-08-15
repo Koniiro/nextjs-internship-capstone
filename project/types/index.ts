@@ -15,7 +15,7 @@ export interface Project {
   projectOwner: string
   name: string
   statusId:number
-  description?: string |null
+  description: string 
   color:string
   created_at: Date
   updated_at: Date
@@ -23,7 +23,7 @@ export interface Project {
 }
 export interface ProjectCreator {
   name: string
-  description?: string
+  description: string
   statusId:number
   color?:string
   dueDate?: Date
@@ -34,19 +34,19 @@ export interface ProjectCreator {
 export interface Column {
   id: number
   name: string
-  description?: string
+  description: string
   color?:string
   projectId: string
-  position: number|null
+  position: number
   created_at: Date
   updated_at: Date
 }
 export interface ColumnCreate {
   name: string
-  description?: string
+  description: string 
   projectId: string
   color?:string
-  position?:number
+  position:number
 }
 
 export interface Task {
@@ -55,7 +55,7 @@ export interface Task {
   assigneeId: string|null
 
   title: string
-  description: string |null
+  description: string 
   priority: "low" | "medium" | "high"
   position: number |null
   
@@ -68,7 +68,7 @@ export interface TaskCreate {
   columnId: number //TODO CONVERT TO REQUIRED
   assigneeId?: string
   title: string
-  description?: string
+  description: string
   priority: "low" | "medium" | "high"
   position:number
   due_date?: Date

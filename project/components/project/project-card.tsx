@@ -1,10 +1,10 @@
 'use client'
-import { Project, ProjectCreator } from '../types/index';
+import { Project, ProjectCreator } from '../../types/index';
 import Link from 'next/link';
 import { Calendar, Users, MoreHorizontal } from "lucide-react"
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { projectStatus } from '@/lib/constants';
-import { UpdateProjectModal } from './modals/update-project-modal';
+import { UpdateProjectModal } from '../modals/update-project-modal';
 import ProjectStatusChip from './project-status-chip';
 
 // TODO: Task 4.5 - Design and implement project cards and layouts

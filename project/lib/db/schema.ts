@@ -58,7 +58,7 @@ export const projectTable = pgTable("project", {
   statusId: integer("status_id")
     .references(() => statusTable.id, { onDelete: "set null" })
     .notNull(),
-  description:text("description"),
+  description:text("description").notNull().default(''),
   color: varchar("color", { length: 64 }).notNull().default('blue-500'),
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -116,10 +116,10 @@ export const columnTable = pgTable("kbColumn", {
   projectId: uuid("project_id").notNull().references(() => projectTable.id, { onDelete: "cascade" }),
   
   name: varchar({ length: 255 }).notNull(), // e.g. "To Do", "In Progress"
-  description: text("description"),
+  description: text("description").notNull().default(''),
   color: varchar("color", { length: 64 }).notNull().default('blue-500'),
 
-  position: integer("order").default(0), // controls column order
+  position: integer("order").notNull().default(0), // controls column order
 
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -132,9 +132,9 @@ export const taskTable = pgTable("task", {
   assigneeId:uuid('assignee_Id').references(()=>usersTable.id, {onDelete: 'cascade'}),
   
   title: varchar({ length: 255 }).notNull(),
-  description:text("description"),
+  description:text("description").notNull().default(''),
   priority: priorityEnum("priority").notNull(),
-  position: integer("order").default(0),
+  position: integer("order").notNull().default(0),
 
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
