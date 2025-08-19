@@ -1,5 +1,5 @@
 "use client"
-import { createTask, deleteTask, getTasks, updateTask } from "@/actions/task-col_actions";
+import { createTask, deleteTask, getTasks, getTasksByProject, updateTask } from "@/actions/task-col_actions";
 import { TaskCreate } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -78,7 +78,6 @@ export function useTasks(colId: number) {
     isLoading,
     error,
     
-
     isCreating:isCreating,
     
     isUpdating: isUpdating,
@@ -91,5 +90,28 @@ export function useTasks(colId: number) {
     deleteTask: (id: number) => useDeleteTask(id),
     moveTask: (taskId: string, newListId: string, position: number) =>
       console.log(`TODO: Move task ${taskId} to list ${newListId} at position ${position}`),
+  }
+}
+
+
+export function useProjectTasks(projectId: string) {
+  const queryClient = useQueryClient()
+  const {
+      data: projectTasks,
+      isLoading,
+      error
+  } = useQuery({
+      queryKey: ['tasks',projectId],
+      queryFn: async () => {
+      const res = await getTasksByProject(projectId);
+      if (!res.success) throw new Error(res.error);
+      return res.data;
+      },
+  })
+  
+  return {
+    projectTasks,
+    isLoading,
+    error,
   }
 }

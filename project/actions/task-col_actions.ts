@@ -4,7 +4,7 @@
 import 'dotenv/config';
 import { queries } from '../lib/db/index';
 import { clerkAuthCheck } from '@/lib/server_util';
-import { ColumnCreate, TaskCreate } from '@/types';
+import { ColumnCreate, Task, TaskCreate } from '@/types';
 
 //Column Section
 export const getProjectColumns=async(projectId:string)=>{
@@ -107,6 +107,36 @@ export const createTask=async(taskData:TaskCreate)=>{
   }
 }
 
+
+function groupTasksByColumnId(results: Task[]) {
+  return results.reduce((acc, task) => {
+    if (!acc[task.columnId]) {
+      acc[task.columnId] = [];
+    }
+    acc[task.columnId].push(task);
+    return acc;
+  }, {} as Record<number, Task[]>);
+}
+
+export const getTasksByProject = async (projectId:string)=>{
+  try {
+      clerkAuthCheck()
+
+      const taskRows=await queries.tasks.getByProj(projectId)
+      const tasks=groupTasksByColumnId(taskRows)
+
+      return {success: true,data: tasks}
+    
+  } catch (error) {
+
+    console.error(`❌ Error fetching tasks for project ${projectId}`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+}
 
 export const getTasks=async(colId:number)=>{
   try {

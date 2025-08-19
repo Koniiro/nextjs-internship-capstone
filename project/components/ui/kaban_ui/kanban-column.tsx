@@ -1,8 +1,8 @@
 import { CreateTaskModal } from "@/components/modals/create-task-modal";
 import { TaskCard } from "@/components/task-card";
 import { useTasks } from "@/hooks/use-tasks";
-import { Column, ColumnCreate } from "@/types";
-import {  MoreHorizontal,ArrowRight, ArrowLeft } from 'lucide-react';
+import { Column, ColumnCreate, Task, TaskCreate } from "@/types";
+import {  MoreHorizontal,ArrowRight, ArrowLeft, Trash, Pencil } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   DropdownMenu,
@@ -17,22 +17,42 @@ import {
 import { useColumns } from "@/hooks/use-columns";
 import { UpdateColumnModal } from "@/components/modals/update-col-modal";
 import { Dialog, DialogTrigger } from "../dialog";
-import { useSortable } from "@dnd-kit/sortable";
+import { arrayMove, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "../button";
+import { useCallback, useEffect, useState } from "react";
+import { updateTask } from '../../../actions/task-col_actions';
 
 export interface KanbanColumnProps {
   id:number,
   colArrayLength:number,
+  colLocalPosition:number,
   column: Column,
+  taskArray:Task[],
   leftHandler: () => void;
   rightHandler: () => void;
 
 }
 
-export default function KanbanColumn({id,colArrayLength,column, leftHandler, rightHandler}:KanbanColumnProps){
-    const{tasks,isLoading,error}=useTasks(column.id)
+export default function KanbanColumn({id,colArrayLength,column,taskArray,colLocalPosition ,leftHandler, rightHandler}:KanbanColumnProps){
+    const{updateTask}=useTasks(column.id)
     const{deleteCol,updateCol}=useColumns(column.projectId)
+    const [dragTasks, setDragTasks] = useState<Task[]>([]);
+
+    useEffect(() => {
+      if (!taskArray) return;
+  
+      const sortedServer = [...taskArray].sort((a, b) => a.position - b.position);
+      const sortedLocal = [...dragTasks].sort((a, b) => a.position - b.position);
+  
+      const differentContent = JSON.stringify(sortedServer) !== JSON.stringify(sortedLocal);
+  
+      if (differentContent) {
+        console.log("Updating columns")
+        setDragTasks(taskArray);
+      }
+    }, [taskArray]);
+    
 
     const {attributes, listeners, setNodeRef, transform, transition} =useSortable({id})
     const style = {
@@ -40,21 +60,57 @@ export default function KanbanColumn({id,colArrayLength,column, leftHandler, rig
       transform: CSS.Transform.toString(transform),
     };
 
-    if (isLoading) return <p>Loading...</p>;
-    if (error) return <p>Failed to load tasks {error.message}</p>;
-    if (!tasks) return <p>Failed to load tasks</p>;
+    //if (isLoading) return <p>Loading...</p>;
+    //if (error) return <p>Failed to load tasks {error.message}</p>;
+    //if (!tasks) return <p>Failed to load tasks</p>;
 
     const delColHandler = async () => { 
       deleteCol(column.id)
     }
-    const disableCheckLeft = column.position === 0;
 
+    const getTaskPos = useCallback((id: number) =>
+      dragTasks.findIndex(task => task.id === id),
+      [dragTasks]
+    );
 
-    const disableCheckRight = column.position === colArrayLength-1;
- 
-
- 
+    function taskOrderUpdate(newTaskArr:Task[]){
+        newTaskArr.forEach((task, index) => {
+          const taskData:TaskCreate = {
+            ...task,
+            position: index // or whatever position field you use
+          };
+       
+          updateTask(task.id, taskData);
+        });
     
+      }
+
+    function toBottomButton(taskId:number){
+      console.log("To Bottom button pressed")
+      const originalPos = getTaskPos(taskId);
+      if (originalPos!==dragTasks.length-1) {
+        setDragTasks((dragTasks) => {
+        const newArr = arrayMove(dragTasks, originalPos, dragTasks.length - 1);        
+        taskOrderUpdate(newArr);
+        return newArr;
+      });
+      } 
+    }
+
+    function toTopButton(taskId:number){
+      console.log("To Top button pressed")
+      const originalPos = getTaskPos(taskId);
+      if (originalPos!==0) {
+        setDragTasks((dragTasks) => {
+        const newArr = arrayMove(dragTasks, originalPos, 0);        
+        taskOrderUpdate(newArr);
+        return newArr;
+      });
+      } 
+    }
+    const disableCheckLeft = colLocalPosition=== 0;
+    const disableCheckRight = colLocalPosition === colArrayLength-1;
+
     return(
         <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="flex-shrink-0 w-80 column">
           <div className="bg-gray-100 dark:bg-outer_space-400 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400">
@@ -72,7 +128,7 @@ export default function KanbanColumn({id,colArrayLength,column, leftHandler, rig
                     {column.name}
                   </h3>
                   <div className=" p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
-                    {tasks.length}
+                    {dragTasks.length}
                   </div>
                 </div>
                 <Dialog>
@@ -86,18 +142,19 @@ export default function KanbanColumn({id,colArrayLength,column, leftHandler, rig
 
                       <DropdownMenuLabel>Column</DropdownMenuLabel>
                       <DropdownMenuGroup>
-                        <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer hover:bg-muted">
-                        <DialogTrigger className="">
-                            Edit Column
+                        <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer  hover:bg-muted">
+                        <DialogTrigger className=" flex flex-row items-center gap-2">
+                          <Pencil size={16}/> Edit Column
                         </DialogTrigger>
                         
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={delColHandler}
-                          className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
-                        >
-                          Delete
-                        </DropdownMenuItem>
+                        onClick={delColHandler}
+                        className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                      >
+                        <Trash size={16} />
+                        Delete
+                      </DropdownMenuItem>
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
                       <DropdownMenuLabel>Position</DropdownMenuLabel>
@@ -126,9 +183,9 @@ export default function KanbanColumn({id,colArrayLength,column, leftHandler, rig
 
             <div className="p-3 space-y-2 min-h-[400px]">
               <ScrollArea className="h-72">
-                {tasks.map((task) => (
+                {dragTasks.map((task) => (
                   <div className="my-2" key={task.id} >
-                    <TaskCard task={task}/>
+                    <TaskCard task={task} arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
                   </div>
                 ))}
               </ScrollArea>

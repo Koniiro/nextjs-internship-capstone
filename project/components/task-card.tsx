@@ -1,11 +1,14 @@
 // TODO: Task 5.6 - Create task detail modals and editing interfaces
 
 import { Task } from "@/types"
-import { MoreHorizontal } from "lucide-react"
+import { ArrowDownToLine, ArrowUpToLine, MoreHorizontal, Pencil, Trash } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { UpdateTaskModal } from "./modals/update-task-modal"
@@ -52,12 +55,14 @@ Features to implement:
 interface TaskCardProps {
   task:Task
   isDragging?: boolean
-  onEdit?: (id: string) => void
-  onDelete?: (id: string) => void
+  arrayPosition:number
+  taskArrayLength:number
+  topHandler: () => void;
+  bottomHandler: () => void;
 }
 
 
-export function TaskCard( {task }: TaskCardProps) {
+export function TaskCard( {task,arrayPosition, taskArrayLength,topHandler,bottomHandler }: TaskCardProps) {
   const{deleteTask,isDeleting,deleteError}=useTasks(task.columnId)
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -71,6 +76,10 @@ export function TaskCard( {task }: TaskCardProps) {
         return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
     }
   }
+  const disableCheckTop = arrayPosition === 0;
+  const disableCheckBottom = arrayPosition === taskArrayLength-1;
+
+
 
   const delTaskHandler = async () => { 
     deleteTask(task.id)
@@ -87,17 +96,35 @@ export function TaskCard( {task }: TaskCardProps) {
             <DropdownMenu>
               <DropdownMenuTrigger><MoreHorizontal size={16} /></DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white">
-                <DropdownMenuItem  className="cursor-pointer hover:bg-muted">
-                  <DialogTrigger className="">
-                    Edit Task
-                  </DialogTrigger> 
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={delTaskHandler}
-                  className="cursor-pointer text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
-                  >
-                    Delete
-                </DropdownMenuItem>
+                <DropdownMenuLabel>Task</DropdownMenuLabel>
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem  className="cursor-pointer hover:bg-muted">
+                      <DialogTrigger className=" flex flex-row items-center gap-2">
+                        <Pencil size={16}/> Edit Task
+                      </DialogTrigger>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={delTaskHandler}
+                      className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                      >
+                        <Trash size={16} />
+                        Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Position</DropdownMenuLabel>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem className=" flex flex-row items-center cursor-pointer" disabled={disableCheckTop} onClick={topHandler}>
+                        <ArrowUpToLine size={12}/> Move to Top
+                        
+                      </DropdownMenuItem>
+                      <DropdownMenuItem  className=" flex flex-row items-center cursor-pointer" disabled={disableCheckBottom} onClick={bottomHandler} >
+                        <ArrowDownToLine size={12}/> Move to Bottom
+                        
+                      </DropdownMenuItem>
+
+                    </DropdownMenuGroup>
+                
               </DropdownMenuContent>
             </DropdownMenu>
             <UpdateTaskModal task={task}/>

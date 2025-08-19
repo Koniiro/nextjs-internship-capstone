@@ -5,11 +5,12 @@ import { MoreHorizontal } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 import KanbanColumn from "./kanban-column"
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable"
-import { Column, ColumnCreate } from "@/types"
+import { Column, ColumnCreate, Task } from "@/types"
 import {DndContext,PointerSensor,closestCorners, useSensor, useSensors} from "@dnd-kit/core"
 import {
   restrictToHorizontalAxis,
 } from '@dnd-kit/modifiers';
+import { useProjectTasks } from "@/hooks/use-tasks"
 // TODO: Task 5.1 - Design responsive Kanban board layout
 // TODO: Task 5.2 - Implement drag-and-drop functionality with dnd-kit
 
@@ -45,91 +46,17 @@ State management:
 - Handle conflicts with server state
 */
 
-const initialColumns = [
-  {
-    id: "todo",
-    title: "To Do",
-    tasks: [
-      {
-        id: "1",
-        title: "Design homepage mockup",
-        description: "Create initial design concepts",
-        priority: "high",
-        assignee: "John Doe",
-      },
-      {
-        id: "2",
-        title: "Research competitors",
-        description: "Analyze competitor websites",
-        priority: "medium",
-        assignee: "Jane Smith",
-      },
-      {
-        id: "3",
-        title: "Define user personas",
-        description: "Create detailed user personas",
-        priority: "low",
-        assignee: "Mike Johnson",
-      },
-    ],
-  },
-  {
-    id: "in-progress",
-    title: "In Progress",
-    tasks: [
-      {
-        id: "4",
-        title: "Develop navigation component",
-        description: "Build responsive navigation",
-        priority: "high",
-        assignee: "Sarah Wilson",
-      },
-      {
-        id: "5",
-        title: "Content strategy",
-        description: "Plan content structure",
-        priority: "medium",
-        assignee: "Tom Brown",
-      },
-    ],
-  },
-  {
-    id: "review",
-    title: "Review",
-    tasks: [
-      {
-        id: "6",
-        title: "Logo design options",
-        description: "Present logo variations",
-        priority: "high",
-        assignee: "Lisa Davis",
-      },
-    ],
-  },
-  {
-    id: "done",
-    title: "Done",
-    tasks: [
-      {
-        id: "7",
-        title: "Project kickoff meeting",
-        description: "Initial team meeting completed",
-        priority: "medium",
-        assignee: "John Doe",
-      },
-      {
-        id: "8",
-        title: "Requirements gathering",
-        description: "Collected all requirements",
-        priority: "high",
-        assignee: "Jane Smith",
-      },
-    ],
-  },
-]
 
+function projectTaskParser(colId: number, projectTasks?:Record<number, Task[]>) {
+  if (!projectTasks) return [];
+  return projectTasks[colId] ?? [];
+}
 export function KanbanBoard({ projectId }: { projectId: string }) {
   const { columns, isLoading, error, updateCol } = useColumns(projectId);
+  let { projectTasks } = useProjectTasks(projectId);
+  projectTasks = projectTasks ?? [];
+
+
 
   const [dragColumns, setDragColumns] = useState<Column[]>([]);
 
@@ -221,7 +148,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         <div className="flex space-x-6 overflow-x-auto pb-4">
           <SortableContext items={dragColumns} strategy={horizontalListSortingStrategy}>
             {dragColumns.map((col) => (
-            <KanbanColumn id={col.id} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
+            <KanbanColumn id={col.id} colLocalPosition={getColPos(col.id)} taskArray={projectTaskParser(col.id,projectTasks)} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
           ))}
           </SortableContext>
           
