@@ -23,12 +23,14 @@ import { Button } from "../button";
 import { useCallback, useEffect, useState } from "react";
 import { updateTask } from '../../../actions/task-col_actions';
 
+
 export interface KanbanColumnProps {
   id:number,
   colArrayLength:number,
   colLocalPosition:number,
   column: Column,
   taskArray:Task[],
+
   leftHandler: () => void;
   rightHandler: () => void;
 
@@ -54,6 +56,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
     }, [taskArray]);
     
 
+
     const {attributes, listeners, setNodeRef, transform, transition} =useSortable({id})
     const style = {
       transition,
@@ -67,6 +70,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
     const delColHandler = async () => { 
       deleteCol(column.id)
     }
+
 
     const getTaskPos = useCallback((id: number) =>
       dragTasks.findIndex(task => task.id === id),
@@ -82,7 +86,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
        
           updateTask(task.id, taskData);
         });
-    
+  
       }
 
     function toBottomButton(taskId:number){
@@ -142,9 +146,11 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
 
                       <DropdownMenuLabel>Column</DropdownMenuLabel>
                       <DropdownMenuGroup>
+
                         <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer  hover:bg-muted">
                         <DialogTrigger className=" flex flex-row items-center gap-2">
                           <Pencil size={16}/> Edit Column
+
                         </DialogTrigger>
                         
                         </DropdownMenuItem>
@@ -183,6 +189,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
 
             <div className="p-3 space-y-2 min-h-[400px]">
               <ScrollArea className="h-72">
+
                 {dragTasks.map((task) => (
                   <div className="my-2" key={task.id} >
                     <TaskCard task={task} arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>

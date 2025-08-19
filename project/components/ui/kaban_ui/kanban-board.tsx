@@ -148,7 +148,9 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         <div className="flex space-x-6 overflow-x-auto pb-4">
           <SortableContext items={dragColumns} strategy={horizontalListSortingStrategy}>
             {dragColumns.map((col) => (
+
             <KanbanColumn id={col.id} colLocalPosition={getColPos(col.id)} taskArray={projectTaskParser(col.id,projectTasks)} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
+
           ))}
           </SortableContext>
           

@@ -122,6 +122,7 @@ export const queries = {
   },
   tasks: {
     //Auto orders by position
+
     getByProj: async (projectId:string):Promise<Task[]> =>{
       return await db.select({
         id:taskTable.id,
@@ -139,6 +140,7 @@ export const queries = {
       .innerJoin(columnTable,eq(taskTable.columnId,columnTable.id))
       .where(eq(columnTable.projectId,projectId))
     },
+
     getByCol: async(colId:number)=>{
       return db.query.taskTable.findMany({
         where:eq(taskTable.columnId,colId),
