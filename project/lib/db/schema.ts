@@ -126,6 +126,7 @@ export const columnTable = pgTable("kbColumn", {
 });
 
 export const priorityEnum = pgEnum("priority", ["low", "medium", "high"]);
+
 export const taskTable = pgTable("task", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   columnId: integer("column_Id").notNull().references(() => columnTable.id, { onDelete: "cascade" }),

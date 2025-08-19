@@ -66,12 +66,12 @@ export interface Task {
 }
 export interface TaskCreate {
   columnId: number //TODO CONVERT TO REQUIRED
-  assigneeId?: string
+  assigneeId: string |null
   title: string
   description: string
   priority: "low" | "medium" | "high"
   position:number
-  due_date?: Date
+  due_date:Date|null
 }
 
 export interface Comment {

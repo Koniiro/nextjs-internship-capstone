@@ -67,11 +67,12 @@ export function CreateTaskForm({colId}:CreateTaskFormProps){
 
     async function onSubmit(data: z.infer<typeof taskSchema>) {
       const newTaskData:TaskCreate={
+        assigneeId:null,
         position:nextPosition,
         columnId:colId,
         title:data.title,
         description:data.description||'',
-        due_date:data.dueDate,
+        due_date:data.dueDate || null ,
         priority:data.priority,
       }
      
