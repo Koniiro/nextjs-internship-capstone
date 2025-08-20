@@ -17,7 +17,7 @@ import {
 import { useColumns } from "@/hooks/use-columns";
 import { UpdateColumnModal } from "@/components/modals/update-col-modal";
 import { Dialog, DialogTrigger } from "../dialog";
-import { arrayMove, useSortable } from "@dnd-kit/sortable";
+import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "../button";
 import { useCallback, useEffect, useState } from "react";
@@ -57,7 +57,13 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
     
 
 
-    const {attributes, listeners, setNodeRef, transform, transition} =useSortable({id})
+    const {attributes, listeners, setNodeRef, transform, transition} =useSortable(
+    {id:id,
+    data: {
+    type: "column",
+    column,
+   }
+  })
     const style = {
       transition,
       transform: CSS.Transform.toString(transform),
@@ -87,7 +93,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
           updateTask(task.id, taskData);
         });
   
-      }
+    }
 
     function toBottomButton(taskId:number){
       console.log("To Bottom button pressed")
@@ -129,7 +135,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                         `}
                     />
                   <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
-                    {column.name}
+                    {column.name} {column.id}
                   </h3>
                   <div className=" p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
                     {dragTasks.length}
@@ -186,17 +192,13 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                 {column.description}
               </p>
             </div>
-
             <div className="p-3 space-y-2 min-h-[400px]">
-              <ScrollArea className="h-72">
-
-                {dragTasks.map((task) => (
-                  <div className="my-2" key={task.id} >
-                    <TaskCard task={task} arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
-                  </div>
-                ))}
-              </ScrollArea>
-              
+              {/*<ScrollArea className="h-72">*/}
+                <SortableContext items={dragTasks} strategy={verticalListSortingStrategy}>
+                  {dragTasks.map((task) => (
+                    <TaskCard key={task.id} id={task.id} task={task} arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
+                  ))}
+                </SortableContext>
               <CreateTaskModal colId={column.id}/>
             </div>
           </div>

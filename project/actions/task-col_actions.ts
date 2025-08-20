@@ -108,24 +108,16 @@ export const createTask=async(taskData:TaskCreate)=>{
 }
 
 
-function groupTasksByColumnId(results: Task[]) {
-  return results.reduce((acc, task) => {
-    if (!acc[task.columnId]) {
-      acc[task.columnId] = [];
-    }
-    acc[task.columnId].push(task);
-    return acc;
-  }, {} as Record<number, Task[]>);
-}
+
 
 export const getTasksByProject = async (projectId:string)=>{
   try {
       clerkAuthCheck()
 
       const taskRows=await queries.tasks.getByProj(projectId)
-      const tasks=groupTasksByColumnId(taskRows)
+     
 
-      return {success: true,data: tasks}
+      return {success: true,data: taskRows}
     
   } catch (error) {
 

@@ -15,6 +15,9 @@ import { UpdateTaskModal } from "./modals/update-task-modal"
 import { useState } from "react"
 import { Dialog, DialogTrigger } from "./ui/dialog"
 import { useTasks } from "@/hooks/use-tasks"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities";
+
 
 /*
 TODO: Implementation Notes for Interns:
@@ -53,16 +56,17 @@ Features to implement:
 - Responsive design
 */
 interface TaskCardProps {
+  id:number
   task:Task
   isDragging?: boolean
-  arrayPosition:number
-  taskArrayLength:number
-  topHandler: () => void;
-  bottomHandler: () => void;
+  arrayPosition?:number
+  taskArrayLength?:number
+  topHandler?: () => void;
+  bottomHandler?: () => void;
 }
 
 
-export function TaskCard( {task,arrayPosition, taskArrayLength,topHandler,bottomHandler }: TaskCardProps) {
+export function TaskCard( {id,task,arrayPosition, isDragging,taskArrayLength,topHandler,bottomHandler }: TaskCardProps) {
   const{deleteTask,isDeleting,deleteError}=useTasks(task.columnId)
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -76,25 +80,41 @@ export function TaskCard( {task,arrayPosition, taskArrayLength,topHandler,bottom
         return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
     }
   }
-  const disableCheckTop = arrayPosition === 0;
-  const disableCheckBottom = arrayPosition === taskArrayLength-1;
+  const disableCheckTop =
+    arrayPosition == null ? true : arrayPosition === 0;
 
+  const disableCheckBottom =
+    taskArrayLength == null ? true : arrayPosition === taskArrayLength - 1;
+  const {attributes, listeners, setNodeRef, transform, transition} =useSortable(
+    {id:id,
+    data: {
+    type: "task",
+    task,
+   }
+
+  })
+  
+  const style = {
+        transition,
+        transform: CSS.Transform.toString(transform),
+  };
 
 
   const delTaskHandler = async () => { 
     deleteTask(task.id)
   }
   return (
-    <div 
-        className="p-4 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-pointer hover:shadow-md transition-shadow"
+    <div
+      ref={setNodeRef} style={style} {...attributes} {...listeners}
+        className="p-4 my-2 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-pointer hover:shadow-md transition-shadow"
       >
         <div className="flex items-center justify-between">
           <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
-            {task.title}
+            {task.title}-{id}
           </h4>
           <Dialog>
             <DropdownMenu>
-              <DropdownMenuTrigger><MoreHorizontal size={16} /></DropdownMenuTrigger>
+              <DropdownMenuTrigger disabled={isDragging}><MoreHorizontal size={16} /></DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white">
                 <DropdownMenuLabel>Task</DropdownMenuLabel>
                   <DropdownMenuGroup>
