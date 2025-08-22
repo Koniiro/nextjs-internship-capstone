@@ -2,7 +2,7 @@
 
 import { useColumns } from "@/hooks/use-columns"
 import { MoreHorizontal } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import KanbanColumn from "./kanban-column"
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable"
 import { Column, ColumnCreate, Task } from "@/types"
@@ -76,15 +76,28 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
     if (differentContent) {
       console.log("Updating columns")
       setDragColumns(columns);
+      
     }
   }, [columns]);
 
 
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const activeTaskRef = useRef<Task | null>(null);
+  const originColumn = useRef<number | null>(null);
+
   let { projectTasks } = useProjectTasks(projectId);
   projectTasks = projectTasks ?? [];
   
   const [rawTasksArray, setRawTasksArray] = useState<Task[]>([]);
+  const rawTasksRef = useRef<Task[]>([]);
+
+  const setTasks = (updater: (prev: Task[]) => Task[]) => {
+    setRawTasksArray(prev => {
+      const updated = updater(prev);
+      rawTasksRef.current = updated; // keep ref in sync
+      return updated;
+    });
+  };
 
   useEffect(() => {
     if (!projectTasks) return;
@@ -93,15 +106,16 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
 
     if (differentContent) {
       console.log("Updating Global tasks")
-      setRawTasksArray(projectTasks);
+      setTasks(()=>projectTasks);
+
     }
   }, [projectTasks]); 
-  const sortedProjectTasks = groupTasksByColumnId(rawTasksArray);
+  
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
     activationConstraint: {
-      distance: {x:15, y:15}, // px before drag starts
+      distance: 5, // px before drag starts
       },
     })
   );
@@ -110,10 +124,8 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
     dragColumns.findIndex(col => col.id === id),
     [dragColumns]
   );
-  const getTaskPos = useCallback((id: number) =>
-    rawTasksArray.findIndex(task => task.id === id),
-    [rawTasksArray]
-  );
+  const getTaskPos = (id: number, filterArray: Task[]) =>
+    filterArray.findIndex(task => task.id === id);
 
   function colOrderUpdate(cols:Column[]){
 
@@ -127,6 +139,20 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
     });
 
   }
+  
+  function taskOrderUpdate(tasks:Task[],colId:number){
+
+    /*tasks.forEach((task, index) => {
+      const taskData:ColumnCreate = {
+        ...task,
+        position: index // or whatever position field you use
+        columnI
+      };
+   
+      updateCol(col.id, colData);
+    });*/
+  } 
+
   function leftButtonHandler(colId:number){
     const originalPos = getColPos(colId);
     if (originalPos!==dragColumns.length-1) {
@@ -156,31 +182,33 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
       const task = event.active.data.current?.task;
       
       setActiveTask(task);
-      console.log(`Task ${id} is active`)
+      originColumn.current=task.columnId;
+      activeTaskRef.current = task;
+      console.log(`Task ${id} is active`,task)
     }
   }, []);
 
   const handleDragOver = useCallback((event: { active: any; over: any }) => {
     const { active, over } = event;
-    const type = active.data.current?.type;
-    const task = active.data.current?.task;
+    console.log(active,over)
+    const aType = active.data.current?.type;
+    const oType = over.data.current?.type;
 
     
-    if (over && type==="task" ) {
+    if (over && aType==="task"  && oType==="task") {
       const sourceColumn=active.data.current?.task.columnId
       let overColumn=over.data.current?.task.columnId
       console.log("Dragging:", active.id, "from",sourceColumn,"over:", over.id,"-",overColumn);
       if (sourceColumn !==overColumn){
-        setRawTasksArray((prev) => {
-          console.log(sourceColumn, "to",overColumn)
+        console.log(sourceColumn, "to",overColumn)
 
-          return prev.map((t) =>
-            t.id === active.id
-              ? { ...t, columnId: overColumn, position: -1 } // update moved task
-              : t
-          );
-    
-        });
+        setTasks((prev) =>
+          prev.map((t) =>
+            t.id === active.id ? { ...t,  columnId: overColumn, position: -1 } : t
+          )
+        );
+        
+        console.log(rawTasksRef.current )
       }
       
     } else {
@@ -190,11 +218,22 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
 
   const handleDragEnd = useCallback((event: { active: any; over: any }) => {
     const { active, over } = event;
-    if (!over || active.id === over.id) return;
+    if (!active || !over) return;
+
+    /*const task = activeTaskRef.current; // always fresh here
+    
+    if (task!=null){
+      console.log("✅ Drag ended for task:", task);
+    }*/
     const activeType = active.data.current?.type;
     const overType = over.data.current?.type;
-    
+    const latestTasks = rawTasksRef.current;
+
+
+    console.log("Drag End",activeType,overType)
     if(activeType==="column"){
+      if (active.id === over.id ) return;
+
       setDragColumns((dragcols) => {
         const originalPos = getColPos(active.id);
         const newPos = getColPos(over.id);
@@ -205,10 +244,49 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         return newArr;
       });
     }else if(activeType==="task"){
-      console.log("task moved")
-      setActiveTask(null)
 
-    }/*else if (activeType==="Tasks" && overType==="Tasks" ){
+      //Retrieve column the task is currently in
+
+      const actTask:Task=active.data.current.task
+
+      console.log("active id",active.id,"over id",over.id,"currentCol",actTask.columnId,"originCol",originColumn.current)
+      
+      //Check if placed on the same spot
+      if (active.id === over.id && actTask.columnId===originColumn.current ) {
+        console.log("Task dropped in the same area")
+        activeTaskRef.current = null;
+        setActiveTask(null) 
+        originColumn.current=null;
+        return
+      }
+
+      
+      console.log("Dropped task",active.id,"over",over.id," moved",actTask.columnId,latestTasks)
+
+      const filteredTaskList=latestTasks.filter(t=>t.columnId===actTask.columnId)
+      const origPos=getTaskPos(active.id,filteredTaskList)
+      const newPos=getTaskPos(over.id,filteredTaskList)
+
+      console.log(filteredTaskList,"from",origPos,"to",newPos)
+
+      setTasks((prev) =>
+          prev.map((t) =>
+            t.id === active.id ? { ...t,  position: newPos } : t
+          )
+      );
+
+
+      //const newArr = arrayMove(filteredTaskList, origPos, newPos);
+
+      //taskOrderUpdate(newArr,actTask.columnId)
+    
+    }  
+    
+      /*
+      
+      
+      
+      
       const activeCol=active.data.current?.task.columnId
       const originalPos = getTaskPos(activeCol,active.id)
       const newPos=getTaskPos(over.id,activeCol)
@@ -222,9 +300,9 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         console.log("new smth",newArr)
         //colOrderUpdate(newArr);
         return newRecord;
-      });
+      });*/
 
-    }*/
+    
     
   }, [getColPos]);
 
@@ -239,8 +317,8 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         <div className="flex space-x-6 overflow-x-auto pb-4">
           <SortableContext items={dragColumns} strategy={horizontalListSortingStrategy}>
             {dragColumns.map((col) => (
-
-            <KanbanColumn id={col.id} colLocalPosition={getColPos(col.id)} taskArray={projectTaskParser(col.id,sortedProjectTasks)} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
+             
+            <KanbanColumn id={col.id} colLocalPosition={getColPos(col.id)} taskArray={projectTaskParser(col.id,groupTasksByColumnId(rawTasksArray))} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
 
           ))}
           </SortableContext>

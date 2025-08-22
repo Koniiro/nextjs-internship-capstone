@@ -50,8 +50,10 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
       const differentContent = JSON.stringify(sortedServer) !== JSON.stringify(sortedLocal);
   
       if (differentContent) {
-        console.log("Updating columns")
-        setDragTasks(taskArray);
+        
+        setDragTasks(sortedServer);
+        console.log("Updating column",id,sortedServer)
+       
       }
     }, [taskArray]);
     
