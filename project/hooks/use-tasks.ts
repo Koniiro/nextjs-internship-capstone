@@ -62,7 +62,7 @@ export function useTasks(colId: number) {
       error: updateError,
     }  = useMutation({
       mutationFn: async ({ taskId, taskUpdateData }: { taskId: number; taskUpdateData: TaskCreate }) => {
-        console.log('Updating Task',taskId)
+        console.log('Updating Task',taskId,colId)
         const res = await updateTask(taskId,taskUpdateData);
         if (!res.success) throw new Error(res.error);
         return res.data;
@@ -108,10 +108,32 @@ export function useProjectTasks(projectId: string) {
       return res.data;
       },
   })
+
+  const{
+    mutate: useUpdateProjectTasks,
+    isPending: isUpdating,
+    error: updateError,
+  }  = useMutation({
+    mutationFn: async ({ taskId, taskUpdateData }: { taskId: number; taskUpdateData: TaskCreate }) => {
+        console.log('Updating Task',taskId,taskUpdateData)
+        const res = await updateTask(taskId,taskUpdateData);
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+      },
+      onSuccess: () => {
+        console.log(" Task update Success",)
+        queryClient.invalidateQueries({ queryKey: ['tasks',projectId] })
+      }
+  })
   
   return {
     projectTasks,
     isLoading,
     error,
+
+    isPending: isUpdating,
+    updateError: updateError,
+
+    updateTask: (taskId: number, taskUpdateData: TaskCreate) => useUpdateProjectTasks({taskId,taskUpdateData}),
   }
 }

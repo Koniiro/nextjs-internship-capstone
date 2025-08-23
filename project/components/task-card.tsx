@@ -110,7 +110,7 @@ export function TaskCard( {id,task,arrayPosition, isDragging,taskArrayLength,top
       >
         <div className="flex items-center justify-between">
           <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
-            {task.title}-{id}
+            {task.title}-{id}-{task.position}-{task.columnId}
           </h4>
           <Dialog>
             <DropdownMenu>

@@ -38,7 +38,7 @@ export interface KanbanColumnProps {
 
 export default function KanbanColumn({id,colArrayLength,column,taskArray,colLocalPosition ,leftHandler, rightHandler}:KanbanColumnProps){
     const{updateTask}=useTasks(column.id)
-    const{deleteCol,updateCol}=useColumns(column.projectId)
+    const{deleteCol}=useColumns(column.projectId)
     const [dragTasks, setDragTasks] = useState<Task[]>([]);
 
     useEffect(() => {
@@ -52,6 +52,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
       if (differentContent) {
         
         setDragTasks(sortedServer);
+        //taskOrderUpdate(sortedServer)
         console.log("Updating column",id,sortedServer)
        
       }
@@ -89,7 +90,8 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
         newTaskArr.forEach((task, index) => {
           const taskData:TaskCreate = {
             ...task,
-            position: index // or whatever position field you use
+            position: index, // or whatever position field you use
+            columnId:id
           };
        
           updateTask(task.id, taskData);
@@ -137,7 +139,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                         `}
                     />
                   <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
-                    {column.name} {column.id}
+                    {column.name} {column.id} {column.position}
                   </h3>
                   <div className=" p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
                     {dragTasks.length}

@@ -5,7 +5,7 @@ import { MoreHorizontal } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import KanbanColumn from "./kanban-column"
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable"
-import { Column, ColumnCreate, Task } from "@/types"
+import { Column, ColumnCreate, Task, TaskCreate } from "@/types"
 import {DndContext,DragOverlay,PointerSensor,closestCorners, useSensor, useSensors} from "@dnd-kit/core"
 import {
   restrictToHorizontalAxis,
@@ -85,7 +85,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
   const activeTaskRef = useRef<Task | null>(null);
   const originColumn = useRef<number | null>(null);
 
-  let { projectTasks } = useProjectTasks(projectId);
+  let { projectTasks, updateTask } = useProjectTasks(projectId);
   projectTasks = projectTasks ?? [];
   
   const [rawTasksArray, setRawTasksArray] = useState<Task[]>([]);
@@ -139,8 +139,32 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
     });
 
   }
-  
-  function taskOrderUpdate(tasks:Task[],colId:number){
+  function taskUpdateHandler(newTaskArr:Task[]){
+    newTaskArr.forEach((task, index) => {
+      const taskData:TaskCreate = {
+        ...task, // or whatever position field you use
+      
+      };
+    
+      updateTask(task.id, taskData);
+  });
+    
+}
+  function taskOrderUpdate(destinationColumn:number|null,originalColumn:number, taskArray:Task[]){
+
+    if(destinationColumn===originalColumn){
+      console.log("Update within column",originalColumn)
+      const filteredTaskList=taskArray.filter(t=>t.columnId===originalColumn)
+      taskUpdateHandler(filteredTaskList)
+    }else{
+      console.log("Update from column",originalColumn,'to',destinationColumn)
+      const filteredTaskList1=taskArray.filter(t=>t.columnId===originalColumn)
+      taskUpdateHandler(filteredTaskList1)
+
+      const filteredTaskList2=taskArray.filter(t=>t.columnId===destinationColumn)
+      taskUpdateHandler(filteredTaskList2)
+
+    }
 
     /*tasks.forEach((task, index) => {
       const taskData:ColumnCreate = {
@@ -200,15 +224,12 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
       let overColumn=over.data.current?.task.columnId
       console.log("Dragging:", active.id, "from",sourceColumn,"over:", over.id,"-",overColumn);
       if (sourceColumn !==overColumn){
-        console.log(sourceColumn, "to",overColumn)
 
         setTasks((prev) =>
           prev.map((t) =>
             t.id === active.id ? { ...t,  columnId: overColumn, position: -1 } : t
           )
         );
-        
-        console.log(rawTasksRef.current )
       }
       
     } else {
@@ -227,7 +248,6 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
     }*/
     const activeType = active.data.current?.type;
     const overType = over.data.current?.type;
-    const latestTasks = rawTasksRef.current;
 
 
     console.log("Drag End",activeType,overType)
@@ -261,46 +281,67 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
       }
 
       
-      console.log("Dropped task",active.id,"over",over.id," moved",actTask.columnId,latestTasks)
+      console.log("Dropped task",active.id,"over",over.id," moved from",originColumn.current,"to",actTask.columnId,rawTasksRef.current)
 
-      const filteredTaskList=latestTasks.filter(t=>t.columnId===actTask.columnId)
-      const origPos=getTaskPos(active.id,filteredTaskList)
-      const newPos=getTaskPos(over.id,filteredTaskList)
+      //Move in column
+      if (originColumn.current===actTask.columnId){
+        const filteredOriginTaskList=rawTasksRef.current.filter(t=>t.columnId===originColumn.current)
+        const origPos=getTaskPos(active.id,filteredOriginTaskList)
+        const newPos=getTaskPos(over.id,filteredOriginTaskList)
 
-      console.log(filteredTaskList,"from",origPos,"to",newPos)
+        const refactoredOriginTaskArray = arrayMove(filteredOriginTaskList, origPos, newPos);
+        refactoredOriginTaskArray.forEach((task,index)=>{
+          task.position=index;
+        })
 
-      setTasks((prev) =>
+        console.log("Origin Array",refactoredOriginTaskArray)
+
+      }else{
+
+        // Origin Column
+        const filteredOriginTaskList=rawTasksRef.current.filter(t=>t.columnId===originColumn.current)
+        filteredOriginTaskList.forEach((task,index)=>{
+          task.position=index;
+        })
+
+        console.log("Origin Array",filteredOriginTaskList)
+
+
+
+        // New Column
+        const filteredNewTaskList=rawTasksRef.current.filter(t=>t.columnId===actTask.columnId)
+        const origPos=getTaskPos(active.id,filteredNewTaskList)
+        const newPos=getTaskPos(over.id,filteredNewTaskList)
+        
+        const refactoredNewTaskArray = arrayMove(filteredNewTaskList, origPos, newPos);
+        refactoredNewTaskArray.forEach((task,index)=>{
+          task.position=index;
+        })
+
+        console.log("from",origPos,"to",newPos)
+        console.log("Origin Array",filteredOriginTaskList)
+        console.log("Target Array",refactoredNewTaskArray)
+
+      }
+
+
+
+  
+
+     /* setTasks((prev) =>
           prev.map((t) =>
             t.id === active.id ? { ...t,  position: newPos } : t
           )
-      );
+      );*/
 
 
-      //const newArr = arrayMove(filteredTaskList, origPos, newPos);
-
-      //taskOrderUpdate(newArr,actTask.columnId)
+      //taskOrderUpdate(originColumn.current,actTask.columnId)
+      activeTaskRef.current = null;
+      setActiveTask(null) 
+      originColumn.current=null;
     
     }  
-    
-      /*
-      
-      
-      
-      
-      const activeCol=active.data.current?.task.columnId
-      const originalPos = getTaskPos(activeCol,active.id)
-      const newPos=getTaskPos(over.id,activeCol)
-
-      setDragSortedTasks((dragSortedTasks) => {
-        const newArr = arrayMove(dragSortedTasks[activeCol], originalPos, newPos);
-        const newRecord={
-          ...dragSortedTasks,
-          [activeCol]:newArr
-        }
-        console.log("new smth",newArr)
-        //colOrderUpdate(newArr);
-        return newRecord;
-      });*/
+ 
 
     
     
