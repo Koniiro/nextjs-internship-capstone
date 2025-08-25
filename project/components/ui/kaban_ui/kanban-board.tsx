@@ -146,37 +146,12 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
       const taskData:TaskCreate = {
         ...task, 
       };
-      //console.log("Updates task",index,taskData)
+      console.log("Updates task",index,taskData)
       updateTask(task.id, taskData);
   });
     
 }
-  function taskOrderUpdate(destinationColumn:number|null,originalColumn:number, taskArray:Task[]){
 
-    if(destinationColumn===originalColumn){
-      console.log("Update within column",originalColumn)
-      const filteredTaskList=taskArray.filter(t=>t.columnId===originalColumn)
-      taskUpdateHandler(filteredTaskList)
-    }else{
-      console.log("Update from column",originalColumn,'to',destinationColumn)
-      const filteredTaskList1=taskArray.filter(t=>t.columnId===originalColumn)
-      taskUpdateHandler(filteredTaskList1)
-
-      const filteredTaskList2=taskArray.filter(t=>t.columnId===destinationColumn)
-      taskUpdateHandler(filteredTaskList2)
-
-    }
-
-    /*tasks.forEach((task, index) => {
-      const taskData:ColumnCreate = {
-        ...task,
-        position: index // or whatever position field you use
-        columnI
-      };
-   
-      updateCol(col.id, colData);
-    });*/
-  } 
 
   function leftButtonHandler(colId:number){
     const originalPos = getColPos(colId);
@@ -279,36 +254,34 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         originColumn.current=null;
         return
       }
-      //Move in column
       
+      //Move in column
       if (originColumn.current===actTask.columnId){
-
-        
         // Filter tasks into a holder array new array
-        const filteredOriginTaskList = rawTasksRef.current
+        const filteredTaskList = rawTasksRef.current
           .filter(t => t.columnId === originColumn.current).sort((a, b) => a.position - b.position)
           .map(t => ({ ...t }));
 
         //Retrieve Position
-        const origPos=getTaskPos(active.id,filteredOriginTaskList)
-        const newPos=getTaskPos(over.id,filteredOriginTaskList)
-        console.log("Move in Column",filteredOriginTaskList)
+        const origPos=getTaskPos(active.id,filteredTaskList)
+        const newPos=getTaskPos(over.id,filteredTaskList)
+        console.log("Move in Column",filteredTaskList)
         console.log("active id",active.id,origPos)
         console.log("over id",over.id,newPos)
 
         //Move within the array itself
-        const refactoredOriginTaskArray = arrayMove(filteredOriginTaskList, origPos, newPos);
+        const refactoredTaskArray = arrayMove(filteredTaskList, origPos, newPos);
 
         //Update Position Values
-        refactoredOriginTaskArray.forEach((task,index)=>{
+        refactoredTaskArray.forEach((task,index)=>{
           task.position=index;
         })
 
-        console.log("Moved Array",refactoredOriginTaskArray)
+        console.log("Moved Array",refactoredTaskArray)
 
         //Update local Array
         setTasks(prev =>{
-          const updates = new Map(refactoredOriginTaskArray.map(t => [t.id, t.position]));
+          const updates = new Map(refactoredTaskArray.map(t => [t.id, t.position]));
 
           return prev.map(task =>
             updates.has(task.id) ? { ...task, position: updates.get(task.id)! } : task
@@ -316,14 +289,68 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         );
 
         //Update Server
-        taskUpdateHandler(refactoredOriginTaskArray)
-
+        taskUpdateHandler(refactoredTaskArray)
 
       }else{
 
+        // Retrieve Origin Column
+        const filteredOriginTaskList = rawTasksRef.current
+          .filter(t => t.columnId === originColumn.current).sort((a, b) => a.position - b.position)
+          .map(t => ({ ...t }));
+
         // Origin Column
-        const filteredOriginTaskList=rawTasksRef.current.filter(t=>t.columnId===originColumn.current)
+        const filteredTargetTaskList = rawTasksRef.current
+          .filter(t => t.columnId === actTask.columnId).sort((a, b) => a.position - b.position)
+          .map(t => ({ ...t }));
+        
+        console.log("Origin Array",filteredOriginTaskList)
+        console.log("Target Array",filteredTargetTaskList)
+        
+        //Update Origin Column Positions
         filteredOriginTaskList.forEach((task,index)=>{
+          task.position=index;
+        })
+
+
+
+        //Retrieve Positions within target Array
+        const origPos=getTaskPos(active.id,filteredTargetTaskList)
+        const newPos=getTaskPos(over.id,filteredTargetTaskList)
+        console.log("active id",active.id,origPos)
+        console.log("over id",over.id,newPos)
+
+        //Move Tasks and Update position values
+        const refactoredTargetTaskArray = arrayMove(filteredTargetTaskList, origPos, newPos);
+        refactoredTargetTaskArray.forEach((task,index)=>{
+          task.position=index;
+          task.columnId= actTask.columnId
+        })
+        console.log("Refactored Origin Array",filteredOriginTaskList)
+        console.log("Refactored Target Array",refactoredTargetTaskArray)
+
+
+
+        //Update Local Array
+
+        setTasks(prev =>{
+          const updates = new Map<number, number>(
+          [...filteredOriginTaskList, ...refactoredTargetTaskArray].map(
+              t => [t.id, t.position] as const   
+            )
+          );
+
+          return prev.map(task =>
+            updates.has(task.id) ? { ...task, position: updates.get(task.id)! } : task
+          );}
+        );
+
+
+
+        //Update Server
+
+        taskUpdateHandler(filteredOriginTaskList)
+        taskUpdateHandler(refactoredTargetTaskArray)
+        /*filteredOriginTaskList.forEach((task,index)=>{
           task.position=index;
         })
 
@@ -343,7 +370,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
 
         console.log("from",origPos,"to",newPos)
         console.log("Origin Array",filteredOriginTaskList)
-        console.log("Target Array",refactoredNewTaskArray)
+        console.log("Target Array",refactoredNewTaskArray)*/
 
       }
 

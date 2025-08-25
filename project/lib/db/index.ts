@@ -154,6 +154,7 @@ export const queries = {
       return db.update(taskTable)
         .set({
           title:data.title,
+          columnId:data.columnId,
           description:data.description,
           priority:data.priority,
           position:data.position,

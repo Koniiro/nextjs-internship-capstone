@@ -154,7 +154,7 @@ export const updateTask=async(taskId:number,taskUpdateData:TaskCreate)=>{
     clerkAuthCheck()
 
     const updatedTask = await queries.tasks.update(taskId,taskUpdateData).returning()
-    
+
     if (!updatedTask) {
       throw new Error("Task could not be updated or was not found.");
     }

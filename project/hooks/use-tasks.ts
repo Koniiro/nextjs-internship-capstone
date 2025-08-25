@@ -115,7 +115,7 @@ export function useProjectTasks(projectId: string) {
     error: updateError,
   }  = useMutation({
     mutationFn: async ({ taskId, taskUpdateData }: { taskId: number; taskUpdateData: TaskCreate }) => {
-        console.log('Updating Task',taskId,taskUpdateData)
+        console.log('Updating Task - ',taskId,taskUpdateData)
         const res = await updateTask(taskId,taskUpdateData);
         if (!res.success) throw new Error(res.error);
         return res.data;
