@@ -208,6 +208,19 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         );
       }
       
+    } else if (over && aType==="task"  && oType==="column") {
+      const sourceColumn=active.data.current?.task.columnId
+      const currColArrayLength=projectTaskParser(over.id,groupTasksByColumnId(rawTasksArray)).length
+      console.log("Dragging:", active.id, "from",sourceColumn,"over column:", over.id,'lenght-',currColArrayLength);
+      
+      if(currColArrayLength===0){
+        setTasks((prev) =>
+          prev.map((t) =>
+            t.id === active.id ? { ...t,  columnId: over.id, position: 0 } : t
+          )
+        );
+      }
+
     } else {
       console.log("Dragging:", active.id, "over: nothing");
     }
