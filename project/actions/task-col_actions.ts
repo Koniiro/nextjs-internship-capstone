@@ -153,13 +153,13 @@ export const updateTask=async(taskId:number,taskUpdateData:TaskCreate)=>{
   try {
     clerkAuthCheck()
 
-    const updatedCol = await queries.tasks.update(taskId,taskUpdateData).returning()
+    const updatedTask = await queries.tasks.update(taskId,taskUpdateData).returning()
     
-    if (!updatedCol) {
-      throw new Error("Column could not be updated or was not found.");
+    if (!updatedTask) {
+      throw new Error("Task could not be updated or was not found.");
     }
 
-    return { success: true, data:updatedCol }
+    return { success: true, data:updatedTask }
     
   } catch (error) {
     console.error("❌ Error updating column =>", error);

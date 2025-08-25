@@ -97,6 +97,8 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
       rawTasksRef.current = updated; // keep ref in sync
       return updated;
     });
+
+    console.log("Set Tasks Called", rawTasksRef.current)
   };
 
   useEffect(() => {
@@ -142,10 +144,9 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
   function taskUpdateHandler(newTaskArr:Task[]){
     newTaskArr.forEach((task, index) => {
       const taskData:TaskCreate = {
-        ...task, // or whatever position field you use
-      
+        ...task, 
       };
-    
+      //console.log("Updates task",index,taskData)
       updateTask(task.id, taskData);
   });
     
@@ -208,13 +209,13 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
       setActiveTask(task);
       originColumn.current=task.columnId;
       activeTaskRef.current = task;
-      console.log(`Task ${id} is active`,task)
+      console.log(`Task ${id} is active`)
     }
   }, []);
 
   const handleDragOver = useCallback((event: { active: any; over: any }) => {
     const { active, over } = event;
-    console.log(active,over)
+
     const aType = active.data.current?.type;
     const oType = over.data.current?.type;
 
@@ -259,7 +260,6 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         const newPos = getColPos(over.id);
         const newArr = arrayMove(dragcols, originalPos, newPos);
         
-        console.log("new smth",newArr)
         colOrderUpdate(newArr);
         return newArr;
       });
@@ -279,22 +279,45 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
         originColumn.current=null;
         return
       }
-
-      
-      console.log("Dropped task",active.id,"over",over.id," moved from",originColumn.current,"to",actTask.columnId,rawTasksRef.current)
-
       //Move in column
+      
       if (originColumn.current===actTask.columnId){
-        const filteredOriginTaskList=rawTasksRef.current.filter(t=>t.columnId===originColumn.current)
+
+        
+        // Filter tasks into a holder array new array
+        const filteredOriginTaskList = rawTasksRef.current
+          .filter(t => t.columnId === originColumn.current).sort((a, b) => a.position - b.position)
+          .map(t => ({ ...t }));
+
+        //Retrieve Position
         const origPos=getTaskPos(active.id,filteredOriginTaskList)
         const newPos=getTaskPos(over.id,filteredOriginTaskList)
+        console.log("Move in Column",filteredOriginTaskList)
+        console.log("active id",active.id,origPos)
+        console.log("over id",over.id,newPos)
 
+        //Move within the array itself
         const refactoredOriginTaskArray = arrayMove(filteredOriginTaskList, origPos, newPos);
+
+        //Update Position Values
         refactoredOriginTaskArray.forEach((task,index)=>{
           task.position=index;
         })
 
-        console.log("Origin Array",refactoredOriginTaskArray)
+        console.log("Moved Array",refactoredOriginTaskArray)
+
+        //Update local Array
+        setTasks(prev =>{
+          const updates = new Map(refactoredOriginTaskArray.map(t => [t.id, t.position]));
+
+          return prev.map(task =>
+            updates.has(task.id) ? { ...task, position: updates.get(task.id)! } : task
+          );}
+        );
+
+        //Update Server
+        taskUpdateHandler(refactoredOriginTaskArray)
+
 
       }else{
 

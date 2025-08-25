@@ -42,11 +42,17 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
     const [dragTasks, setDragTasks] = useState<Task[]>([]);
 
     useEffect(() => {
+
       if (!taskArray) return;
   
       const sortedServer = [...taskArray].sort((a, b) => a.position - b.position);
       const sortedLocal = [...dragTasks].sort((a, b) => a.position - b.position);
-  
+      if(id===119){
+        //console.log("Testing task differences",id)
+       // console.log("Server",sortedServer)
+        //console.log("Local",sortedLocal)
+      }
+      
       const differentContent = JSON.stringify(sortedServer) !== JSON.stringify(sortedLocal);
   
       if (differentContent) {

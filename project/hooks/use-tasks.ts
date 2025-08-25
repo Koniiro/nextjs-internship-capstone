@@ -121,7 +121,7 @@ export function useProjectTasks(projectId: string) {
         return res.data;
       },
       onSuccess: () => {
-        console.log(" Task update Success",)
+        console.log(" Task update Success")
         queryClient.invalidateQueries({ queryKey: ['tasks',projectId] })
       }
   })
