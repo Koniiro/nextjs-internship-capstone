@@ -1,3 +1,5 @@
+"use client"
+
 // TODO: Task 5.6 - Create task detail modals and editing interfaces
 
 import { Task } from "@/types"
@@ -11,12 +13,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { UpdateTaskModal } from "./modals/update-task-modal"
+
+import { UpdateTaskModal } from "../modals/update-task-modal"
 import { useState } from "react"
-import { Dialog, DialogTrigger } from "./ui/dialog"
+import { Dialog, DialogTrigger } from "../ui/dialog"
 import { useTasks } from "@/hooks/use-tasks"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities";
+
+import { TaskPriorityBadge, TaskStatusBadge } from "../ui/status_badges"
+import  TaskContent  from "./task-content-handler"
 
 
 /*
@@ -106,12 +112,10 @@ export function TaskCard( {id,task,arrayPosition, isDragging,taskArrayLength,top
   return (
     <div
       ref={setNodeRef} style={style} {...attributes} {...listeners}
-        className="p-4 my-2 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-pointer hover:shadow-md transition-shadow"
+        className="p-4 my-2 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-grab hover:shadow-md transition-shadow"
       >
         <div className="flex items-center justify-between">
-          <h4 className="font-medium text-outer_space-500 dark:text-platinum-500 text-sm mb-2">
-            {task.title}-{id}-{task.position}-{task.columnId}
-          </h4>
+          <TaskContent task={task}/>
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger disabled={isDragging}><MoreHorizontal size={16} /></DropdownMenuTrigger>
@@ -151,13 +155,12 @@ export function TaskCard( {id,task,arrayPosition, isDragging,taskArrayLength,top
           </Dialog>
         </div>
       
-        <p className="text-xs text-payne's_gray-500 dark:text-french_gray-400 mb-3">
-          {task.description}
-        </p>
+
         <div className="flex items-center justify-between">
-          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(task.priority)}`}>
-            {task.priority}
-          </span>
+          <div className="flex flex-row gap-2">
+            <TaskStatusBadge status={task.openStatus}/>
+            <TaskPriorityBadge priority={task.priority}/>
+          </div>
           <div className="w-6 h-6 bg-blue_munsell-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
             U
           </div>

@@ -134,7 +134,8 @@ export const queries = {
         position: taskTable.position,
         created_at: taskTable.created_at,
         updated_at: taskTable.updated_at,
-        due_date: taskTable.due_date
+        due_date: taskTable.due_date,
+        openStatus:taskTable.openStatus
 
       }).from(taskTable)
       .innerJoin(columnTable,eq(taskTable.columnId,columnTable.id))
@@ -159,7 +160,8 @@ export const queries = {
           priority:data.priority,
           position:data.position,
           due_date:data.due_date,
-          updated_at:sql`now()`
+          updated_at:sql`now()`,
+
         }).where(eq(taskTable.id,id));
     },
     delete: (id: number) => {

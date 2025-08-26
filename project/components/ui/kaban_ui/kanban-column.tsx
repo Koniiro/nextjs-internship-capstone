@@ -1,5 +1,5 @@
 import { CreateTaskModal } from "@/components/modals/create-task-modal";
-import { TaskCard } from "@/components/task-card";
+import { TaskCard } from "@/components/tasks/task-card";
 import { useTasks } from "@/hooks/use-tasks";
 import { Column, ColumnCreate, Task, TaskCreate } from "@/types";
 import {  MoreHorizontal,ArrowRight, ArrowLeft, Trash, Pencil } from 'lucide-react';

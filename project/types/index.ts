@@ -58,7 +58,7 @@ export interface Task {
   description: string 
   priority: "low" | "medium" | "high"
   position: number
-  
+  openStatus:boolean
   created_at: Date
   updated_at: Date
   due_date: Date|null

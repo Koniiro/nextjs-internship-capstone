@@ -60,6 +60,7 @@ export const taskSchema =  z.object({
   description: z.string().max(500, 'Description too long').optional(),
   priority: TaskPrio,
   dueDate: z.date().min(today, 'Due date must today or be in future').optional(),
+
 })
 
 export const colSchema = z.object({

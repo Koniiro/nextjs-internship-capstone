@@ -11,7 +11,7 @@ import {
   restrictToHorizontalAxis,
 } from '@dnd-kit/modifiers';
 import { useProjectTasks } from "@/hooks/use-tasks"
-import { TaskCard } from "@/components/task-card"
+import { TaskCard } from "@/components/tasks/task-card"
 // TODO: Task 5.1 - Design responsive Kanban board layout
 // TODO: Task 5.2 - Implement drag-and-drop functionality with dnd-kit
 
