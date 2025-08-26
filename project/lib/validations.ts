@@ -71,4 +71,7 @@ export const colSchema = z.object({
 
 export const userSchema = "TODO: Implement user validation schema"
 
-export const commentSchema = "TODO: Implement comment validation schema"
+export const commentSchema = z.object({
+  content: z.string().max(500, 'Comment too long'),
+
+})

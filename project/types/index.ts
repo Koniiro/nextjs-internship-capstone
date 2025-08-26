@@ -83,5 +83,8 @@ export interface Comment {
   updatedAt: Date
 }
 
-// Note for interns: These types should match your database schema
-// Update as needed when implementing the actual database schema
+export interface CommentCreate {
+  content: string
+  task_id:number
+  author_id: string
+}

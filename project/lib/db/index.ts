@@ -41,8 +41,8 @@ export const queries = {
 import {config} from "dotenv";
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
-import { ColumnCreate, ProjectCreator, Task, TaskCreate } from "@/types";
-import { columnTable, projectMembers, projectTable, taskTable } from "@/lib/db/schema";
+import { ColumnCreate, CommentCreate, ProjectCreator, Task, TaskCreate } from "@/types";
+import { columnTable, projectMembers, projectTable, taskTable, commentsTable } from "@/lib/db/schema";
 import { asc, eq, sql } from "drizzle-orm";
 
 config({path:".env"});
@@ -164,10 +164,9 @@ export const queries = {
 
         }).where(eq(taskTable.id,id));
     },
-    delete: (id: number) => {
-      return db.delete(taskTable).where(eq(taskTable.id,id)).returning({ deletedId: taskTable.id});;  
-    },
+    
   },
+
   cols:{
     //Auto Orders by position
     getByProject: async(projectId: string) => {
@@ -195,5 +194,30 @@ export const queries = {
       return res
     },
 
+  },
+
+  comments:{
+    getById: async(commentId:string)=>{
+      return await db
+          .select()
+          .from(commentsTable)
+          .where(eq(commentsTable.id, commentId))
+          .limit(1); 
+    },
+    getByTask: async(taskId:number)=>{
+      return db.query.commentsTable.findMany({
+        where:eq(commentsTable.task_id,taskId),
+        orderBy:[asc(columnTable.created_at)]
+      })
+    },
+
+    create: async (data: CommentCreate) => {
+      return db.insert(commentsTable).values(data).returning()
+    },
+    delete: (id: string) => {
+      return db.delete(commentsTable).where(eq(commentsTable.id,id)).returning({ deletedId: commentsTable.id});
+    },
   }
+
+
 }

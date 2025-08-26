@@ -64,7 +64,7 @@ export const projectTable = pgTable("project", {
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   due_date: timestamp("due_date", { withTimezone: true }),
 
-  });
+});
 
 export const projectMembers = pgTable("projectMembers", {
   userId: uuid("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
@@ -160,4 +160,13 @@ export const columnRelations = relations(columnTable, ({ many }) => ({
   tasks: many(taskTable),
 }));
 
-export const comments = "TODO: Implement comments table schema"
+export const commentsTable = pgTable("comments", {
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey().notNull(),
+  
+  task_id: integer("task_id").notNull().references(() => taskTable.id, { onDelete: "cascade" }),
+  author_id: uuid("author_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
+  content:text("content").notNull().default(''),
+  
+  created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
