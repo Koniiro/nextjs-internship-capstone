@@ -19,9 +19,7 @@ import { UpdateColumnModal } from "@/components/modals/update-col-modal";
 import { Dialog, DialogTrigger } from "../dialog";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button } from "../button";
 import { useCallback, useEffect, useState } from "react";
-import { updateTask } from '../../../actions/task-col_actions';
 
 
 export interface KanbanColumnProps {
@@ -203,12 +201,13 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
               </p>
             </div>
             <div className="p-3 space-y-2 min-h-[400px]">
-              {/*<ScrollArea className="h-72">*/}
+              <ScrollArea className="h-72">
                 <SortableContext items={dragTasks} strategy={verticalListSortingStrategy}>
                   {dragTasks.map((task) => (
                     <TaskCard key={task.id} id={task.id} task={task} arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
                   ))}
                 </SortableContext>
+              </ScrollArea>
               <CreateTaskModal colId={column.id}/>
             </div>
           </div>
