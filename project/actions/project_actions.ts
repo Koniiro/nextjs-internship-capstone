@@ -2,8 +2,8 @@
 import 'dotenv/config';
 
 import { queries } from '../lib/db/index';
-import { auth } from '@clerk/nextjs/server';
-import { Project, ProjectCreator } from '@/types';
+
+import {  ProjectCreator } from '@/types';
 import { clerkAuthCheck } from '@/lib/server_util';
 
 
