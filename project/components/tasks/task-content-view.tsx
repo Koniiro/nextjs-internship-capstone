@@ -27,9 +27,12 @@ import { useTaskSheet } from "../task-sheet-context"
 
 export default function TaskSheetRoot() {
   const { activeTask, setActiveTask } = useTaskSheet();
-  if (!activeTask) return null;
   const { isLoaded, isSignedIn, user } = useUser()
+  if (!activeTask) return null;
+
   const {comments, isLoading,error} = useTaskComments(activeTask.id)
+
+  
   if (!isLoaded ) {
     return <p>Loading...</p>  // still fetching user
   }

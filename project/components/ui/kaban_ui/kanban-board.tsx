@@ -62,7 +62,13 @@ function projectTaskParser(colId: number, projectTasks?:Record<number, Task[]>) 
   if (!projectTasks) return [];
   return projectTasks[colId] ?? [];
 }
-export function KanbanBoard({ projectId }: { projectId: string }) {
+
+
+type taskCommentCardProps = {
+    projectId: string;
+    projectTasks:Task[]|undefined
+};
+export function KanbanBoard({ projectId,projectTasks }: taskCommentCardProps) {
   const { columns, isLoading, error, updateCol } = useColumns(projectId);
   const [dragColumns, setDragColumns] = useState<Column[]>([]);
   useEffect(() => {
@@ -85,7 +91,7 @@ export function KanbanBoard({ projectId }: { projectId: string }) {
   const activeTaskRef = useRef<Task | null>(null);
   const originColumn = useRef<number | null>(null);
 
-  let { projectTasks, updateTask } = useProjectTasks(projectId);
+  let {  updateTask } = useProjectTasks(projectId);
   projectTasks = projectTasks ?? [];
   
   const [rawTasksArray, setRawTasksArray] = useState<Task[]>([]);
