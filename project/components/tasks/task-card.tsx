@@ -15,14 +15,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { UpdateTaskModal } from "../modals/update-task-modal"
-import { useState } from "react"
 import { Dialog, DialogTrigger } from "../ui/dialog"
 import { useTasks } from "@/hooks/use-tasks"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities";
 
 import { TaskPriorityBadge, TaskStatusBadge } from "../ui/status_badges"
-import  TaskContent  from "./task-content-handler"
+import { useTaskSheet } from "../task-sheet-context"
 
 
 /*
@@ -73,6 +72,9 @@ interface TaskCardProps {
 
 
 export function TaskCard( {id,task,arrayPosition, isDragging,taskArrayLength,topHandler,bottomHandler }: TaskCardProps) {
+
+  const { setActiveTask } = useTaskSheet();
+
   const{deleteTask,isDeleting,deleteError}=useTasks(task.columnId)
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -115,7 +117,13 @@ export function TaskCard( {id,task,arrayPosition, isDragging,taskArrayLength,top
         className="p-4 my-2 bg-white dark:bg-outer_space-300 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 cursor-grab hover:shadow-md transition-shadow"
       >
         <div className="flex items-center justify-between">
-          <TaskContent task={task}/>
+          <div onClick={() => setActiveTask(task)}>
+            {/* Task content */}
+            <h4 className="font-medium hover:underline hover:font-bold hover:text-outer_space-700 hover text-outer_space-500 dark:text-platinum-500 text-sm mb-2 cursor-pointer" >
+                {task.title}-{task.id}-{task.position}-{task.columnId}
+            </h4>
+          </div>
+          
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger disabled={isDragging}><MoreHorizontal size={16} /></DropdownMenuTrigger>

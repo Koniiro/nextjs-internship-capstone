@@ -1,6 +1,8 @@
+"use client"
 import { useDBUser } from "@/hooks/use-users";
 import { Comment, User } from "@/types";
 import { useUser } from "@clerk/nextjs";
+import { Avatar,AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
 
 type taskCommentCardProps = {
@@ -42,8 +44,14 @@ export default function TaskCommentCard({userId,commentData}:taskCommentCardProp
     if (error) return <p>Failed to load user {error.message}</p>;
     if (!user) return <p>Failed to load user</p>;
     return <div className="flex flex-col border px-5 py-2 w-auto border-blue-900 rounded-md text-wrap">
-        <div className="flex flex-row gap-2 ">
-            <h2 className="font-bold text-base text-blue-900">{user.firstName} </h2>
+        <div className="flex flex-row gap-2 items-center">
+            <Avatar className="h-5 w-5 rounded-full border-outer_space-200 border">
+              <AvatarImage src={user.avatarURL ?? undefined}  className="h-5 w-5  rounded-full object-cover object-center"/>
+              <AvatarFallback className="rounded-full">{user.firstName && user.lastName
+                ? `${user.firstName[0]}${user.lastName[0]}`
+                : "人"}</AvatarFallback>
+            </Avatar>
+            <h2 className="font-bold text-base text-blue-900">{user.firstName} {user.lastName} </h2>
             <p>•</p>
             <p>{timeAgo(commentData.created_at)}
             </p>

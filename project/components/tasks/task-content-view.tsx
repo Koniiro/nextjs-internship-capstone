@@ -16,48 +16,41 @@ import { CreateCommentForm } from "../forms/comment-form"
 import { ScrollArea } from "../ui/scroll-area"
 import { useTaskComments } from "@/hooks/use-comments"
 import TaskCommentCard from './task-comment-card';
+import { useTaskSheet } from "../task-sheet-context"
 
 
 
 
-interface TaskContentClientProps {
-
-  task:Task
-
-}
 
 
 
 
-export  function TaskContentClient( {task }: TaskContentClientProps){
-    const { isLoaded, isSignedIn, user } = useUser()
-    const {comments, isLoading,error} = useTaskComments(task.id)
+export default function TaskSheetRoot() {
+  const { activeTask, setActiveTask } = useTaskSheet();
+  if (!activeTask) return null;
+  const { isLoaded, isSignedIn, user } = useUser()
+  const {comments, isLoading,error} = useTaskComments(activeTask.id)
+  if (!isLoaded ) {
+    return <p>Loading...</p>  // still fetching user
+  }
 
-  
-    
-    if (!isLoaded ) {
-      return <p>Loading...</p>  // still fetching user
-    }
-
-    if (!isSignedIn || !user) {
-      return <p>Not signed in</p>
-    }
-
-    return(
-        <Sheet>
-          <SheetTrigger>
-            <h4 className="font-medium hover:underline hover:font-bold hover:text-outer_space-700 hover text-outer_space-500 dark:text-platinum-500 text-sm mb-2 cursor-pointer" >
-                {task.title}-{task.id}-{task.position}-{task.columnId}
-            </h4>
-          </SheetTrigger>
+  if (!isSignedIn || !user) {
+    return <p>Not signed in</p>
+  }
+  return (
+    <>
+      {activeTask && (
+        <>
+          <div className="fixed inset-0 bg-black/20 z-40 pointer-events-auto" />
+          <Sheet open={!!activeTask} onOpenChange={(open) => !open && setActiveTask(null)}>
           <SheetContent className="bg-white rounded-l-lg border overflow-y-auto">
             <SheetHeader>
-              <SheetTitle className="font-bold text-2xl text-outer_space-500">{task.title} #{task.id}</SheetTitle>
+              <SheetTitle className="font-bold text-2xl text-outer_space-500">{activeTask.title} #{activeTask.id}</SheetTitle>
                 <ScrollArea>
                   <div className="flex flex-col">
                     <div className="flex flex-row gap-2 py-2">
-                      <TaskStatusBadge status={task.openStatus} size="lg" />
-                      <TaskPriorityBadge priority={task.priority} size="lg" />
+                      <TaskStatusBadge status={activeTask.openStatus} size="lg" />
+                      <TaskPriorityBadge priority={activeTask.priority} size="lg" />
                     </div>
 
                     <div className="flex flex-row gap-2">
@@ -69,9 +62,9 @@ export  function TaskContentClient( {task }: TaskContentClientProps){
 
                     <Separator className="my-2 bg-outer_space-200" />
 
-                    <div>{task.description}</div>
+                    <div>{activeTask.description}</div>
 
-                    <div className="my-4 flex flex-col gap-2">
+                    <div className="my-4 flex flex-col gap-4">
                       <div className="text-lg font-bold text-outer_space-500">
                         Comments
                       </div>
@@ -89,10 +82,10 @@ export  function TaskContentClient( {task }: TaskContentClientProps){
                           </div>
                         )}
                       </div>
-                      
+                      <Separator className="my-2 border-t-2 border-dashed border-outer_space-200 " />
                       <div className="flex flex-row gap-2 items-center">
-                          <Avatar className="h-12 w-12 rounded-full">
-                            <AvatarImage src={user.imageUrl} className="rounded-full object-cover"/>
+                          <Avatar className="h-12 w-12 rounded-full border-outer_space-500 border">
+                            <AvatarImage src={user.imageUrl} className="h-12 w-12 rounded-full object-cover"/>
                             <AvatarFallback className="rounded-full">CN</AvatarFallback>
                           </Avatar>
                           <div className="text-md font-medium text-outer_space-500">
@@ -101,7 +94,7 @@ export  function TaskContentClient( {task }: TaskContentClientProps){
                       </div>
                       
                       <div>
-                        <CreateCommentForm taskId={task.id} />
+                        <CreateCommentForm taskId={activeTask.id} />
                       </div>
                       
                       
@@ -112,5 +105,8 @@ export  function TaskContentClient( {task }: TaskContentClientProps){
             </SheetHeader>
           </SheetContent>
         </Sheet>
-    )
+        </>
+      )}
+    </>
+  );
 }
