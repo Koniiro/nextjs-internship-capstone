@@ -59,11 +59,12 @@ export function UpdateTaskForm({task}:UpdateTaskFormProps){
 
     async function onSubmit(data: z.infer<typeof taskSchema>) {
       const newTaskData:TaskCreate={
-        position:0, //TODO ACCOUNT FOR TASK POSITION
+        assigneeId:null,
+        position:task.position,
         columnId:task.columnId,
         title:data.title,
         description:data.description||'',
-        due_date:data.dueDate,
+        due_date:data.dueDate || null,
         priority:data.priority,
       }
 

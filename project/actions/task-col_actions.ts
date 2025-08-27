@@ -2,12 +2,9 @@
 
 "use server";
 import 'dotenv/config';
-import { db } from "@/lib/db"
-import { taskTable } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 import { queries } from '../lib/db/index';
 import { clerkAuthCheck } from '@/lib/server_util';
-import { ColumnCreate, TaskCreate } from '@/types';
+import { ColumnCreate, Task, TaskCreate } from '@/types';
 
 //Column Section
 export const getProjectColumns=async(projectId:string)=>{
@@ -93,6 +90,7 @@ export const updateCol=async(coldId:number,coldData:ColumnCreate)=>{
 export const createTask=async(taskData:TaskCreate)=>{
   try {
       clerkAuthCheck()
+      console.log("new task",taskData)
 
       const newTask=await queries.tasks.create(taskData)
 
@@ -109,6 +107,28 @@ export const createTask=async(taskData:TaskCreate)=>{
   }
 }
 
+
+
+
+export const getTasksByProject = async (projectId:string)=>{
+  try {
+      clerkAuthCheck()
+
+      const taskRows=await queries.tasks.getByProj(projectId)
+     
+
+      return {success: true,data: taskRows}
+    
+  } catch (error) {
+
+    console.error(`❌ Error fetching tasks for project ${projectId}`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+}
 
 export const getTasks=async(colId:number)=>{
   try {
@@ -133,13 +153,13 @@ export const updateTask=async(taskId:number,taskUpdateData:TaskCreate)=>{
   try {
     clerkAuthCheck()
 
-    const updatedCol = await queries.tasks.update(taskId,taskUpdateData).returning()
-    
-    if (!updatedCol) {
-      throw new Error("Column could not be updated or was not found.");
+    const updatedTask = await queries.tasks.update(taskId,taskUpdateData).returning()
+
+    if (!updatedTask) {
+      throw new Error("Task could not be updated or was not found.");
     }
 
-    return { success: true, data:updatedCol }
+    return { success: true, data:updatedTask }
     
   } catch (error) {
     console.error("❌ Error updating column =>", error);

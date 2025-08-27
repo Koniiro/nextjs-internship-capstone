@@ -41,10 +41,9 @@ export const queries = {
 import {config} from "dotenv";
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
-import { ColumnCreate, ProjectCreator, TaskCreate } from "@/types";
+import { ColumnCreate, ProjectCreator, Task, TaskCreate } from "@/types";
 import { columnTable, projectMembers, projectTable, taskTable } from "@/lib/db/schema";
 import { asc, eq, sql } from "drizzle-orm";
-import { create } from "domain";
 
 config({path:".env"});
 export const db = drizzle(process.env.DATABASE_URL!,{schema});
@@ -122,9 +121,31 @@ export const queries = {
     },
   },
   tasks: {
+    //Auto orders by position
+
+    getByProj: async (projectId:string):Promise<Task[]> =>{
+      return await db.select({
+        id:taskTable.id,
+        columnId: taskTable.columnId,
+        assigneeId: taskTable.assigneeId,
+        title: taskTable.title,
+        description: taskTable.description ,
+        priority: taskTable.priority,
+        position: taskTable.position,
+        created_at: taskTable.created_at,
+        updated_at: taskTable.updated_at,
+        due_date: taskTable.due_date
+
+      }).from(taskTable)
+      .innerJoin(columnTable,eq(taskTable.columnId,columnTable.id))
+      .where(eq(columnTable.projectId,projectId))
+    },
 
     getByCol: async(colId:number)=>{
-      return db.select().from(taskTable).where(eq(taskTable.columnId,colId))
+      return db.query.taskTable.findMany({
+        where:eq(taskTable.columnId,colId),
+        orderBy:[asc(taskTable.position)]
+      })
     },
     create: async (data: TaskCreate) => {
       return db.insert(taskTable).values(data).returning()
@@ -133,6 +154,7 @@ export const queries = {
       return db.update(taskTable)
         .set({
           title:data.title,
+          columnId:data.columnId,
           description:data.description,
           priority:data.priority,
           position:data.position,
@@ -145,6 +167,7 @@ export const queries = {
     },
   },
   cols:{
+    //Auto Orders by position
     getByProject: async(projectId: string) => {
       return db.query.columnTable.findMany({
         where:eq(columnTable.projectId,projectId),

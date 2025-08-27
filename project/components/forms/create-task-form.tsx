@@ -43,9 +43,17 @@ type CreateTaskFormProps = {
 };
 
 export function CreateTaskForm({colId}:CreateTaskFormProps){
-    const {
+    const {tasks,
       createTask,
     } = useTasks(colId);
+
+    var nextPosition=0;
+    if (!tasks) {
+      nextPosition=0
+    }else{
+      nextPosition=tasks.length
+    }
+    
 
     const form = useForm<z.infer<typeof taskSchema>>({
         resolver: zodResolver(taskSchema),
@@ -59,11 +67,12 @@ export function CreateTaskForm({colId}:CreateTaskFormProps){
 
     async function onSubmit(data: z.infer<typeof taskSchema>) {
       const newTaskData:TaskCreate={
-        position:0, //TODO ACCOUNT FOR TASK POSITION
+        assigneeId:null,
+        position:nextPosition,
         columnId:colId,
         title:data.title,
         description:data.description||'',
-        due_date:data.dueDate,
+        due_date:data.dueDate || null ,
         priority:data.priority,
       }
      
