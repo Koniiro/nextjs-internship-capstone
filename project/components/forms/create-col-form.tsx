@@ -26,14 +26,16 @@ import {
 import { ColumnCreate } from "@/types";
 import { colors } from "@/lib/constants";
 import { useColumns } from "@/hooks/use-columns";
+import { toast } from "sonner";
 //import { queries } from "@/lib/db";
 
 type CreateColumnFormProps = {
   projectId: string;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
 };
 
 
-export function CreateColumnForm({projectId}:CreateColumnFormProps){
+export function CreateColumnForm({projectId,setOpen}:CreateColumnFormProps){
     const {columns,createCol} = useColumns(projectId);
     var nextPosition=0;
     if (!columns) {
@@ -52,15 +54,24 @@ export function CreateColumnForm({projectId}:CreateColumnFormProps){
     })
 
     async function onSubmit(data: z.infer<typeof colSchema>) {
-      const newColData:ColumnCreate={
-        name:data.name,
-        description:data.description||'',
-        color:data.color,
-        projectId:projectId,
-        position:nextPosition,
+      try{
+          const newColData:ColumnCreate={
+          name:data.name,
+          description:data.description||'',
+          color:data.color,
+          projectId:projectId,
+          position:nextPosition,
 
+        }
+        const res=await createCol(newColData)
+        setOpen(false);
+       
+
+
+      } catch(err){
+        console.error("Failed to create column", err);
       }
-      const res=createCol(newColData)
+      
     
     }
 

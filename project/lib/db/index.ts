@@ -168,7 +168,7 @@ export const queries = {
     },
     create: async(colData: ColumnCreate)=>{
       const newProject=await db.insert(columnTable).values(colData).onConflictDoNothing().returning()
-      return newProject 
+      return newProject
     },
     update: (colId: number,  colData: ColumnCreate) => {
       return db.update(columnTable)
