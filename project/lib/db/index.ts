@@ -4,7 +4,7 @@
 import {config} from "dotenv";
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
-import { ColumnCreate, CommentCreate, ProjectCreator, Task, TaskCreate } from "@/types";
+import { ColumnCreate, CommentCreate, ProjectCreator, Task, TaskCreate, UserCreator } from "@/types";
 import { columnTable,usersTable, projectMembers, projectTable, taskTable, commentsTable } from "@/lib/db/schema";
 import { asc, eq, sql } from "drizzle-orm";
 
@@ -28,6 +28,20 @@ export const queries = {
           .where(eq(usersTable.id, id))
           .limit(1); 
         return result[0] ?? null;
+    },
+    createUser: async (userData:UserCreator)=>{
+      return db.insert(usersTable).values(userData).onConflictDoNothing().returning()
+    },
+    updateUser: (id: string, userData:UserCreator) => {
+      return db.update(usersTable)
+        .set({
+          email: userData.email,
+          userName: userData.userName,
+          firstName:userData.first_name,
+          lastName: userData.last_name,
+          avatarURL:userData.avatar_url,
+          updatedAt:sql`now()`
+        }).where(eq(usersTable.id,id));
     },
 
   },
@@ -62,7 +76,7 @@ export const queries = {
         due_date:projectData.dueDate
       }
 
-      const newProject=await db.insert(projectTable).values(data).returning()
+      const newProject=await db.insert(projectTable).values(data).onConflictDoNothing().returning()
       return newProject
     },
     projectUserLink:async (projectId:string, userId:string,role:string)=>{
@@ -123,7 +137,7 @@ export const queries = {
       })
     },
     create: async (data: TaskCreate) => {
-      return db.insert(taskTable).values(data).returning()
+      return db.insert(taskTable).values(data).onConflictDoNothing().returning()
     },
     update: (id: number, data: TaskCreate) => {
       return db.update(taskTable)
@@ -153,7 +167,7 @@ export const queries = {
       })
     },
     create: async(colData: ColumnCreate)=>{
-      const newProject=await db.insert(columnTable).values(colData).returning()
+      const newProject=await db.insert(columnTable).values(colData).onConflictDoNothing().returning()
       return newProject 
     },
     update: (colId: number,  colData: ColumnCreate) => {
@@ -195,7 +209,7 @@ export const queries = {
         task_id:commentData.task_id
       }
 
-      return db.insert(commentsTable).values(data).returning()
+      return db.insert(commentsTable).values(data).onConflictDoNothing().returning()
     },
     delete: (id: string) => {
       return db.delete(commentsTable).where(eq(commentsTable.id,id)).returning({ deletedId: commentsTable.id});

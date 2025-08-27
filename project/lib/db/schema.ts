@@ -38,10 +38,14 @@ import { integer, pgTable, varchar,text,timestamp,boolean,jsonb, primaryKey,uuid
 export const usersTable = pgTable("users", {
   id: uuid("id").default(sql`gen_random_uuid()`).primaryKey().notNull(),
   clerkId: text('clerk_id').notNull().unique(),
-  name: varchar({ length: 255 }).notNull(),
+  userName: varchar("user_name",{ length: 255 }).notNull(),
+  firstName: varchar("first_name",{ length: 255 }),
+  lastName: varchar("last_name",{ length: 255 }),
+  avatarURL: text("avatar_url"),
   email: varchar({ length: 255 }).notNull().unique(),
-  createdAt: timestamp('created_at').notNull(),
-  updatedAt: timestamp('updated_at').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+
   teamId: integer("team_id").references(() => teamTable.id),
 });
 

@@ -43,7 +43,7 @@ export default function TaskCommentCard({userId,commentData}:taskCommentCardProp
     if (!user) return <p>Failed to load user</p>;
     return <div className="flex flex-col border px-5 py-2 w-auto border-blue-900 rounded-md text-wrap">
         <div className="flex flex-row gap-2 ">
-            <h2 className="font-bold text-base text-blue-900">{user.name} </h2>
+            <h2 className="font-bold text-base text-blue-900">{user.firstName} </h2>
             <p>•</p>
             <p>{timeAgo(commentData.created_at)}
             </p>

@@ -5,6 +5,7 @@ import { db, queries } from "@/lib/db"
 import { usersTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { clerkAuthCheck } from '@/lib/server_util';
+import { UserCreator } from '@/types';
 
 export const getUserById = async (userId:string) => {
   try {
@@ -28,33 +29,56 @@ export async function getUserData() {
      return  db.select().from(usersTable);
 }
 export const createUser=async (
-  nClerkId:string,
-  nUserName:string,
-  nEmail: string,
-  nCreatedAt: Date,
+  newUserData:UserCreator
 
 )=>{
-  await db.insert(usersTable).values({
-     clerkId:nClerkId,
-     name:nUserName,
-     email:nEmail,
-     createdAt:nCreatedAt,
-     updatedAt:nCreatedAt
+  try {
 
-  }).onConflictDoNothing()
+      const columns=await queries.users.createUser(newUserData)
 
-  return { success: true }
+      return {success: true,data: columns}
+    
+  } catch (error) {
+
+    console.error("❌ Error creating new user:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+
 
 }
 
 export const updateUser=async (
-  nClerkId:string,
-  nUserName:string,
-  nEmail: string,
-  nUpdatedAt: Date,
 
+  updatedUserData:UserCreator
 )=>{
-  const updatedRows = await db.update(usersTable)
+  try {
+
+    // Get internal user UUID from your `usersTable`
+    const internalUser = await  queries.users.getByClerkId(updatedUserData.clerkId)
+    if (!internalUser) {
+      throw new Error("User not found.");
+    }
+
+    const updatedCol = await queries.users.updateUser(internalUser.id,updatedUserData).returning()
+    
+    if (!updatedCol) {
+      throw new Error("User could not be updated or was not found.");
+    }
+
+    return { success: true, data:updatedCol }
+    
+  } catch (error) {
+    console.error("❌ Error updating column =>", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+  /*const updatedRows = await db.update(usersTable)
     .set({
       name: nUserName,
       email: nEmail,
@@ -67,7 +91,7 @@ export const updateUser=async (
     return { success: true, updatedIds: updatedRows.map(row => row.updatedId) };
   } else {
     return { success: false, message: "User not found or update had no effect." };
-  }
+  }*/
 
 }
 

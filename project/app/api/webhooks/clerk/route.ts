@@ -2,6 +2,7 @@ import { verifyWebhook, } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
 import {headers} from 'next/headers'
 import { createUser, deleteUser, updateUser } from '@/actions/user_actions'
+import { UserCreator } from '@/types'
 
 export async function POST(req: NextRequest) {
   const webhk_scrt=process.env.CLERK_WEBHOOK_SIGNING_SECRET
@@ -21,52 +22,57 @@ export async function POST(req: NextRequest) {
     console.log('Webhook payload:', evt)
 
     if (evt.type === 'user.created') {
-      const clerkID=evt.data.id;
-      const userName= evt.data.username || "unnamed_user";
-      const createdAt = new Date(evt.data.created_at);
-      const primaryEmailId = evt.data.primary_email_address_id;
+      const primaryEmailId=evt.data.primary_email_address_id
 
       const primaryEmailObj = evt.data.email_addresses.find(
-        (email) => email.id===primaryEmailId
+        (email) => email.id === primaryEmailId
       );
-      const email = primaryEmailObj?.email_address || "null";
+
+      const newUser: UserCreator = {
+        clerkId: evt.data.id,              // Clerk ID
+        email: primaryEmailObj?.email_address || "null", // get actual email
+        userName: evt.data.username || "unnamed_user",
+        first_name: evt.data.first_name || null,
+        last_name: evt.data.last_name || null,
+        avatar_url: evt.data.image_url || null,
+      };
 
       //TODO Remove when not in Dev
       console.log("=====Creating User=====")
-      console.log('userId:', evt.data.id)
-      console.log('userName:', evt.data.username)
-      console.log('createdAt:', createdAt.toISOString());
-      console.log("Primary Email:", email);
+      console.log(newUser)
+
       try {
-        const response = await createUser(clerkID,userName,email,createdAt)
+        const response = await createUser(newUser)
         console.log("User Create response:", response);
       } catch (error) {
         console.error("Failed to create user:", error);
       }
     }
 
-    if (evt.type=== 'user.updated'){
-      const clerkID=evt.data.id;
-      const userName= evt.data.username || "unnamed_user";
-      const updatedAt = new Date(evt.data.updated_at);
-      const primaryEmailId = evt.data.primary_email_address_id;
+    else if (evt.type=== 'user.updated'){
+
+      const primaryEmailId=evt.data.primary_email_address_id
 
       const primaryEmailObj = evt.data.email_addresses.find(
-        (email) => email.id===primaryEmailId
+        (email) => email.id === primaryEmailId
       );
-      const email = primaryEmailObj?.email_address || "null";
 
+      const updatedUserData: UserCreator = {
+        clerkId: evt.data.id,              
+        email: primaryEmailObj?.email_address || "null", 
+        userName: evt.data.username || "unnamed_user",
+        first_name: evt.data.first_name || null,
+        last_name: evt.data.last_name || null,
+        avatar_url: evt.data.image_url || null,
+      };
       //TODO Remove when not in Dev
       console.log("=====Updating User=====")
-      console.log('userId:', evt.data.id)
-      console.log('userName:', evt.data.username)
-      console.log('updatedAt:', updatedAt.toISOString());
-      console.log("Primary Email:", email);
+      console.log(updatedUserData)
       try {
-        const response = await updateUser(clerkID, userName, email, updatedAt);
+        const response = await updateUser(updatedUserData);
         console.log("User Update response:", response);
       } catch (error) {
-        console.error("Failed to create user:", error);
+        console.error("Failed to update user:", error);
       }
 
     }

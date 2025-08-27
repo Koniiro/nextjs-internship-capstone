@@ -1,13 +1,28 @@
 // TypeScript type definitions
 // Task 1.3: Set up project structure and folder organization
 
+import middleware from "@/middleware"
+
 export interface User {
   id: string
   clerkId: string
   email: string
-  name: string
-  createdAt: Date
-  updatedAt: Date
+  userName: string
+  first_name:string | null
+  last_name: string |null
+  avatar_url:string |null
+  created_at: Date
+  updated_at: Date
+}
+
+export interface UserCreator {
+  clerkId: string
+  email: string
+  userName: string
+  first_name:string | null
+  last_name: string |null
+  avatar_url:string |null
+
 }
 
 export interface Project {
