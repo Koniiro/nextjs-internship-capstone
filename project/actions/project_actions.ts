@@ -75,7 +75,7 @@ export const createProject=async (
     const clerkID= await clerkAuthCheck()
 
     // Get internal user UUID from your `usersTable`
-    const internalUser = await await queries.users.getById(clerkID)
+    const internalUser = await  queries.users.getById(clerkID)
     if (!internalUser) {
       throw new Error("User not found.");
     }
