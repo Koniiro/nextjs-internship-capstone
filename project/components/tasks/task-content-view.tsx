@@ -10,27 +10,49 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Task } from "@/types"
 import { TaskPriorityBadge, TaskStatusBadge } from "../ui/status_badges"
-import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar"
+
 import { useUser } from "@clerk/nextjs"
 import { CreateCommentForm } from "../forms/comment-form"
 import { ScrollArea } from "../ui/scroll-area"
 import { useTaskComments } from "@/hooks/use-comments"
 import TaskCommentCard from './task-comment-card';
 import { useTaskSheet } from "../task-sheet-context"
+import { Button } from "../ui/button"
+import { CircleCheckBig, Loader2Icon, RefreshCcwDot } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { useEffect, useState } from "react"
 
 
 
 
+type TaskSheetRootProps = {
+    isOpening:boolean
+    isClosing:boolean
+    openTask: (taskId: number) => void;
+    closeTask: (taskId: number) => void;
+};
 
 
 
 
-export default function TaskSheetRoot() {
+export default function TaskSheetRoot({isOpening,isClosing,openTask,closeTask}:TaskSheetRootProps) {
   const { activeTask, setActiveTask } = useTaskSheet();
-  const { isLoaded, isSignedIn, user } = useUser()
-  if (!activeTask) return null;
+  const [taskStatus, setTaskStatus] = useState(true);
 
-  const {comments, isLoading,error} = useTaskComments(activeTask.id)
+  useEffect(() => {
+  if (activeTask) {
+    setTaskStatus(activeTask.openStatus);
+  }
+}, [activeTask]);
+
+  
+  const { isLoaded, isSignedIn, user } = useUser();
+
+  // Call useTaskComments with a safe fallback ID or null
+  const { comments,createComment ,isCreating, isLoading, error } = useTaskComments(activeTask?.id ?? -1);
+
+  // Conditionally render only after hooks
+  if (!activeTask) return null;
 
   
   if (!isLoaded ) {
@@ -39,6 +61,21 @@ export default function TaskSheetRoot() {
 
   if (!isSignedIn || !user) {
     return <p>Not signed in</p>
+  }
+
+  async function handleToggleTaskStatus() {
+    if (!activeTask) return;
+    try{
+      if (activeTask.openStatus) {
+        await closeTask(activeTask.id);
+        
+      }else{
+        await openTask(activeTask.id);
+      }
+      setTaskStatus(prev => !prev)
+    } catch (err) {
+      console.error("Failed to toggle task status", err);
+    }
   }
   return (
     <>
@@ -52,7 +89,7 @@ export default function TaskSheetRoot() {
                 <ScrollArea>
                   <div className="flex flex-col">
                     <div className="flex flex-row gap-2 py-2">
-                      <TaskStatusBadge status={activeTask.openStatus} size="lg" />
+                      <TaskStatusBadge status={taskStatus} size="lg" />
                       <TaskPriorityBadge priority={activeTask.priority} size="lg" />
                     </div>
 
@@ -96,8 +133,42 @@ export default function TaskSheetRoot() {
                           </div>
                       </div>
                       
-                      <div>
-                        <CreateCommentForm taskId={activeTask.id} />
+                      <div className="grid grid-rows-2 gap-2">
+                        <CreateCommentForm taskId={activeTask.id} createComment={createComment}/>
+                        <div className=" flex flex-row justify-end gap-2 ">
+                            <Button disabled={isClosing || isOpening}  onClick={handleToggleTaskStatus} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline">
+                                {isClosing ? (
+                                  <>
+                                    <Loader2Icon className="animate-spin mr-2" size={15} />
+                                    Closing...
+                                  </>
+                                ) : isOpening ? (
+                                  <>
+                                    <Loader2Icon className="animate-spin mr-2" size={15} />
+                                    Opening...
+                                  </>
+                                ) : (
+                                  <>
+                                    
+                                    {activeTask.openStatus ? 
+                                    <>
+                                      <CircleCheckBig size={15} className="mr-2" />Close Task
+                                    </>
+                                     : <><RefreshCcwDot size={15} className="mr-2"/>Open Task</>}
+                                  </>
+                                )}
+                            </Button>
+                            <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-comment-form">
+                                {isCreating ? (
+                                  <>
+                                    <Loader2Icon className="animate-spin mr-2" size={15} /> Posting...
+                                  </>
+                                ) : (
+                                  "Comment"
+                                )}
+                            </Button>
+                        </div>
+                        
                       </div>
                       
                       

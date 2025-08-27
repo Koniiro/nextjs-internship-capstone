@@ -11,7 +11,7 @@ import { useProjectTasks } from "@/hooks/use-tasks"
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params); 
   const { project, isLoading, error } = useSpecProject(id);
-  let { projectTasks } = useProjectTasks(id);
+  let { projectTasks, openTask,closeTask,isOpening,isClosing } = useProjectTasks(id);
   
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load projects {error.message}</p>;
@@ -27,7 +27,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           <ProjectHeader project={project} taskLength={taskLength} completedTasks={completedTasks}/>
           <CreateColumnModal projectId={id}/>
           <KanbanBoard projectId={project?.id} projectTasks={projectTasks}/>
-          <TaskSheetRoot />
+          <TaskSheetRoot isClosing={isClosing} isOpening={isOpening} openTask={openTask} closeTask={closeTask}/>
       </div>
     </SheetProvider>
       

@@ -67,6 +67,7 @@ export const projectTable = pgTable("project", {
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   due_date: timestamp("due_date", { withTimezone: true }),
+  done_date: timestamp("done_date", { withTimezone: true }),
 
 });
 
@@ -144,7 +145,8 @@ export const taskTable = pgTable("task", {
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   due_date: timestamp("due_date", { withTimezone: true }),
-  openStatus: boolean("open_status").notNull().default(true)
+  openStatus: boolean("open_status").notNull().default(true),
+  done_date: timestamp("done_date", { withTimezone: true }),
 
 
 

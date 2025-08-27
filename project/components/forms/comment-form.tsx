@@ -5,19 +5,18 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { Form,FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { User } from "@clerk/nextjs/server";
-import { useTaskComments } from "@/hooks/use-comments";
+
 
 
 
 type CreateCommentFormProps = {
     taskId: number;
+    createComment: (data: CommentCreate) => void;
 };
 
 
-export function CreateCommentForm({taskId,}:CreateCommentFormProps){
-    const {createComment, isCreating} = useTaskComments(taskId)
+export function CreateCommentForm({taskId,createComment}:CreateCommentFormProps){
+    //const {createComment, isCreating} = useTaskComments(taskId)
 
     
     const form = useForm<z.infer<typeof commentSchema>>({
@@ -41,8 +40,7 @@ export function CreateCommentForm({taskId,}:CreateCommentFormProps){
             console.error(err);
         } 
     }
-    return <div className="grid grid-rows-2 gap-2">
-        <Form {...form}>
+    return <Form {...form}>
             <form id="create-comment-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                     control={form.control} name="content"
@@ -58,11 +56,4 @@ export function CreateCommentForm({taskId,}:CreateCommentFormProps){
                 />
             </form>
         </Form>
-        <div className=" flex flex-row justify-end ">
-            <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-comment-form">
-                {isCreating ? "Posting..." : "Comment"}
-            </Button>
-        </div>
-        
-    </div>
 }
