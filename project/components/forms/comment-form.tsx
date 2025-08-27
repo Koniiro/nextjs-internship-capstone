@@ -7,16 +7,19 @@ import { Form,FormControl, FormField, FormItem, FormLabel, FormMessage } from ".
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { User } from "@clerk/nextjs/server";
+import { useTaskComments } from "@/hooks/use-comments";
 
 
 
 type CreateCommentFormProps = {
     taskId: number;
-    userId: string 
 };
 
 
-export function CreateCommentForm({taskId,userId}:CreateCommentFormProps){
+export function CreateCommentForm({taskId,}:CreateCommentFormProps){
+    const {createComment, isCreating} = useTaskComments(taskId)
+
+    
     const form = useForm<z.infer<typeof commentSchema>>({
         resolver: zodResolver(commentSchema),
             defaultValues: {
@@ -27,10 +30,16 @@ export function CreateCommentForm({taskId,userId}:CreateCommentFormProps){
         const commentData:CommentCreate={
             task_id:taskId,
             content:data.content,
-            author_id:userId
+
         }
         console.log("New Comment",commentData)
-        //createCol(newColData) 
+        
+        try {
+            await createComment(commentData)
+            form.reset(); // clears the "content" field
+        } catch (err) {
+            console.error(err);
+        } 
     }
     return <div className="grid grid-rows-2 gap-2">
         <Form {...form}>
@@ -50,8 +59,8 @@ export function CreateCommentForm({taskId,userId}:CreateCommentFormProps){
             </form>
         </Form>
         <div className=" flex flex-row justify-end ">
-            <Button  className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-comment-form">
-                Comment
+            <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-comment-form">
+                {isCreating ? "Posting..." : "Comment"}
             </Button>
         </div>
         

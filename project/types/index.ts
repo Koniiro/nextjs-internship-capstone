@@ -77,14 +77,14 @@ export interface TaskCreate {
 export interface Comment {
   id: string
   content: string
-  taskId: string
-  authorId: string
-  createdAt: Date
-  updatedAt: Date
+  task_id: number
+  author_id: string
+  created_at: Date
+  updated_at: Date
 }
 
 export interface CommentCreate {
   content: string
   task_id:number
-  author_id: string
+
 }

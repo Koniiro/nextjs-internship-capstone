@@ -36,7 +36,7 @@ export function useTasks(colId: number) {
         queryClient.invalidateQueries({ queryKey: ['tasks',colId] })
       }
      
-    })
+  })
 
   const{
     mutate: useDeleteTask,

@@ -14,6 +14,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar"
 import { useUser } from "@clerk/nextjs"
 import { CreateCommentForm } from "../forms/comment-form"
 import { ScrollArea } from "../ui/scroll-area"
+import { useTaskComments } from "@/hooks/use-comments"
+import TaskCommentCard from './task-comment-card';
+
 
 
 
@@ -28,14 +31,18 @@ interface TaskContentClientProps {
 
 export  function TaskContentClient( {task }: TaskContentClientProps){
     const { isLoaded, isSignedIn, user } = useUser()
+    const {comments, isLoading,error} = useTaskComments(task.id)
 
-    if (!isLoaded) {
+  
+    
+    if (!isLoaded ) {
       return <p>Loading...</p>  // still fetching user
     }
 
     if (!isSignedIn || !user) {
       return <p>Not signed in</p>
     }
+
     return(
         <Sheet>
           <SheetTrigger>
@@ -68,6 +75,21 @@ export  function TaskContentClient( {task }: TaskContentClientProps){
                       <div className="text-lg font-bold text-outer_space-500">
                         Comments
                       </div>
+                      <div>
+                        {error && <p>Failed to load comments: {error.message}</p>}
+                        {!comments && !error && <p>Loading comments...</p>}
+                        {comments && comments.length === 0 && <p>No comments yet.</p>}
+
+                        {comments && comments.length > 0 && (
+                          <div className="space-y-2">
+                            {comments.map((comment) => (
+                              <TaskCommentCard key={comment.id} userId={"Hello"} commentData={comment}/>
+                             
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
                       <div className="flex flex-row gap-2 items-center">
                           <Avatar className="h-12 w-12 rounded-full">
                             <AvatarImage src={user.imageUrl} className="rounded-full object-cover"/>
@@ -79,7 +101,7 @@ export  function TaskContentClient( {task }: TaskContentClientProps){
                       </div>
                       
                       <div>
-                        <CreateCommentForm taskId={task.id} userId={user.id}/>
+                        <CreateCommentForm taskId={task.id} />
                       </div>
                       
                       

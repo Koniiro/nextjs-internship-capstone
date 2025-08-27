@@ -42,8 +42,14 @@ export const createComment=async (
   data:CommentCreate
 )=>{
   try {
-    clerkAuthCheck()
-    const [newComment] =await queries.comments.create(data);
+    const clerkID= await clerkAuthCheck()
+
+    // Get internal user UUID from your `usersTable`
+    const internalUser =  await queries.users.getById(clerkID)
+    if (!internalUser) {
+      throw new Error("User not found.");
+    }
+    const [newComment] =await queries.comments.create(internalUser.id,data);
   
     return { success: true, data:newComment }
     
