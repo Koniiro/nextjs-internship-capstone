@@ -29,10 +29,12 @@ import { useColumns } from "@/hooks/use-columns";
 
 type UpdateColumnFormProps = {
   column: Column;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+
 };
 
 
-export function UpdateColumnForm({column}:UpdateColumnFormProps){
+export function UpdateColumnForm({column,setOpen}:UpdateColumnFormProps){
     const {updateCol} = useColumns(column.projectId);
 
     const form = useForm<z.infer<typeof colSchema>>({
@@ -40,7 +42,7 @@ export function UpdateColumnForm({column}:UpdateColumnFormProps){
           defaultValues: {
             name:column.name,
             description:column.description||"",
-            color:column.color,
+            color:column.color||"",
         }
     })
 
@@ -53,8 +55,13 @@ export function UpdateColumnForm({column}:UpdateColumnFormProps){
         position:column.position
 
       }
-      const res=updateCol(column.id,upColData)
-    
+      console.log("RUnning UPdate",upColData)
+      try {
+        await updateCol(column.id, upColData); // wait for mutation
+        setOpen(false); // only closes if successful
+      } catch (err) {
+        console.error("Failed to update column:", err);
+      }
     }
 
     return(

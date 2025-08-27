@@ -36,7 +36,7 @@ type CreateColumnFormProps = {
 
 
 export function CreateColumnForm({projectId,setOpen}:CreateColumnFormProps){
-    const {columns,createCol} = useColumns(projectId);
+    const {columns,createCol,isCreating} = useColumns(projectId);
     var nextPosition=0;
     if (!columns) {
       nextPosition=0
@@ -63,7 +63,7 @@ export function CreateColumnForm({projectId,setOpen}:CreateColumnFormProps){
           position:nextPosition,
 
         }
-        const res=await createCol(newColData)
+        await createCol(newColData)
         setOpen(false);
        
 

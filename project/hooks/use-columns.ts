@@ -102,6 +102,9 @@ export function useColumns(projectId:string){
         isCreating:isCreating,
         createError:createError,
 
+        isUpdating:isUpdating,
+        updateError:updateError,
+
         
         createCol: (data: ColumnCreate) =>useCreateColumn(data),
         updateCol: (colId:number,colUpdateData: ColumnCreate) => useUpdateCol({colId,colUpdateData}),
