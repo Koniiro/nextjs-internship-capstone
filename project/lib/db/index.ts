@@ -5,7 +5,7 @@ import {config} from "dotenv";
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
 import { ColumnCreate, CommentCreate, ProjectCreator, Task, TaskCreate } from "@/types";
-import { columnTable, projectMembers, projectTable, taskTable, commentsTable } from "@/lib/db/schema";
+import { columnTable,usersTable, projectMembers, projectTable, taskTable, commentsTable } from "@/lib/db/schema";
 import { asc, eq, sql } from "drizzle-orm";
 
 config({path:".env"});
@@ -13,10 +13,21 @@ export const db = drizzle(process.env.DATABASE_URL!,{schema});
 
 export const queries = {
   users:{
-    getById: async (clerkId: string) => {
-        return await db.query.usersTable.findFirst({
-        where: (u, { eq }) => eq(u.clerkId, clerkId),
-      });
+    getByClerkId: async (clerkId: string) => {
+        const result = await  db
+          .select()
+          .from(usersTable)
+          .where(eq(usersTable.clerkId, clerkId))
+          .limit(1); 
+        return result[0] ?? null;
+    },
+    getById: async (id: string) => {
+        const result = await  db
+          .select()
+          .from(usersTable)
+          .where(eq(usersTable.id, id))
+          .limit(1); 
+        return result[0] ?? null;
     },
 
   },
@@ -178,7 +189,7 @@ export const queries = {
     },
 
     create: async (authorId:string,commentData: CommentCreate) => {
-      const data:CommentCreate={
+      const data={
         author_id:authorId,
         content:commentData.content,
         task_id:commentData.task_id

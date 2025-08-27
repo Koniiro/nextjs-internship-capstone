@@ -1,9 +1,27 @@
 // app/actions.ts
 "use server";
 import 'dotenv/config';
-import { db } from "@/lib/db"
+import { db, queries } from "@/lib/db"
 import { usersTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { clerkAuthCheck } from '@/lib/server_util';
+
+export const getUserById = async (userId:string) => {
+  try {
+    clerkAuthCheck()
+    const user = await queries.users.getById(userId)
+    return {
+      success: true,
+      data: user,
+    };
+  } catch (error) {
+    console.error("❌ Error fetching User:",userId,"Error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+};
 
 
 export async function getUserData() {

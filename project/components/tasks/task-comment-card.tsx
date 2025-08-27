@@ -1,21 +1,51 @@
+import { useDBUser } from "@/hooks/use-users";
 import { Comment, User } from "@/types";
-
+import { useUser } from "@clerk/nextjs";
 
 
 type taskCommentCardProps = {
     userId: string;
     commentData:Comment
 };
+function timeAgo(dateString: Date) {
+  const now = Date.now();
+  const past = new Date(dateString).getTime();
+  const diff = Math.floor((now - past) / 1000); // seconds difference
+
+  if (diff < 60) {
+    return `${diff} second${diff !== 1 ? "s" : ""} ago`;
+  }
+
+  const minutes = Math.floor(diff / 60);
+  if (minutes < 60) {
+    return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+  }
+
+  const days = Math.floor(hours / 24);
+  if (days < 7) {
+    return `${days} day${days !== 1 ? "s" : ""} ago`;
+  }
+
+  // 7 days or more → show local string
+  return new Date(dateString).toLocaleString();
+}
 
 
 export default function TaskCommentCard({userId,commentData}:taskCommentCardProps){
+    const {user, isLoading,error} =useDBUser(userId)
+    if (isLoading) return <p>Loading...</p>;
+    if (error) return <p>Failed to load user {error.message}</p>;
+    if (!user) return <p>Failed to load user</p>;
     return <div className="flex flex-col border px-5 py-2 w-auto border-blue-900 rounded-md text-wrap">
         <div className="flex flex-row gap-2 ">
-            <h2 className="font-bold text-base text-blue-900">User </h2>
+            <h2 className="font-bold text-base text-blue-900">{user.name} </h2>
             <p>•</p>
-            <p>{Math.floor(
-                    (Date.now() - new Date(commentData.created_at).getTime()) / (1000 * 60 * 60 * 24)
-                )} days ago
+            <p>{timeAgo(commentData.created_at)}
             </p>
         </div>
         <div className="text-wrap text-justify text-gray-800">

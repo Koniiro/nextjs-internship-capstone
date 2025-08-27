@@ -26,7 +26,7 @@ export function useTaskComments(taskId:number) {
         error: createError,
     }  = useMutation({
         mutationFn: async (data:CommentCreate) => {
-            console.log('Creating Task',data)
+            console.log('Creating Comment',data)
             const res = await createComment(data);
             if (!res.success) throw new Error(res.error);
                 return res.data;

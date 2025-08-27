@@ -83,7 +83,7 @@ export  function TaskContentClient( {task }: TaskContentClientProps){
                         {comments && comments.length > 0 && (
                           <div className="space-y-2">
                             {comments.map((comment) => (
-                              <TaskCommentCard key={comment.id} userId={"Hello"} commentData={comment}/>
+                              <TaskCommentCard key={comment.id} userId={comment.author_id} commentData={comment}/>
                              
                             ))}
                           </div>
