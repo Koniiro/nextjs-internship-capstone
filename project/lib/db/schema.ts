@@ -68,6 +68,8 @@ export const projectTable = pgTable("project", {
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   due_date: timestamp("due_date", { withTimezone: true }),
   done_date: timestamp("done_date", { withTimezone: true }),
+  //doneColumnId: integer("done_column_id").references(() => columnTable.id, {  onDelete: "set null" }).nullable(),
+
 
 });
 
@@ -128,6 +130,8 @@ export const columnTable = pgTable("kbColumn", {
 
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  isDoneCol: boolean("is_done_col").notNull().default(false),
+
 });
 
 export const priorityEnum = pgEnum("priority", ["low", "medium", "high"]);

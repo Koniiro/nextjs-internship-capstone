@@ -42,8 +42,9 @@ export default function TaskSheetRoot({isOpening,isClosing,openTask,closeTask}:T
   useEffect(() => {
   if (activeTask) {
     setTaskStatus(activeTask.openStatus);
-  }
-}, [activeTask]);
+    }
+  }, [activeTask]);
+
 
   
   const { isLoaded, isSignedIn, user } = useUser();
@@ -66,13 +67,18 @@ export default function TaskSheetRoot({isOpening,isClosing,openTask,closeTask}:T
   async function handleToggleTaskStatus() {
     if (!activeTask) return;
     try{
-      if (activeTask.openStatus) {
+      if (taskStatus){
+        console.log("Closing")
+
         await closeTask(activeTask.id);
+        setTaskStatus(false)
         
       }else{
+        console.log("Opening")
         await openTask(activeTask.id);
+        setTaskStatus(true)
       }
-      setTaskStatus(prev => !prev)
+      
     } catch (err) {
       console.error("Failed to toggle task status", err);
     }
@@ -106,7 +112,7 @@ export default function TaskSheetRoot({isOpening,isClosing,openTask,closeTask}:T
 
                     <div className="my-4 flex flex-col gap-4">
                       <div className="text-lg font-bold text-outer_space-500">
-                        Comments
+                        Comments 
                       </div>
                       <div>
                         {error && <p>Failed to load comments: {error.message}</p>}
@@ -150,7 +156,7 @@ export default function TaskSheetRoot({isOpening,isClosing,openTask,closeTask}:T
                                 ) : (
                                   <>
                                     
-                                    {activeTask.openStatus ? 
+                                    {taskStatus ? 
                                     <>
                                       <CircleCheckBig size={15} className="mr-2" />Close Task
                                     </>
