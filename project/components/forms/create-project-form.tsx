@@ -39,9 +39,12 @@ import { ProjectCreator } from "@/types";
 import { colors } from "@/lib/constants";
 //import { queries } from "@/lib/db";
 
+type CreateProjectFormProps = {
 
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+};
 
-export function CreateProjectForm(){
+export function CreateProjectForm({setOpen}:CreateProjectFormProps){
     const {
       createProject,
     } = useProjects();
@@ -57,16 +60,21 @@ export function CreateProjectForm(){
     })
 
     async function onSubmit(data: z.infer<typeof projectCreationSchema>) {
-      const newProjData:ProjectCreator={
+      try{
+        const newProjData:ProjectCreator={
         name:data.name,
         description:data.description || '',
         color:data.color,
         dueDate:data.dueDate,
         statusId:5,
+        }
+        await createProject(newProjData)
+        setOpen(false)
+
+      }catch(err){
+        console.error("Failed to create project", err);
       }
-      await createProject(newProjData)
-      //const response= await queries.projects.getAll()
-      //console.log("User Create response:", response);
+    
         
     }
 

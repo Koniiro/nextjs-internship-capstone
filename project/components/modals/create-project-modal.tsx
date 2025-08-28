@@ -36,10 +36,13 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { CreateProjectForm } from '../forms/create-project-form';
 import { Button } from "../ui/button";
 import { useProjects } from "@/hooks/use-projects";
+import { useState } from "react";
 
 
 
 export  function CreateProjectModal() {
+    const[openDiag,setOpenDiag] = useState(false)
+  
     const {
 
       isCreating
@@ -47,7 +50,7 @@ export  function CreateProjectModal() {
     } = useProjects();
   
   return (
-    <Dialog>
+    <Dialog open={openDiag} onOpenChange={setOpenDiag}>
         <DialogTrigger className="inline-flex items-center px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600 transition-colors">
             <Plus size={20} className="mr-2" />
             New Project
@@ -59,17 +62,17 @@ export  function CreateProjectModal() {
             Ready to start a new project?
           </DialogDescription>
         </DialogHeader>
-        <CreateProjectForm/>
+        <CreateProjectForm setOpen={setOpenDiag}/>
         
         <DialogFooter className="flex flex-col gap-3 sm:flex-row">
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-project-form">
-              {isCreating ? "Creating..." : "Create Project"}
-            </Button>
-          </DialogClose>
+          
+          <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form="create-project-form">
+            {isCreating ? "Creating..." : "Create Project"}
+          </Button>
+        
         </DialogFooter>
         
       </DialogContent>
