@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <TanstackProvider>
           <ThemeProvider>
-            <Toaster position="top-right" toastOptions={{ className: "z-[9999]" }}/>
+            <Toaster position="top-right" toastOptions={{ className: "z-[9999]" }} richColors  />
             {children}
           </ThemeProvider>
         </TanstackProvider>

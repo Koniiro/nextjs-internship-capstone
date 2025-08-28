@@ -68,7 +68,7 @@ export function UpdateProjectForm({ projectData }: UpdateProjectFormProps){
         dueDate:data.dueDate,
         statusId:data.statusId||5,
       }
-      const res=updateProject(projectData.id,newProjData)
+      await updateProject(projectData.id,newProjData)
     }
 
     return(

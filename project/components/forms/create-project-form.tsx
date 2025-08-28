@@ -64,7 +64,7 @@ export function CreateProjectForm(){
         dueDate:data.dueDate,
         statusId:5,
       }
-      const res=createProject(newProjData)
+      await createProject(newProjData)
       //const response= await queries.projects.getAll()
       //console.log("User Create response:", response);
         

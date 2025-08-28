@@ -30,15 +30,15 @@ export function useColumns(projectId:string){
           return await createColumn(data);
         },
         onSuccess: (data) => {
-          toast(
-            "✅ Column Added!", {
+          toast.success(
+            "Column Added!", {
             description: `Your new column "${data.name}" has been successfully created (ID: ${data.id}).`,
           })
           queryClient.invalidateQueries({ queryKey: ['columns',projectId] })
         },
         onError: (err) => {
           // React Query passes the thrown error here
-          toast("❌ Failed to create column", { description: err.message });
+          toast.error("Failed to create column", { description: err.message });
           console.error("Column creation failed:", err);
         },
       })
@@ -53,8 +53,8 @@ export function useColumns(projectId:string){
             return await deleteCol(colId);
           },
           onSuccess: (data) => {
-            toast(
-              "🗑️ Column Deleted!", 
+            toast.success(
+              "Column Deleted!", 
             {
               description: `Column ${data.deletedId} has been successfully deleted.`,
             })
@@ -62,7 +62,7 @@ export function useColumns(projectId:string){
           },
           onError: (err) => {
             // React Query passes the thrown error here
-            toast("❌ Failed to delete column", { description: err.message });
+            toast.error("Failed to delete column", { description: err.message });
             console.error("Column deletion failed:", err);
           },
         })
@@ -76,16 +76,16 @@ export function useColumns(projectId:string){
             return await updateCol(colId,colUpdateData);
           },
           onSuccess: (data) => {
-            toast(
+            toast.success(
               "Column Updated!", 
             {
-              description: `Column ${data.name} has been successfully updated.`,
+              description: `Column "${data.name}" has been successfully updated.`,
             })
             queryClient.invalidateQueries({ queryKey: ['columns',projectId] })
           },
           onError: (err) => {
             // React Query passes the thrown error here
-            toast("❌ Failed to update column", { description: err.message });
+            toast.error("Failed to update column", { description: err.message });
             console.error("Column update failed:", err);
           },
         })
