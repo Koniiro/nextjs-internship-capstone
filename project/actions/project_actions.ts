@@ -71,53 +71,35 @@ export const getUserProjects=async()=>{
 export const createProject=async (
   data:ProjectCreator
 )=>{
-  try {
-    const clerkID= await clerkAuthCheck()
+  const clerkID= await clerkAuthCheck()
 
     // Get internal user UUID from your `usersTable`
-    const internalUser = await  queries.users.getByClerkId(clerkID)
-    if (!internalUser) {
-      throw new Error("User not found.");
-    }
-
-    const [newProject] =await queries.projects.create(internalUser.id,data);
-    await queries.projects.projectUserLink(newProject.id,internalUser.id,"Project Owner")
-
-    return { success: true, data:newProject }
-    
-  } catch (error) {
-    console.error("❌ Error creating project =>", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-    
+  const internalUser = await  queries.users.getByClerkId(clerkID)
+  if (!internalUser) {
+    throw new Error("User not found.");
+  }
+  const result =await queries.projects.create(internalUser.id,data);
+  if (!result[0]) throw new Error("Project creation failed or duplicate");
+  const newProject=result[0]
+  const linkCheck=await queries.projects.projectUserLink(newProject.id,internalUser.id,"Project Owner") 
+  if (!linkCheck) { 
+    await queries.projects.delete(newProject.id); 
+    throw new Error(`Project creation failed for user ${internalUser.id}`); 
   }
 
+  return newProject;
 }
 
 export const deleteProject=async(projectId:string)=>{
-  try {
-    clerkAuthCheck()
-    const deletedId =await queries.projects.delete(projectId)
+  clerkAuthCheck();
 
-    if (!deletedId) {
-      throw new Error("Project could not be deleted or was not found.");
-    }
+  const deletedId =await queries.projects.delete(projectId)
 
-    return {
-      success: true,
-      data: deletedId,
-    };
-
-  } catch (error) {
-    console.error(`❌ Error deleting project ${projectId} =>`, error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-    
+  if (!deletedId[0]) {
+    throw new Error("Project deletion failed or project does not exist");
   }
+
+  return deletedId[0];
 
 }
 
@@ -125,27 +107,10 @@ export const updateProject=async (
   projectId:string,
   data:ProjectCreator
 )=>{
-  try {
-    clerkAuthCheck()
+  clerkAuthCheck();
 
-    const updatedProject = await queries.projects.update(projectId,data).returning()
-    
-    if (!updatedProject) {
-      throw new Error("Project could not be updated or was not found.");
-    }
+  const updatedProject = await queries.projects.update(projectId,data).returning()
+  if (!updatedProject[0]) throw new Error("Project update failed or was not found");
 
-
-
-
-    return { success: true, data:updatedProject }
-    
-  } catch (error) {
-    console.error("❌ Error creating project =>", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-    
-  }
-
+  return updatedProject[0];
 }
