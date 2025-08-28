@@ -6,22 +6,28 @@ import { CreateColumnModal } from "@/components/modals/create-col-modal"
 import { ProjectHeader } from "@/components/project/project-header"
 import { SheetProvider } from "@/components/task-sheet-context"
 import TaskSheetRoot from "@/components/tasks/task-content-view"
+import { useProjectTasks } from "@/hooks/use-tasks"
 
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params); 
   const { project, isLoading, error } = useSpecProject(id);
+  let { projectTasks, openTask,closeTask,isOpening,isClosing } = useProjectTasks(id);
+  
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Failed to load projects {error.message}</p>;
-  if (!project) return <p>Failed to load projects</p>;
+  if (!project || !projectTasks) return <p>Failed to load projects</p>;
+  
+  const completedTasks = projectTasks.filter(p => p.openStatus === false).length;
+  const taskLength=projectTasks.length
   
   return (
     <SheetProvider>
         <div className="space-y-6">
           {/* Project Header */}
-          <ProjectHeader project={project}/>
+          <ProjectHeader project={project} taskLength={taskLength} completedTasks={completedTasks}/>
           <CreateColumnModal projectId={id}/>
-          <KanbanBoard projectId={project?.id}/>
-          <TaskSheetRoot />
+          <KanbanBoard projectId={project?.id} projectTasks={projectTasks}/>
+          <TaskSheetRoot isClosing={isClosing} isOpening={isOpening} openTask={openTask} closeTask={closeTask}/>
       </div>
     </SheetProvider>
       

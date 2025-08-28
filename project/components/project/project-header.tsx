@@ -4,11 +4,15 @@ import { Calendar, Users, Settings, MoreHorizontal, ArrowLeft } from "lucide-rea
 import Link from "next/link";
 
 type ProjectHeaderProps = {
-  project: Project;
+  project: Project
+  taskLength:number
+  completedTasks:number
 };
 
 
-export function ProjectHeader({project}:ProjectHeaderProps) {
+export function ProjectHeader({project,taskLength,completedTasks}:ProjectHeaderProps) {
+
+  const completionRatio = Math.round((completedTasks / taskLength) * 100) / 100; 
   return (
     <div className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6">
       <div className="flex items-start justify-between">
@@ -39,7 +43,7 @@ export function ProjectHeader({project}:ProjectHeaderProps) {
             </div>
             <div className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
-              0% complete
+              {completionRatio*100}% complete
             </div>
           </div>
         </div>

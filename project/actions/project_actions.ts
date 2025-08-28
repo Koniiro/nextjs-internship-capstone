@@ -149,3 +149,42 @@ export const updateProject=async (
   }
 
 }
+
+
+export const closeProject=async(projecId:string)=>{
+  try {
+      clerkAuthCheck()
+
+      const del = await queries.projects.openProject(projecId).returning()
+
+      return {success: true,data: del}
+    
+  } catch (error) {
+
+    console.error(`❌ Error closing project ${projecId}`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+}
+
+export const openProject=async(projecId:string)=>{
+  try {
+      clerkAuthCheck()
+
+      const del = await queries.projects.openProject(projecId).returning()
+
+      return {success: true,data: del}
+    
+  } catch (error) {
+
+    console.error(`❌ Error opening project ${projecId}`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+}

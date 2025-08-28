@@ -1,5 +1,5 @@
 "use client"
-import { createTask, deleteTask, getTasks, getTasksByProject, updateTask } from "@/actions/task-col_actions";
+import { closeTask, createTask, deleteTask, getTasks, getTasksByProject, openTask, updateTask } from "@/actions/task-col_actions";
 import { TaskCreate } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -125,6 +125,37 @@ export function useProjectTasks(projectId: string) {
         queryClient.invalidateQueries({ queryKey: ['tasks',projectId] })
       }
   })
+
+  const{
+    mutate: useCloseTask,
+    isPending: isClosing,
+    error: closeError,
+  }  = useMutation({
+    mutationFn: async ({ taskId,  }: { taskId: number; }) => {
+        const res = await closeTask(taskId);
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+      },
+      onSuccess: () => {
+        console.log(" Task was closed")
+        queryClient.invalidateQueries({ queryKey: ['tasks',projectId] })
+      }
+  })
+  const{
+    mutate: useOpenTask,
+    isPending: isOpening,
+    error: openError,
+  }  = useMutation({
+    mutationFn: async ({ taskId,  }: { taskId: number; }) => {
+        const res = await openTask(taskId);
+        if (!res.success) throw new Error(res.error);
+        return res.data;
+      },
+      onSuccess: () => {
+        console.log(" Task was opened")
+        queryClient.invalidateQueries({ queryKey: ['tasks',projectId] })
+      }
+  })
   
   return {
     projectTasks,
@@ -135,5 +166,14 @@ export function useProjectTasks(projectId: string) {
     updateError: updateError,
 
     updateTask: (taskId: number, taskUpdateData: TaskCreate) => useUpdateProjectTasks({taskId,taskUpdateData}),
+    
+    isClosing:isClosing,
+    isOpening:isOpening,
+
+    closeError:closeError,
+    openError:openError,
+    
+    closeTask:(taskId:number) =>useCloseTask({taskId}),
+    openTask:(taskId:number) =>useOpenTask({taskId}),
   }
 }

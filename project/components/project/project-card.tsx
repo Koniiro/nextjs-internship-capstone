@@ -6,6 +6,9 @@ import { Button } from '../ui/button';
 import { projectStatus } from '@/lib/constants';
 import { UpdateProjectModal } from '../modals/update-project-modal';
 import ProjectStatusChip from './project-status-chip';
+import { useProjectTasks } from '@/hooks/use-tasks';
+import { useCompletionRatio } from '@/hooks/use-utils';
+import { Progress } from '../ui/progress';
 
 // TODO: Task 4.5 - Design and implement project cards and layouts
 
@@ -50,6 +53,8 @@ export interface ProjectCardProps {
 }
 
 export default function ProjectCard({project,onDelete,onEdit}:ProjectCardProps,) {
+  const ratio = useCompletionRatio(project.id);
+
   return (
     <div key={project.id}
           className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6 hover:shadow-lg transition-shadow cursor-pointer"
@@ -82,14 +87,9 @@ export default function ProjectCard({project,onDelete,onEdit}:ProjectCardProps,)
       <div className="mb-4">
         <div className="flex items-center justify-between text-sm mb-2">
           <span className="text-payne's_gray-500 dark:text-french_gray-400">Progress</span>
-          <span className="text-outer_space-500 dark:text-platinum-500 font-medium">{0}%</span>
+          <span className="text-outer_space-500 dark:text-platinum-500 font-medium">{ratio*100}%</span>
         </div>
-        <div className="w-full bg-french_gray-300 dark:bg-payne's_gray-400 rounded-full h-2">
-          <div
-            className={`h-2 rounded-full transition-all duration-300 bg-${project.color}`}
-            style={{ width: `0%` }}
-          />
-        </div>
+        <Progress value={ratio*100} color={project.color} className='h-2' />
       </div>
 
       <div className="flex flex-row items-center justify-between">
