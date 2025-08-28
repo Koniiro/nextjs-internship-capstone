@@ -164,3 +164,41 @@ export const deleteTask=async(taskId:number)=>{
   }
 }
 
+export const closeTask=async(taskId:number)=>{
+  try {
+      clerkAuthCheck()
+
+      const del = await queries.tasks.closeTask(taskId).returning()
+
+      return {success: true,data: del}
+    
+  } catch (error) {
+
+    console.error(`❌ Error closing task ${taskId}`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+}
+
+export const openTask=async(taskId:number)=>{
+  try {
+      clerkAuthCheck()
+
+      const del = await queries.tasks.openTask(taskId).returning()
+
+      return {success: true,data: del}
+    
+  } catch (error) {
+
+    console.error(`❌ Error opening task ${taskId}`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+}
+

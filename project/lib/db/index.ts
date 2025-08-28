@@ -107,6 +107,24 @@ export const queries = {
       const res =await  db.delete(projectTable).where(eq(projectTable.id,id)).returning({ deletedId: projectTable.id});
       return res
     },
+    closeProject:(id:string)=>{
+      return db.update(projectTable)
+        .set({
+          statusId:4,
+          done_date:sql`now()`,
+          updated_at:sql`now()`,
+
+        }).where(eq(projectTable.id,id));
+    },
+    openProject:(id:string)=>{
+      return db.update(projectTable)
+        .set({
+          statusId:1,
+          done_date:null,
+          updated_at:sql`now()`,
+
+        }).where(eq(projectTable.id,id));
+    },
   },
   tasks: {
     //Auto orders by position
@@ -148,6 +166,24 @@ export const queries = {
           priority:data.priority,
           position:data.position,
           due_date:data.due_date,
+          updated_at:sql`now()`,
+
+        }).where(eq(taskTable.id,id));
+    },
+    closeTask:(id:number)=>{
+      return db.update(taskTable)
+        .set({
+          openStatus:false,
+          done_date:sql`now()`,
+          updated_at:sql`now()`,
+
+        }).where(eq(taskTable.id,id));
+    },
+    openTask:(id:number)=>{
+      return db.update(taskTable)
+        .set({
+          openStatus:true,
+          done_date:null,
           updated_at:sql`now()`,
 
         }).where(eq(taskTable.id,id));
