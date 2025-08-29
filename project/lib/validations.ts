@@ -75,3 +75,9 @@ export const commentSchema = z.object({
   content: z.string().max(500, 'Comment too long'),
 
 })
+
+
+export const teamSchema = z.object({
+  teamName: z.string().min(1, 'Name is required').max(20, 'Name too long'),
+
+})

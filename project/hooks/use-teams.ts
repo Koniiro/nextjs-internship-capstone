@@ -1,5 +1,6 @@
 "use client"
 import { createTeam, deleteTeam, getUserTeams, updateTeam } from '@/actions/team_actions';
+import { TeamCreate } from '@/types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from "sonner";
 export function useTeams() {
@@ -21,8 +22,8 @@ export function useTeams() {
         isPending: isCreating,
         error: createError,
     }  = useMutation({
-    mutationFn: async (teamName:string) => {
-        return await createTeam(teamName);
+    mutationFn: async (newTeam:TeamCreate) => {
+        return await createTeam(newTeam);
     },
     onSuccess: (data) => {
         toast.success(
@@ -66,15 +67,15 @@ export function useTeams() {
         isPending: isUpdating,
         error: updateError,
     }  = useMutation({
-        mutationFn: async ({ teamId, newTeamName }: { teamId: string; newTeamName: string }) => {
-            return await updateTeam(teamId,newTeamName);
+        mutationFn: async ({ teamId, newTeamData }: { teamId: string; newTeamData: TeamCreate }) => {
+            return await updateTeam(teamId,newTeamData);
         },
         onSuccess: (data) => {
             toast.success(
                 "Team Updated!", {
                 description: `Project "${data.teamName}" has been successfully updated.`,
             })
-            queryClient.invalidateQueries({ queryKey: ['projects'] })
+            queryClient.invalidateQueries({ queryKey: ['teams'] })
         },
         onError: (err) => {
             // React Query passes the thrown error here
@@ -88,11 +89,11 @@ export function useTeams() {
         isLoading: isLoading,
         error: error,
 
-        createTeam:(teamName:string)=>useCreateTeam(teamName),
+        createTeam:(teamData:TeamCreate)=>useCreateTeam(teamData),
         isCreating:isCreating,
         createError: createError,
 
-        updateTeam:(teamId:string, teamName:string)=>useUpdateTeam({teamId,newTeamName:teamName}),
+        updateTeam:(teamId:string, newTeamData:TeamCreate)=>useUpdateTeam({teamId,newTeamData}),
         isUpdating:isUpdating,
         updateError:updateError,
 

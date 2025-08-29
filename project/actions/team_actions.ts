@@ -1,10 +1,11 @@
 "use server";
 import { queries } from '@/lib/db';
 import { clerkAuthCheck, roleAuthCheck } from '@/lib/server_util';
+import { TeamCreate } from '@/types';
 import 'dotenv/config';
 
 export const createTeam = async  (
-        teamName:string
+        newTeamData:TeamCreate
     )=>{
     const clerkID= await clerkAuthCheck()
 
@@ -13,7 +14,7 @@ export const createTeam = async  (
     if (!internalUser) {
         throw new Error("User not found.");
     }
-    const result =await queries.team.createTeam(teamName);
+    const result =await queries.team.createTeam(newTeamData.team_name);
 
     if (!result[0]) throw new Error("Team creation failed or duplicate");
     const newTeam=result[0]
@@ -31,11 +32,11 @@ export const createTeam = async  (
 
 export const updateTeam = async  (
         teamId:string,
-        newTeamName:string
+        updateTeamData:TeamCreate
     )=>{
         const clerkID= await clerkAuthCheck()
         await roleAuthCheck(teamId,clerkID)
-        const result = await queries.team.updateTeam(teamId,newTeamName)
+        const result = await queries.team.updateTeam(teamId,updateTeamData.team_name)
 
         if (!result[0]) throw new Error(`Failed to update team`); 
 

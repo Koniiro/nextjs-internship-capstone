@@ -2,6 +2,7 @@
 // Task 1.3: Set up project structure and folder organization
 
 import middleware from "@/middleware"
+import { string } from "zod"
 
 export interface User {
   id: string
@@ -102,4 +103,14 @@ export interface CommentCreate {
   content: string
   task_id:number
 
+}
+
+export interface Team{
+  teamName: string
+  id: string
+  created_at: Date
+  updated_at: Date
+}
+export interface TeamCreate {
+  team_name: string
 }
