@@ -38,18 +38,20 @@ import { Button } from "../ui/button";
 import { useProjects } from "@/hooks/use-projects";
 import { UpdateProjectForm } from "../forms/update-project-form";
 import { Project } from "@/types";
+import { useState } from "react";
 
 type UpdateProjectModalProps = {
   projectData: Project;
 };
 
 export  function UpdateProjectModal( { projectData }: UpdateProjectModalProps) {
-    const {
+  const[openDiag,setOpenDiag] = useState(false)  
+  const {
       isUpdating
     } = useProjects();
   
   return (
-    <Dialog>
+    <Dialog open={openDiag} onOpenChange={setOpenDiag}>
         <DialogTrigger className="inline-flex items-center px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600 transition-colors">
             Update Project
         </DialogTrigger>
@@ -60,17 +62,17 @@ export  function UpdateProjectModal( { projectData }: UpdateProjectModalProps) {
             Need to change a few things?
           </DialogDescription>
         </DialogHeader>
-        <UpdateProjectForm projectData={projectData}/>
+        <UpdateProjectForm projectData={projectData} setOpen={setOpenDiag}/>
         
         <DialogFooter className="flex flex-col gap-3 sm:flex-row">
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button disabled={isUpdating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`update-project-form-${projectData.id}`}>
-              {isUpdating ? "Updating..." : "Update Project"}
-            </Button>
-          </DialogClose>
+          
+          <Button disabled={isUpdating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`update-project-form-${projectData.id}`}>
+            {isUpdating ? "Updating..." : "Update Project"}
+          </Button>
+          
         </DialogFooter>
         
       </DialogContent>

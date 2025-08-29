@@ -5,6 +5,7 @@ import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TanstackProvider } from "@/components/providers/tanstack-provider"
+import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -23,9 +24,12 @@ export default function RootLayout({
     <ClerkProvider>
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <TanstackProvider><ThemeProvider>
-        {children}</ThemeProvider></TanstackProvider>
-        
+        <TanstackProvider>
+          <ThemeProvider>
+            <Toaster position="top-right" toastOptions={{ className: "z-[9999]" }} richColors  />
+            {children}
+          </ThemeProvider>
+        </TanstackProvider>
       </body>
     </html>
     </ClerkProvider>

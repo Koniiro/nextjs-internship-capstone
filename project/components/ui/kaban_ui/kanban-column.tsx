@@ -38,6 +38,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
     const{updateTask}=useTasks(column.id)
     const{deleteCol}=useColumns(column.projectId)
     const [dragTasks, setDragTasks] = useState<Task[]>([]);
+    const[openDiag,setOpenDiag] = useState(false)
 
     useEffect(() => {
 
@@ -149,7 +150,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                     {dragTasks.length}
                   </div>
                 </div>
-                <Dialog>
+                <Dialog open={openDiag} onOpenChange={setOpenDiag}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="p-1 rounded hover:bg-muted">
@@ -192,7 +193,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                     
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  <UpdateColumnModal column={column}/>
+                  <UpdateColumnModal column={column} setOpen={setOpenDiag}/>
                 </Dialog>
                 
               </div>

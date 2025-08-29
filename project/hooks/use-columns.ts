@@ -1,7 +1,8 @@
 "use client"
 import { createColumn, deleteCol, getProjectColumns, updateCol } from "@/actions/task-col_actions"
-import { ColumnCreate, ProjectCreator } from "@/types"
+import { ColumnCreate, ProjectCreator,Column } from "@/types"
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from "sonner"
 
   
 
@@ -26,15 +27,20 @@ export function useColumns(projectId:string){
         error: createError,
       }  = useMutation({
         mutationFn: async (data:ColumnCreate) => {
-          console.log('Creating Column',data)
-          const res = await createColumn(data);
-          if (!res.success) throw new Error(res.error);
-          return res.data;
+          return await createColumn(data);
         },
-        onSuccess: () => {
-          console.log("Column Creation Success",)
+        onSuccess: (data) => {
+          toast.success(
+            "Column Added!", {
+            description: `Your new column "${data.name}" has been successfully created (ID: ${data.id}).`,
+          })
           queryClient.invalidateQueries({ queryKey: ['columns',projectId] })
-        }
+        },
+        onError: (err) => {
+          // React Query passes the thrown error here
+          toast.error("Failed to create column", { description: err.message });
+          console.error("Column creation failed:", err);
+        },
       })
       
       //Delete Column
@@ -44,15 +50,21 @@ export function useColumns(projectId:string){
           error: deleteError,
         }  = useMutation({
           mutationFn: async (colId:number) => {
-            console.log('Deleting Column',colId)
-            const res = await deleteCol(colId);
-            if (!res.success) throw new Error(res.error);
-            return res.data;
+            return await deleteCol(colId);
           },
-          onSuccess: () => {
-            console.log(" Column deletion Success",)
+          onSuccess: (data) => {
+            toast.success(
+              "Column Deleted!", 
+            {
+              description: `Column ${data.deletedId} has been successfully deleted.`,
+            })
             queryClient.invalidateQueries({ queryKey: ['columns',projectId] })
-          }
+          },
+          onError: (err) => {
+            // React Query passes the thrown error here
+            toast.error("Failed to delete column", { description: err.message });
+            console.error("Column deletion failed:", err);
+          },
         })
       //update Column
       const{
@@ -61,15 +73,21 @@ export function useColumns(projectId:string){
           error: updateError,
         }  = useMutation({
           mutationFn: async ({ colId, colUpdateData }: { colId: number; colUpdateData: ColumnCreate }) => {
-            console.log('Updating Column',colId)
-            const res = await updateCol(colId,colUpdateData);
-            if (!res.success) throw new Error(res.error);
-            return res.data;
+            return await updateCol(colId,colUpdateData);
           },
-          onSuccess: () => {
-            console.log(" Column update Success",)
+          onSuccess: (data) => {
+            toast.success(
+              "Column Updated!", 
+            {
+              description: `Column "${data.name}" has been successfully updated.`,
+            })
             queryClient.invalidateQueries({ queryKey: ['columns',projectId] })
-          }
+          },
+          onError: (err) => {
+            // React Query passes the thrown error here
+            toast.error("Failed to update column", { description: err.message });
+            console.error("Column update failed:", err);
+          },
         })
 
 
@@ -83,6 +101,9 @@ export function useColumns(projectId:string){
 
         isCreating:isCreating,
         createError:createError,
+
+        isUpdating:isUpdating,
+        updateError:updateError,
 
         
         createCol: (data: ColumnCreate) =>useCreateColumn(data),

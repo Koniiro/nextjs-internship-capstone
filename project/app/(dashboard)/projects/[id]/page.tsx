@@ -6,7 +6,12 @@ import { CreateColumnModal } from "@/components/modals/create-col-modal"
 import { ProjectHeader } from "@/components/project/project-header"
 import { SheetProvider } from "@/components/task-sheet-context"
 import TaskSheetRoot from "@/components/tasks/task-content-view"
+
+import { Button } from "@/components/ui/button"
+import { toast, Toaster } from "sonner"
+
 import { useProjectTasks } from "@/hooks/use-tasks"
+
 
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params); 
@@ -24,7 +29,9 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
     <SheetProvider>
         <div className="space-y-6">
           {/* Project Header */}
+
           <ProjectHeader project={project} taskLength={taskLength} completedTasks={completedTasks}/>
+
           <CreateColumnModal projectId={id}/>
           <KanbanBoard projectId={project?.id} projectTasks={projectTasks}/>
           <TaskSheetRoot isClosing={isClosing} isOpening={isOpening} openTask={openTask} closeTask={closeTask}/>

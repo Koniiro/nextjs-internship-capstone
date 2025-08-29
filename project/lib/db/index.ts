@@ -76,7 +76,7 @@ export const queries = {
         due_date:projectData.dueDate
       }
 
-      const newProject=await db.insert(projectTable).values(data).onConflictDoNothing().returning()
+      const newProject=await db.insert(projectTable).values(data).returning()
       return newProject
     },
     projectUserLink:async (projectId:string, userId:string,role:string)=>{
@@ -85,7 +85,7 @@ export const queries = {
             userId,
             projectId,
             role,
-          });
+          }).onConflictDoNothing();
           return true; // success
         } catch (error) {
           console.error("Error linking user to project:", error);
@@ -204,7 +204,7 @@ export const queries = {
     },
     create: async(colData: ColumnCreate)=>{
       const newProject=await db.insert(columnTable).values(colData).onConflictDoNothing().returning()
-      return newProject 
+      return newProject
     },
     update: (colId: number,  colData: ColumnCreate) => {
       return db.update(columnTable)

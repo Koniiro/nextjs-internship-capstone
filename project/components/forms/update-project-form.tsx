@@ -40,9 +40,10 @@ import { colors, projectStatus } from "@/lib/constants";
 
 type UpdateProjectFormProps = {
   projectData: Project;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-export function UpdateProjectForm({ projectData }: UpdateProjectFormProps){
+export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProps){
 
   
     const {
@@ -61,14 +62,22 @@ export function UpdateProjectForm({ projectData }: UpdateProjectFormProps){
     })
 
     async function onSubmit(data: z.infer<typeof projectUpdateSchema>) {
-      const newProjData:ProjectCreator={
+      try{
+        const newProjData:ProjectCreator={
         name:data.name,
         description:data.description||'',
         color:data.color,
         dueDate:data.dueDate,
         statusId:data.statusId||5,
+        }
+        await updateProject(projectData.id,newProjData)
+        setOpen(false);
+
+      }catch(err){
+        console.error("Failed to update project", err);
       }
-      const res=updateProject(projectData.id,newProjData)
+      
+      
     }
 
     return(

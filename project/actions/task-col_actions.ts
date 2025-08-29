@@ -27,62 +27,36 @@ export const getProjectColumns=async(projectId:string)=>{
 }
 
 export const createColumn=async(colData:ColumnCreate)=>{
-  try {
-      clerkAuthCheck()
+  clerkAuthCheck();
 
-      const columns=await queries.cols.create(colData)
+  const columns = await queries.cols.create(colData);
+  if (!columns[0]) throw new Error("Column insert failed or already exists");
 
-      return {success: true,data: columns}
-    
-  } catch (error) {
-
-    console.error("❌ Error creating new column:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-    
-  }
+  return columns[0];
 }
 
 export const deleteCol=async(colId:number)=>{
-  try {
-      clerkAuthCheck()
 
-      const del = await queries.cols.delete(colId)
+  clerkAuthCheck();
 
-      return {success: true,data: del}
-    
-  } catch (error) {
+  const deleted = await queries.cols.delete(colId);
 
-    console.error("❌ Error deleting column", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-    
+  if (!deleted[0]) {
+    throw new Error("Column deletion failed or column does not exist");
   }
+
+  return deleted[0];
 }
 
 export const updateCol=async(coldId:number,coldData:ColumnCreate)=>{
-  try {
-    clerkAuthCheck()
 
-    const updatedCol = await queries.cols.update(coldId,coldData).returning()
-    
-    if (!updatedCol) {
-      throw new Error("Column could not be updated or was not found.");
-    }
+  clerkAuthCheck();
 
-    return { success: true, data:updatedCol }
-    
-  } catch (error) {
-    console.error("❌ Error updating column =>", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
+  const columns = await queries.cols.update(coldId,coldData).returning();
+  if (!columns[0]) throw new Error("Column update failed or was not found");
+
+  return columns[0];
+
 }
 
 //Task Actions
