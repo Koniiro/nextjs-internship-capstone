@@ -1,7 +1,7 @@
 import { CreateTaskModal } from "@/components/modals/create-task-modal";
 import { TaskCard } from "@/components/tasks/task-card";
-import { useTasks } from "@/hooks/use-tasks";
-import { Column, ColumnCreate, Task, TaskCreate } from "@/types";
+import { useProjectTasks } from "@/hooks/use-tasks";
+import { Column, Task, TaskCreate } from "@/types";
 import {  MoreHorizontal,ArrowRight, ArrowLeft, Trash, Pencil } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
@@ -11,7 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useColumns } from "@/hooks/use-columns";
@@ -35,7 +34,9 @@ export interface KanbanColumnProps {
 }
 
 export default function KanbanColumn({id,colArrayLength,column,taskArray,colLocalPosition ,leftHandler, rightHandler}:KanbanColumnProps){
-    const{updateTask}=useTasks(column.id)
+
+    const {updateTask,  deleteTask } = useProjectTasks(column.projectId);
+    
     const{deleteCol}=useColumns(column.projectId)
     const [dragTasks, setDragTasks] = useState<Task[]>([]);
     const[openDiag,setOpenDiag] = useState(false)
@@ -99,7 +100,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
             columnId:id
           };
        
-          updateTask(task.id, taskData);
+          updateTask(task.id, taskData,"order");
         });
   
     }
@@ -205,11 +206,11 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
               <ScrollArea className="h-72">
                 <SortableContext items={dragTasks} strategy={verticalListSortingStrategy}>
                   {dragTasks.map((task) => (
-                    <TaskCard key={task.id} id={task.id} task={task} arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
+                    <TaskCard key={task.id} projectId={column.projectId} id={task.id} task={task} delTaskHandler={()=>deleteTask(task.id)}arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
                   ))}
                 </SortableContext>
               </ScrollArea>
-              <CreateTaskModal colId={column.id}/>
+              <CreateTaskModal colId={column.id} projectId={column.projectId}/>
             </div>
           </div>
         </div>

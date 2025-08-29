@@ -34,40 +34,44 @@ Integration:
 */
 
 "use client"
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { useTasks } from "@/hooks/use-tasks";
+import { useProjectTasks } from "@/hooks/use-tasks";
 import { Task } from "@/types";
 import { UpdateTaskForm } from "../forms/update-task-form";
 
 type UpdateTaskModalpProps = {
   task: Task;
+  projectId:string
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+
 };
 
 
-export  function UpdateTaskModal({ task }: UpdateTaskModalpProps) {
+export  function UpdateTaskModal({ task,setOpen,projectId }: UpdateTaskModalpProps) {
+ 
     const {
 
       isCreating
 
-    } = useTasks(task.id);
+    } = useProjectTasks(projectId);
   
   return (
       <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Task</DialogTitle>
         </DialogHeader>
-        <UpdateTaskForm task={task}/>
+        <UpdateTaskForm task={task} setOpen={setOpen} projectId={projectId}/>
         
         <DialogFooter className="flex flex-col gap-3 sm:flex-row">
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`update-task-form-${task.id}`}>
-              {isCreating ? "Saving..." : "Save"}
-            </Button>
-          </DialogClose>
+        
+          <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`update-task-form-${task.id}`}>
+            {isCreating ? "Saving..." : "Save"}
+          </Button>
+          
         </DialogFooter>
         
       </DialogContent>
