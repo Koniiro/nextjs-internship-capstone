@@ -42,9 +42,11 @@ type CreateTaskFormProps = {
   colId: number;
   projectId:string,
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setLocked: React.Dispatch<React.SetStateAction<boolean>>
+
 };
 
-export function CreateTaskForm({colId,projectId, setOpen}:CreateTaskFormProps){
+export function CreateTaskForm({colId,projectId, setOpen, setLocked}:CreateTaskFormProps){
     const {projectTasks,
       createTask,
     } = useProjectTasks(projectId);
@@ -81,6 +83,7 @@ export function CreateTaskForm({colId,projectId, setOpen}:CreateTaskFormProps){
       
         await createTask(newTaskData)
         setOpen(false)
+        setLocked(false)
 
       }catch (err){
         console.error("Failed to create task", err);

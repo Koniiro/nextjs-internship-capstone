@@ -43,10 +43,12 @@ import { useState } from "react";
 type CreateTaskModalpProps = {
   projectId:string
   colId: number;
+  setLocked: React.Dispatch<React.SetStateAction<boolean>>
+
 };
 
 
-export  function CreateTaskModal({ colId,projectId }: CreateTaskModalpProps) {
+export  function CreateTaskModal({ colId,projectId,setLocked }: CreateTaskModalpProps) {
   const [isOpen,setIsOpen] = useState(false)
     const {
     
@@ -55,7 +57,10 @@ export  function CreateTaskModal({ colId,projectId }: CreateTaskModalpProps) {
     } = useProjectTasks(projectId);
   
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+        setIsOpen(open);   // controls modal visibility
+        setLocked(open);   // lock/unlock while modal is open
+      }}>
         <DialogTrigger className="w-full p-3 border-2 border-dashed border-french_gray-300 dark:border-payne's_gray-400 rounded-lg text-payne's_gray-500 dark:text-french_gray-400 hover:border-blue_munsell-500 hover:text-blue_munsell-500 transition-colors">
           + Add Task
         </DialogTrigger>
@@ -63,7 +68,7 @@ export  function CreateTaskModal({ colId,projectId }: CreateTaskModalpProps) {
         <DialogHeader>
           <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">New Task</DialogTitle>
         </DialogHeader>
-        <CreateTaskForm colId={colId} projectId={projectId} setOpen={setIsOpen}/>
+        <CreateTaskForm colId={colId} projectId={projectId} setOpen={setIsOpen} setLocked={setLocked}/>
         
         <DialogFooter className="flex flex-col gap-3 sm:flex-row">
           <DialogClose asChild>

@@ -40,6 +40,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
     const{deleteCol}=useColumns(column.projectId)
     const [dragTasks, setDragTasks] = useState<Task[]>([]);
     const[openDiag,setOpenDiag] = useState(false)
+    const[locked,setLocked] = useState(false)
 
     useEffect(() => {
 
@@ -69,10 +70,11 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
     const {attributes, listeners, setNodeRef, transform, transition} =useSortable(
     {id:id,
     data: {
-    type: "column",
-    column,
-   }
-  })
+      type: "column",
+      column,
+    },
+    disabled:locked
+    })
     const style = {
       transition,
       transform: CSS.Transform.toString(transform),
@@ -116,6 +118,11 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
       });
       } 
     }
+    function setOpenHandler (open:boolean){
+        setOpenDiag(open);   // controls modal visibility
+        setLocked(open);   // lock/unlock while modal is open
+
+    }
 
     function toTopButton(taskId:number){
       console.log("To Top button pressed")
@@ -151,7 +158,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                     {dragTasks.length}
                   </div>
                 </div>
-                <Dialog open={openDiag} onOpenChange={setOpenDiag}>
+                <Dialog open={openDiag} onOpenChange={setOpenHandler }>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="p-1 rounded hover:bg-muted">
@@ -164,11 +171,9 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                       <DropdownMenuGroup>
 
                         <DropdownMenuItem  onSelect={(e) => e.preventDefault()} className="cursor-pointer  hover:bg-muted">
-                        <DialogTrigger className=" flex flex-row items-center gap-2">
-                          <Pencil size={16}/> Edit Column
-
+                        <DialogTrigger   className="flex flex-row items-center gap-2">
+                            <Pencil size={16} /> Edit Column
                         </DialogTrigger>
-                        
                         </DropdownMenuItem>
                         <DropdownMenuItem
                         onClick={delColHandler}
@@ -194,7 +199,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                     
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  <UpdateColumnModal column={column} setOpen={setOpenDiag}/>
+                  <UpdateColumnModal column={column} setOpen={setOpenDiag} setLocked={setLocked}/>
                 </Dialog>
                 
               </div>
@@ -210,7 +215,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                   ))}
                 </SortableContext>
               </ScrollArea>
-              <CreateTaskModal colId={column.id} projectId={column.projectId}/>
+              <CreateTaskModal colId={column.id} projectId={column.projectId} setLocked={setLocked}/>
             </div>
           </div>
         </div>
