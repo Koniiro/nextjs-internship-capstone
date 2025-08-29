@@ -20,8 +20,9 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities";
 
 import { TaskPriorityBadge, TaskStatusBadge } from "../ui/status_badges"
-import { useTaskSheet } from "../task-sheet-context"
+import { useTaskSheet } from "./task-sheet-context"
 import { useState } from "react"
+import { useUpdateTaskModal } from "./task-update-modal-context"
 
 
 /*
@@ -74,7 +75,8 @@ interface TaskCardProps {
 
 
 export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArrayLength, delTaskHandler , topHandler,bottomHandler }: TaskCardProps) {
-
+  const { setTaskToEdit } = useUpdateTaskModal();
+  
   const { setActiveTask } = useTaskSheet();
   const [isOpen,setIsOpen] = useState(false)
  
@@ -98,9 +100,9 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
   };
 
 
-  //const delTaskHandler = async () => { 
-  //  deleteTask(task.id)
-  //}
+  const editTaskHandler = async () => { 
+    setTaskToEdit(task)
+  }
   return (
     <div
       ref={setNodeRef} style={style} {...attributes} {...listeners}
@@ -114,16 +116,16 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
             </h4>
           </div>
           
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          
             <DropdownMenu>
               <DropdownMenuTrigger disabled={isDragging}><MoreHorizontal size={16} /></DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white">
                 <DropdownMenuLabel>Task</DropdownMenuLabel>
                   <DropdownMenuGroup>
-                    <DropdownMenuItem  className="cursor-pointer hover:bg-muted">
-                      <DialogTrigger className=" flex flex-row items-center gap-2">
-                        <Pencil size={16}/> Edit Task
-                      </DialogTrigger>
+                    <DropdownMenuItem 
+                     onClick={editTaskHandler}
+                     className="cursor-pointer hover:bg-muted flex flex-row items-center gap-2">
+                      <Pencil size={16}/> Edit Task
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={delTaskHandler}
@@ -149,8 +151,7 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
                 
               </DropdownMenuContent>
             </DropdownMenu>
-            <UpdateTaskModal task={task} setOpen={setIsOpen} projectId={projectId}/>
-          </Dialog>
+            
         </div>
       
 

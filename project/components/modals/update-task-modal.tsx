@@ -34,22 +34,26 @@ Integration:
 */
 
 "use client"
-import { DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useProjectTasks } from "@/hooks/use-tasks";
 import { Task } from "@/types";
 import { UpdateTaskForm } from "../forms/update-task-form";
+import { useUpdateTaskModal } from "../tasks/task-update-modal-context";
+import { useState } from "react";
 
 type UpdateTaskModalpProps = {
-  task: Task;
+
   projectId:string
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+ 
 
 };
 
 
-export  function UpdateTaskModal({ task,setOpen,projectId }: UpdateTaskModalpProps) {
- 
+export  function UpdateTaskModal({ projectId }: UpdateTaskModalpProps) {
+    const { taskToEdit, setTaskToEdit } = useUpdateTaskModal();
+    //const [isOpen,setIsOpen] = useState(false)
+    
     const {
 
       isCreating
@@ -57,23 +61,33 @@ export  function UpdateTaskModal({ task,setOpen,projectId }: UpdateTaskModalpPro
     } = useProjectTasks(projectId);
   
   return (
-      <DialogContent className="bg-white">
-        <DialogHeader>
-          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Task</DialogTitle>
-        </DialogHeader>
-        <UpdateTaskForm task={task} setOpen={setOpen} projectId={projectId}/>
-        
-        <DialogFooter className="flex flex-col gap-3 sm:flex-row">
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-        
-          <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`update-task-form-${task.id}`}>
-            {isCreating ? "Saving..." : "Save"}
-          </Button>
-          
-        </DialogFooter>
-        
-      </DialogContent>
+    <>
+      { taskToEdit && (
+        <>
+          <Dialog open={!!taskToEdit} onOpenChange={(open) => !open && setTaskToEdit(null)}>
+            <DialogContent className="bg-white">
+            <DialogHeader>
+              <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Task</DialogTitle>
+            </DialogHeader>
+            <UpdateTaskForm task={taskToEdit}  projectId={projectId}/>
+            
+            <DialogFooter className="flex flex-col gap-3 sm:flex-row">
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+            
+              <Button disabled={isCreating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`update-task-form-${taskToEdit.id}`}>
+                {isCreating ? "Saving..." : "Save"}
+              </Button>
+              
+            </DialogFooter>
+            
+          </DialogContent>
+        </Dialog>
+        </>
+        )
+      }
+    </>
+    
   )
 }

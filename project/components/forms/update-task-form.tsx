@@ -37,16 +37,18 @@ import {
 import { Task, TaskCreate } from "@/types";
 import { taskPriority } from "@/lib/constants";
 import { useProjectTasks } from "@/hooks/use-tasks";
+import { useUpdateTaskModal } from "../tasks/task-update-modal-context";
 
 type UpdateTaskFormProps = {
   task: Task;
   projectId:string,
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+
+
 
 };
 
-export function UpdateTaskForm({task,setOpen,projectId}:UpdateTaskFormProps){
-
+export function UpdateTaskForm({task,projectId}:UpdateTaskFormProps){
+    const {  setTaskToEdit } = useUpdateTaskModal();
     const {updateTask}=useProjectTasks(projectId)
 
     const form = useForm<z.infer<typeof taskSchema>>({
@@ -73,7 +75,7 @@ export function UpdateTaskForm({task,setOpen,projectId}:UpdateTaskFormProps){
         }
 
         await updateTask(task.id,newTaskData,"form")
-        setOpen(false)
+        setTaskToEdit(null)
 
       }catch (err){
         console.error("Failed to update task", err);
