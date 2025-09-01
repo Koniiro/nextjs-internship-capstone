@@ -118,7 +118,9 @@ export function useTeamMembers(teamID:string) {
         onSuccess: (data) => {
             toast.success(
                 "User Permissions Updated", {
-                description: `You made ${data.userName} a Team Manager`,
+                description:   data.result.teamManager
+                    ? `You made ${data.userName} a Team Manager`
+                    : `You removed ${data.userName} as Team Manager`
             })
             queryClient.invalidateQueries({ queryKey: ['team', teamID]  })
         },
