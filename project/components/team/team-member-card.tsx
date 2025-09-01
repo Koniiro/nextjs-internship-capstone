@@ -30,7 +30,6 @@ export default function TeamMemberCard({userPermissions,userID,teamId,role,isTea
     if (userLoading|| clerkUserLoading) return <p>Loading...</p>;
     if (error) return <p>Failed to load user {error.message}</p>;
     if (!user||!clerkUser) return <p>Failed to load user data</p>;
-    console.log(user?.firstName,isTeamManager)
 
     const isUser=userID===clerkUser.id
     const roleChangeHandler = async (role:string) => { 

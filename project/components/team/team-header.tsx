@@ -1,6 +1,5 @@
 "use client"
-import { useTeamMembers } from "@/hooks/use-team-members";
-import { Settings, MoreHorizontal, ArrowLeft, Pencil, Trash } from "lucide-react"
+import { MoreHorizontal, ArrowLeft, Trash } from "lucide-react"
 import Link from "next/link";
 import { AddTeamMemberModal } from "../modals/add-team-member";
 import { Button } from "../ui/button";
@@ -10,6 +9,7 @@ import { useState } from "react";
 import { UpdateTeamForm } from "../forms/update-team-form";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 type TeamHeaderProps = {
   teamData: Team
@@ -21,13 +21,21 @@ type TeamHeaderProps = {
 
 
 export function TeamHeader({teamId,teamData,teamLoading,teamError,userPermissions}:TeamHeaderProps) {
-  const {updateTeam,isUpdating}=useTeamData(teamId)
+  const {updateTeam,isUpdating,deleteTeam}=useTeamData(teamId)
   const [editTitleOpen,setEditTitleOpen]=useState(false)
    
   if (teamLoading) return <p>Loading...</p>;
   if (teamError) return <p>Failed to load team {teamError.message}</p>;
   if (!teamData) return <p>Failed to load team data</p>;
+
+  const router = useRouter();
   const delTeamHandler = async () => { 
+    try {
+      await deleteTeam(teamId); // your API/mutation call
+      router.push("/team");     // navigate back to teams page
+    } catch (err) {
+      console.error("Failed to delete team:", err);
+    }
         //deleteTeam(team.id)
   }
   return (

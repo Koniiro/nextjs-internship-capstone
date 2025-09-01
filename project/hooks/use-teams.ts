@@ -138,6 +138,28 @@ export function useTeamData(teamId:string){
         },
     })
 
+    const{
+        mutate: useDeleteTeam,
+        isPending: isDeleting,
+        error: deleteError,
+    }  = useMutation({
+    mutationFn: async (teamId:string) => {
+        return await deleteTeam(teamId);
+    },
+    onSuccess: (data) => {
+        toast.success(
+            "Team Deleted!", {
+            description: `Team ${data.deletedName} has been successfully deleted.`,
+            })
+        queryClient.invalidateQueries({ queryKey: ['teamData',teamId] })
+        },
+    onError: (err) => {
+            // React Query passes the thrown error here
+        toast.error("Failed to delete team", { description: err.message });
+        console.error("Team deletion failed:", err);
+        },
+    })
+
     return{
 
         teamData: teamData,
@@ -147,6 +169,10 @@ export function useTeamData(teamId:string){
         updateTeam:(teamId:string, newTeamData:TeamCreate)=>useUpdateTeam({teamId,newTeamData}),
         isUpdating:isUpdating,
         updateError:updateError,
+
+        deleteTeam: (teamId: string) => useDeleteTeam(teamId),
+
+
 
     }
 
