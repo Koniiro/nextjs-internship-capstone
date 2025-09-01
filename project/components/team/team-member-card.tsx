@@ -13,15 +13,16 @@ interface TeamMemberCardProps{
     userID:string
     teamId: string
     role:string
-    teamManager:boolean
-    teamCreator:boolean
+    userPermissions:boolean
+    teamManagerUI:boolean
+    teamCreatorUI:boolean
     joinedAt: Date
 }
 
-export default function TeamMemberCard({userID,teamId,role,teamManager,teamCreator}:TeamMemberCardProps){
+export default function TeamMemberCard({userPermissions,userID,teamId,role,teamManagerUI,teamCreatorUI}:TeamMemberCardProps){
     let { user,userLoading,userError} = useDBUser(userID);
     const[openDiag,setOpenDiag] = useState(false)
-    let {removeTeamMember,updateMemberRole} =useTeamMembers(teamId)
+    let {removeTeamMember,updateMemberRole,updateTeamMemberMGT} =useTeamMembers(teamId)
 
     if (userLoading) return <p>Loading...</p>;
     if (userError) return <p>Failed to load user {userError.message}</p>;
@@ -31,8 +32,9 @@ export default function TeamMemberCard({userID,teamId,role,teamManager,teamCreat
         await updateMemberRole(userID,role)
     }
 
-   
-
+    const permChangeHandler = async (manager:boolean) => { 
+        await updateTeamMemberMGT(userID,manager)
+    }
 
     const removeUserHandler = async () => { 
         await removeTeamMember(user.id)
@@ -55,8 +57,8 @@ export default function TeamMemberCard({userID,teamId,role,teamManager,teamCreat
                     </div>
                 </div>
             </div>
-   
-            <Dialog open={openDiag} onOpenChange={setOpenDiag}>
+            {userPermissions &&(
+                <Dialog open={openDiag} onOpenChange={setOpenDiag}>
                 <DropdownMenu>
                 <DropdownMenuTrigger ><MoreHorizontal size={16} /></DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-white">
@@ -87,12 +89,32 @@ export default function TeamMemberCard({userID,teamId,role,teamManager,teamCreat
                              <UserRoundX  size={16} />
                             Remove
                         </DropdownMenuItem>
+                        {teamManagerUI ? (
+                            <DropdownMenuItem
+                                onClick={() => permChangeHandler(false)}
+                                className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                            >
+                                <UserRoundX size={16} />
+                                Remove as Team Manager
+                            </DropdownMenuItem>
+                        ) : (
+                            <DropdownMenuItem
+                                onClick={() => permChangeHandler(true)}
+                                className="cursor-pointer flex flex-row items-center gap-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900"
+                            >
+                                <UserRoundX size={16} />
+                                Assign as Team Manager
+                            </DropdownMenuItem>
+                        )}
+
                     </DropdownMenuGroup>
 
                     
                 </DropdownMenuContent>
                 </DropdownMenu>
             </Dialog>
+            )}   
+            
         </div>
 
         <Separator className="my-2  bg-outer_space-200 " />
@@ -104,13 +126,13 @@ export default function TeamMemberCard({userID,teamId,role,teamManager,teamCreat
                         @{user.userName}
                     </span>
 
-                    {teamCreator && (
+                    {teamCreatorUI && (
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                             Team Creator
                         </span>
                         )}
 
-                    {teamManager && (
+                    {teamManagerUI && (
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
                             TM
                         </span>

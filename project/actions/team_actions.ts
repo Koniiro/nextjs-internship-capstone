@@ -87,9 +87,27 @@ export const getTeamByID = async(teamId:string)=>{
     return result[0]
 }
 
+export const getUserTeamPermissions = async(teamId:string)=>{
+    
+    const clerkID= await clerkAuthCheck()
+    const internalUser = await  queries.users.getByClerkId(clerkID)
+    
+    if (!internalUser) {
+        throw new Error("User not found.");
+    }
+
+    const user = await queries.teamMember.getTeamMember(internalUser.id,teamId)
+
+    if (!user) {
+      throw new Error(`User is not a member of team ${teamId}`);
+    }
+    const manager = await queries.teamMember.getTeamManagerRole(internalUser.id,teamId)
+
+    return manager
+}
+
 export const getTeamMembers = async(teamId:string)=>{
-    const clerkId= await clerkAuthCheck()
-    //await teamMGTAuthCheck(teamId,clerkId)
+    await clerkAuthCheck()
 
     const result = await queries.teamMember.getTeamMembers(teamId)
 

@@ -44,6 +44,6 @@ export async function teamMGTAuthCheck(teamId:string,clerkId:string){
       throw new Error(`User is not authorized as a manager for team ${teamId}`);
     }
 
-   return true;
+    return true;
 
 }

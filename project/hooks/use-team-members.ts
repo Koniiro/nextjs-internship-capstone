@@ -1,5 +1,5 @@
 "use client"
-import { addTeamMember, createTeam, deleteTeam, getTeamByID, getTeamMembers, getUserTeams, removeTeamMember, updateTeam, updateTeamMemberMGT, updateTeamMemberRole } from '@/actions/team_actions';
+import { addTeamMember, createTeam, deleteTeam, getTeamByID, getTeamMembers, getUserTeamPermissions, getUserTeams, removeTeamMember, updateTeam, updateTeamMemberMGT, updateTeamMemberRole } from '@/actions/team_actions';
 import { MemberInviteSchema, TeamCreate } from '@/types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from "sonner";
@@ -25,6 +25,16 @@ export function useTeamMembers(teamID:string) {
         } = useQuery({
         queryKey: ['teamdata', teamID],
             queryFn: async () => getTeamByID(teamID), // you’d create this query
+        });
+    
+    //Grab team member permissions
+    const {
+        data: userPermissions,
+        isLoading: permissionsLoading,
+        error: permissionsError,
+        } = useQuery({
+        queryKey: ['teamdata', teamID],
+            queryFn: async () => getUserTeamPermissions(teamID), // you’d create this query
         });
     
     //Add team Member
@@ -123,13 +133,19 @@ export function useTeamMembers(teamID:string) {
         teamMembers,
         isLoading,
         error,
+
         teamData,
         teamLoading,
         teamError,
 
+        userPermissions:userPermissions,
+        permissionsLoading:permissionsLoading,
+        permissionsError:permissionsError,
+
         addTeamMember:  (userInvite:MemberInviteSchema) => useAddTeamMember(userInvite),
         isInviting: isInviting,
         connectError: connectError,
+
 
         removeTeamMember:(userId:string) =>useRemoveMember(userId),
         updateMemberRole:(userId:string, userRole:string) => useUpdateRole({userId,userRole}),

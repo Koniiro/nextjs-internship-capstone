@@ -11,10 +11,11 @@ type TeamHeaderProps = {
   teamId: string
   teamLoading:boolean
   teamError:Error |null
+  userPermissions:boolean
 };
 
 
-export function TeamHeader({teamId,teamData,teamLoading,teamError}:TeamHeaderProps) {
+export function TeamHeader({teamId,teamData,teamLoading,teamError,userPermissions}:TeamHeaderProps) {
     if (teamLoading) return <p>Loading...</p>;
     if (teamError) return <p>Failed to load team {teamError.message}</p>;
     if (!teamData) return <p>Failed to load team data</p>;
@@ -33,16 +34,19 @@ export function TeamHeader({teamId,teamData,teamLoading,teamError}:TeamHeaderPro
             </Link>
             <div className="w-3 h-3 bg-blue_munsell-500 rounded-full" />
             <h1 className="text-2xl font-bold text-outer_space-500 dark:text-platinum-500">{teamData.teamName}</h1>
-            <Button  className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
-              <MoreHorizontal size={20} />
-            </Button>
+            {userPermissions && 
+              <Button  className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
+                <MoreHorizontal size={20} />
+              </Button>
+            }
+           
             </div>
         </div>
-
-        <div className="flex items-center space-x-2">
+        {userPermissions && <div className="flex items-center space-x-2">
           <AddTeamMemberModal teamID={teamId}/>
           
-        </div>
+        </div>}
+        
       </div>
     </div>
   )

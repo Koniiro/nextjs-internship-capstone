@@ -7,20 +7,21 @@ import { use } from "react";
 
 export default function TeamPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params); 
-    const {teamData,teamError,teamLoading} =useTeamMembers(id)
-    
-    const {teamMembers,isLoading,error} =useTeamMembers(id)
-    if (isLoading) return <p>Loading...</p>;
+    const {teamData,teamError,teamLoading,teamMembers,isLoading,error,userPermissions,permissionsLoading,permissionsError} =useTeamMembers(id)
+
+    if (isLoading||permissionsLoading) return <p>Loading...</p>;
     if (error) return <p>Failed to load teams {error.message}</p>;
+    if (permissionsError) return <p>Failed to load teams {permissionsError.message}</p>;
     if (!teamMembers || !teamData) return <p>Failed to load teams</p>;
+    if (!userPermissions) return <p>Failed to load user permissions</p>;
     return(
         <div className="space-y-6">
-            <TeamHeader teamId={id} teamData={teamData} teamError={teamError} teamLoading={teamLoading}/>
+            <TeamHeader userPermissions={userPermissions} teamId={id} teamData={teamData} teamError={teamError} teamLoading={teamLoading}/>
             {teamMembers.length > 0 ? (
                     // Teams exist → show grid of cards
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {teamMembers.map((mem, index) => (
-                        <TeamMemberCard key={index} userID={mem.id} role={mem.role} teamCreator={mem.id === teamData.teamCreatorId} teamManager={mem.teamManager} joinedAt={mem.joinedAt} teamId={id} />
+                        <TeamMemberCard key={index} userPermissions={userPermissions}userID={mem.id} role={mem.role} teamCreatorUI={mem.id === teamData.teamCreatorId} teamManagerUI={mem.teamManager} joinedAt={mem.joinedAt} teamId={id} />
                     ))}
                 </div>
                 ) : (
