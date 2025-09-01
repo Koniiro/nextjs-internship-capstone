@@ -18,6 +18,16 @@ export const getUserById = async (userId:string) => {
   return user
 };
 
+export const getUserIDByClerkId = async () => {
+  const clerkId=await clerkAuthCheck()
+  const user = await queries.users.getByClerkId(clerkId)
+  if (!user) {
+    console.error(`User with ID ${clerkId} not found`);
+    throw new Error(`User with ID ${clerkId} not found`);
+  }
+  return user
+};
+
 
 export async function getUserData() {
      return  db.select().from(usersTable);

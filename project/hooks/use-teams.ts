@@ -1,5 +1,5 @@
 "use client"
-import { createTeam, deleteTeam, getUserTeams, updateTeam } from '@/actions/team_actions';
+import { createTeam, deleteTeam, getTeamByID, getUserTeams, updateTeam } from '@/actions/team_actions';
 import { TeamCreate } from '@/types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from "sonner";
@@ -73,7 +73,7 @@ export function useTeams() {
         onSuccess: (data) => {
             toast.success(
                 "Team Updated!", {
-                description: `Project "${data.teamName}" has been successfully updated.`,
+                description: `Team "${data.teamName}" has been successfully updated.`,
             })
             queryClient.invalidateQueries({ queryKey: ['teams'] })
         },
@@ -99,4 +99,55 @@ export function useTeams() {
 
         deleteTeam: (teamId: string) => useDeleteTeam(teamId),
     }
+}
+
+export function useTeamData(teamId:string){
+     const queryClient = useQueryClient()
+    // Grab User Projects
+    const {
+        data: teamData,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['teamData',teamId],
+        queryFn: async () => {
+            return await getTeamByID(teamId);
+        },
+    })
+
+
+    const{
+        mutate: useUpdateTeam,
+        isPending: isUpdating,
+        error: updateError,
+    }  = useMutation({
+        mutationFn: async ({ teamId, newTeamData }: { teamId: string; newTeamData: TeamCreate }) => {
+            return await updateTeam(teamId,newTeamData);
+        },
+        onSuccess: (data) => {
+            toast.success(
+                "Team Updated!", {
+                description: `Team ${data.teamName} has been successfully updated.`,
+            })
+            queryClient.invalidateQueries({ queryKey: ['teamData',teamId] })
+        },
+        onError: (err) => {
+            // React Query passes the thrown error here
+            toast.error("Failed to update team", { description: err.message });
+            console.error("Team update failed:", err);
+        },
+    })
+
+    return{
+
+        teamData: teamData,
+        teamLoading: isLoading,
+        teamError: error,
+
+        updateTeam:(teamId:string, newTeamData:TeamCreate)=>useUpdateTeam({teamId,newTeamData}),
+        isUpdating:isUpdating,
+        updateError:updateError,
+
+    }
+
 }

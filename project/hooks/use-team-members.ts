@@ -133,8 +133,8 @@ export function useTeamMembers(teamID:string) {
 
     return {
         teamMembers,
-        isLoading,
-        error,
+        membersLoading:isLoading,
+        membersError:error,
 
         teamData,
         teamLoading,

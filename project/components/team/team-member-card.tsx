@@ -2,7 +2,7 @@ import { MoreHorizontal, UserRoundPen, UserRoundX,UserRoundCog  } from "lucide-r
 import { Dialog } from "../ui/dialog";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useState } from "react";
-import { useDBUser } from "@/hooks/use-users";
+import { useClerkUser, useDBUser } from "@/hooks/use-users";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
 import { userRoles } from "@/lib/constants";
@@ -15,20 +15,24 @@ interface TeamMemberCardProps{
     teamId: string
     role:string
     userPermissions:boolean
-    teamManagerUI:boolean
-    teamCreatorUI:boolean
+    isTeamManager:boolean
+    teamCreator:boolean
+  
     joinedAt: Date
 }
 
-export default function TeamMemberCard({userPermissions,userID,teamId,role,teamManagerUI,teamCreatorUI}:TeamMemberCardProps){
+export default function TeamMemberCard({userPermissions,userID,teamId,role,isTeamManager,teamCreator}:TeamMemberCardProps){
     let { user,userLoading,userError} = useDBUser(userID);
+    let {clerkUser,clerkUserLoading,clerkUserError} = useClerkUser()
     const[openDiag,setOpenDiag] = useState(false)
     let {removeTeamMember,updateMemberRole,updateTeamMemberMGT} =useTeamMembers(teamId)
+    const error=userError||clerkUserError
+    if (userLoading|| clerkUserLoading) return <p>Loading...</p>;
+    if (error) return <p>Failed to load user {error.message}</p>;
+    if (!user||!clerkUser) return <p>Failed to load user data</p>;
+    console.log(user?.firstName,isTeamManager)
 
-    if (userLoading) return <p>Loading...</p>;
-    if (userError) return <p>Failed to load user {userError.message}</p>;
-    if (!user) return <p>Failed to load user data</p>;
-    
+    const isUser=userID===clerkUser.id
     const roleChangeHandler = async (role:string) => { 
         await updateMemberRole(userID,role)
     }
@@ -55,6 +59,7 @@ export default function TeamMemberCard({userPermissions,userID,teamId,role,teamM
                     <div>
                         <h3 className="font-bold text-lg text-outer_space-500 dark:text-platinum-500">{user.firstName} {user.lastName}</h3>
                         <p className="captalize text-sm font-semibold text-payne's_gray-500 dark:text-french_gray-400">{role}</p>
+                        
                     </div>
                 </div>
             </div>
@@ -84,86 +89,92 @@ export default function TeamMemberCard({userPermissions,userID,teamId,role,teamM
                             </DropdownMenuSubContent>
                             </DropdownMenuPortal>
                         </DropdownMenuSub>
-                        {!teamManagerUI && <AlertDialog  >
-                            <AlertDialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => {e.preventDefault()}}
-                                    className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900">
-                                    <UserRoundX  size={16} />
+                        {(!isUser && !isTeamManager) && (
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                <DropdownMenuItem
+                                    onSelect={(e) => e.preventDefault()}
+                                    className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                                >
+                                    <UserRoundX size={16} />
                                     Remove
                                 </DropdownMenuItem>
-                            </AlertDialogTrigger>
+                                </AlertDialogTrigger>
                                 <AlertDialogContent className="bg-white">
                                 <AlertDialogHeader>
-                                <AlertDialogTitle>Remove this member?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. The user will lose all access to this team and all its projects. 
-                                </AlertDialogDescription>
+                                    <AlertDialogTitle>Remove this member?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                    This action cannot be undone. The user will lose all access to this team and all its projects.
+                                    </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                <AlertDialogCancel  >Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={removeUserHandler}>
-                                     Yes, Remove.
-                                </AlertDialogAction>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={removeUserHandler}>
+                                    Yes, Remove.
+                                    </AlertDialogAction>
                                 </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>}
-                        
-                        {teamManagerUI ? (
-                            
-                            <AlertDialog  >
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        )}
+                        {!isUser && (
+                            isTeamManager ? (
+                                <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <DropdownMenuItem
-                                        onSelect={(e) => {e.preventDefault()}}
-                                        className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                                    onSelect={(e) => e.preventDefault()}
+                                    className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
                                     >
-                                        <UserRoundX size={16} />
-                                        Demote to Member
+                                    <UserRoundX size={16} />
+                                    Demote to Member
                                     </DropdownMenuItem>
                                 </AlertDialogTrigger>
-                                 <AlertDialogContent className="bg-white">
+                                <AlertDialogContent className="bg-white">
                                     <AlertDialogHeader>
-                                    <AlertDialogTitle>Remove this User's Team Manager Permissions?</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                        Remove this user's Team Manager permissions?
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
                                         This action will remove this user's ability to manage team members.
                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                    <AlertDialogCancel  >Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => {permChangeHandler(false)}}>
-                                        Yes, Demote.
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => permChangeHandler(false)}>
+                                        Yes, Demote
                                     </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
-                            </AlertDialog>
-                        ) : (
-
-                            <AlertDialog  >
+                                </AlertDialog>
+                            ) : (
+                                <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <DropdownMenuItem
-                                        onSelect={(e) => {e.preventDefault()}}
-                                        className="cursor-pointer flex flex-row items-center gap-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900"
+                                    onSelect={(e) => e.preventDefault()}
+                                    className="cursor-pointer flex flex-row items-center gap-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900"
                                     >
-                                        <UserRoundCog  size={16} />
-                                        Assign as Team Manager
+                                    <UserRoundCog size={16} />
+                                    Assign as Team Manager
                                     </DropdownMenuItem>
                                 </AlertDialogTrigger>
-                                 <AlertDialogContent className="bg-white">
+                                <AlertDialogContent className="bg-white">
                                     <AlertDialogHeader>
                                     <AlertDialogTitle>Assign user as a Team Manager?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        This action will grant the user additional permissions to manage team members.
+                                        This action will grant the user additional permissions to manage
+                                        team members.
                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                    <AlertDialogCancel  >Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => {permChangeHandler(true)}}>
-                                        Yes, Assign.
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => permChangeHandler(true)}>
+                                        Yes, Assign
                                     </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
-                            </AlertDialog>
-                            
-                        )}
+                                </AlertDialog>
+                            )
+                            )}
+
 
                     </DropdownMenuGroup>
 
@@ -183,13 +194,13 @@ export default function TeamMemberCard({userPermissions,userID,teamId,role,teamM
                         @{user.userName}
                     </span>
 
-                    {teamCreatorUI && (
+                    {teamCreator && (
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
                             Team Creator
                         </span>
                         )}
 
-                    {teamManagerUI && (
+                    {isTeamManager && (
                         <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
                             TM
                         </span>
