@@ -1,4 +1,4 @@
-import { MoreHorizontal, UserRoundPen, UserRoundX } from "lucide-react"
+import { MoreHorizontal, UserRoundPen, UserRoundX,UserRoundCog  } from "lucide-react"
 import { Dialog } from "../ui/dialog";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useState } from "react";
@@ -102,7 +102,7 @@ export default function TeamMemberCard({userPermissions,userID,teamId,role,teamM
                                 onClick={() => permChangeHandler(true)}
                                 className="cursor-pointer flex flex-row items-center gap-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900"
                             >
-                                <UserRoundX size={16} />
+                                <UserRoundCog  size={16} />
                                 Assign as Team Manager
                             </DropdownMenuItem>
                         )}

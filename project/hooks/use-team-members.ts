@@ -33,7 +33,7 @@ export function useTeamMembers(teamID:string) {
         isLoading: permissionsLoading,
         error: permissionsError,
         } = useQuery({
-        queryKey: ['teamdata', teamID],
+        queryKey: ['userPerm', teamID],
             queryFn: async () => getUserTeamPermissions(teamID), // you’d create this query
         });
     

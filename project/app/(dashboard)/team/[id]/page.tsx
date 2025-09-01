@@ -8,12 +8,11 @@ import { use } from "react";
 export default function TeamPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params); 
     const {teamData,teamError,teamLoading,teamMembers,isLoading,error,userPermissions,permissionsLoading,permissionsError} =useTeamMembers(id)
-
     if (isLoading||permissionsLoading) return <p>Loading...</p>;
     if (error) return <p>Failed to load teams {error.message}</p>;
     if (permissionsError) return <p>Failed to load teams {permissionsError.message}</p>;
     if (!teamMembers || !teamData) return <p>Failed to load teams</p>;
-    if (!userPermissions) return <p>Failed to load user permissions</p>;
+    if (userPermissions==undefined) return <p>Failed to load user permissions</p>;
     return(
         <div className="space-y-6">
             <TeamHeader userPermissions={userPermissions} teamId={id} teamData={teamData} teamError={teamError} teamLoading={teamLoading}/>
