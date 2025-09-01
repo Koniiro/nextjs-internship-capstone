@@ -5,6 +5,7 @@ import { Dialog, DialogTrigger } from "../ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useState } from "react";
 import { UpdateTeamModal } from "../modals/update-team-modal";
+import Link from "next/link";
 
 interface TeamCardProps{
     team:Team
@@ -26,7 +27,11 @@ export default function TeamCard({team}:TeamCardProps){
             <div className="flex items-center space-x-3">
             
             <div>
-                <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">{team.teamName}</h3>
+                <Link href={`/team/${team.id}`}>
+                    <h3 className=" capitalize font-medium hover:underline hover:font-bold hover:text-outer_space-700 dark:text-platinum-500">
+                        {team.teamName}
+                    </h3>
+                </Link>
                
             </div>
             </div>

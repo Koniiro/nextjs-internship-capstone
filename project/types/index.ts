@@ -110,7 +110,28 @@ export interface Team{
   id: string
   created_at: Date
   updated_at: Date
+  teamCreatorId:string
+  teamCreatorName:string
 }
 export interface TeamCreate {
   team_name: string
+}
+
+export interface TeamCreateDataSchema {
+  teamName: string
+  teamCreatorId:string
+  teamCreatorName:string
+}
+
+export interface MemberInviteSchema{
+  userEmail:string
+  role: 
+    | "Developer"
+    | "QA"
+    | "Scrum Master"
+    | "Product Owner"
+    | "Designer"
+    | "DevOps"
+    | "Business Analyst";
+  teamManager:boolean
 }

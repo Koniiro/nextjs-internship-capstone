@@ -24,3 +24,13 @@ export const taskPriority: Record<string, string> = {
   'high':'high',
 
 };
+
+export const userRoles: Record<string, string> = {
+  "Developer":"Developer",
+  "QA":"QA",
+  "Scrum Master":"Scrum Master",
+  "Product Owner":"Product Owner",
+  "Designer":"Designer",
+  "DevOps":"DevOps",
+  "Business Analyst":"Business Analyst",
+};

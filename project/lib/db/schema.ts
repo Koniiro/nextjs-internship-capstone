@@ -107,7 +107,9 @@ export const projectMemberRelations = relations(projectMembers, ({ one }) => ({
 export const teamTable = pgTable("userTeams", {
   id: uuid("id").default(sql`gen_random_uuid()`).primaryKey().notNull(),
   teamName: varchar("team_name",{ length: 255 }).notNull(),
-    created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  teamCreatorId: uuid("team_creator_id").notNull(),
+  teamCreatorName: varchar("team_creator_name", { length: 255 }).notNull().default(""),
+  created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 
 });
@@ -116,7 +118,10 @@ export const teamMembersTable = pgTable("teamMembers", {
   userId: uuid("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
   teamId: uuid("team_id").notNull().references(() => teamTable.id, { onDelete: "cascade" }),
   role: varchar("role", { length: 32 }).notNull().default("member"), // optional metadata
-  joinedAt: timestamp("joined_at").notNull().defaultNow() // optional
+  teamManager: boolean("team_manager").notNull().default(false),
+  joinedAt: timestamp("joined_at").notNull().defaultNow(), // optional
+  updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+
 
 },
   (table) => [

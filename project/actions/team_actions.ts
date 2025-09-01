@@ -1,8 +1,10 @@
 "use server";
+import { userRoles } from '@/lib/constants';
 import { queries } from '@/lib/db';
-import { clerkAuthCheck, roleAuthCheck } from '@/lib/server_util';
-import { TeamCreate } from '@/types';
+import { clerkAuthCheck, roleAuthCheck, teamMGTAuthCheck } from '@/lib/server_util';
+import { MemberInviteSchema, TeamCreate, TeamCreateDataSchema } from '@/types';
 import 'dotenv/config';
+import { getUserById } from './user_actions';
 
 export const createTeam = async  (
         newTeamData:TeamCreate
@@ -14,13 +16,20 @@ export const createTeam = async  (
     if (!internalUser) {
         throw new Error("User not found.");
     }
-    const result =await queries.team.createTeam(newTeamData.team_name);
+
+   const newTeamDataEntry:TeamCreateDataSchema = {
+        teamName: newTeamData.team_name,
+        teamCreatorId: internalUser.id,
+        teamCreatorName: `${internalUser.firstName ?? ""} ${internalUser.lastName ?? ""}`.trim(),
+    };
+
+    const result =await queries.team.createTeam(newTeamDataEntry);
 
     if (!result[0]) throw new Error("Team creation failed or duplicate");
     const newTeam=result[0]
 
     // Add Team Leader
-    const linkCheck=await queries.teamMember.addTeamMember(internalUser.id,newTeam.id,"Team Leader") 
+    const linkCheck=await queries.teamMember.addTeamMember(internalUser.id,newTeam.id,"Team Leader",true) 
 
     if (!linkCheck[0]) { 
         await queries.team.deleteTeam(newTeam.id); 
@@ -35,7 +44,7 @@ export const updateTeam = async  (
         updateTeamData:TeamCreate
     )=>{
         const clerkID= await clerkAuthCheck()
-        await roleAuthCheck(teamId,clerkID)
+        await teamMGTAuthCheck(teamId,clerkID)
         const result = await queries.team.updateTeam(teamId,updateTeamData.team_name)
 
         if (!result[0]) throw new Error(`Failed to update team`); 
@@ -47,7 +56,7 @@ export const deleteTeam = async  (
         teamId:string
     )=>{
         const clerkID= await clerkAuthCheck()
-        await roleAuthCheck(teamId,clerkID)
+        await teamMGTAuthCheck(teamId,clerkID)
         const result = await queries.team.deleteTeam(teamId)
 
         if (!result[0]) throw new Error(`Failed to delete team`); 
@@ -68,41 +77,108 @@ export const getUserTeams= async()=>{
         return result
     }
 
+export const getTeamByID = async(teamId:string)=>{
+    
+    await clerkAuthCheck()
+ 
+    const result = await queries.team.getById(teamId)
+    if (!result[0]) throw new Error(`Failed to get team ${teamId}`); 
+
+    return result[0]
+}
+
 export const getTeamMembers = async(teamId:string)=>{
     const clerkId= await clerkAuthCheck()
-    await roleAuthCheck(teamId,clerkId)
+    //await teamMGTAuthCheck(teamId,clerkId)
 
-    const result = await queries.teamMember.getTeamMember(teamId)
+    const result = await queries.teamMember.getTeamMembers(teamId)
 
     if (!result[0]) throw new Error(`Failed to get team's users`); 
 
-    return result[0]
+    return result
 
     }
-export const addTeamMember = async(teamId:string, userId:string, role:string)=>{
+export const addTeamMember = async(teamId:string, userInvite:MemberInviteSchema)=>{
     const clerkID= await clerkAuthCheck()
-    await roleAuthCheck(teamId,clerkID)
+    await teamMGTAuthCheck(teamId,clerkID)
 
-    const result = await queries.teamMember.addTeamMember(userId,teamId,role)
+    const userQuery= await queries.users.getByEmail(userInvite.userEmail)   //retrieve user Id
+    if (!userQuery) throw new Error( `User with email "${userInvite.userEmail}" does not exist or may be misspelled.`); 
 
-    if (!result[0]) throw new Error(`Failed to add user-${userId} to team`); 
+    //Make sure role is valid
+    if (!userRoles[userInvite.role]) {
+        throw new Error(`Invalid role: ${userInvite.role}. Must be one of: ${Object.keys(userRoles).join(", ")}`);
+    }
 
-    return result[0]
+    const result = await queries.teamMember.addTeamMember(userQuery.id,teamId,userInvite.role,userInvite.teamManager)
+
+    if (!result[0]) throw new Error(`Failed to add user-${userQuery.id} to team`); 
+    const resultData={
+        fName:userQuery.firstName,
+        lName:userQuery.lastName,
+        joinData:result[0]
+    }
+    return resultData
 
     }
 
-export const removeTeamMember = async(teamId:string, userId:string, role:string)=>{
+export const updateTeamMemberRole = async(userId:string,teamId:string,userRole:string)=>{
     const clerkID= await clerkAuthCheck()
-    await roleAuthCheck(teamId,clerkID)
+    await teamMGTAuthCheck(teamId,clerkID)
+    const user=await getUserById(userId)
 
-    // TODO: Add Safety Check for team leads
-    const memberRole = await queries.teamMember.getTeamMemberRole(userId, teamId);
+
+    //Make sure role is valid
+    if (!userRoles[userRole]) {
+        throw new Error(`Invalid role: ${userRole}. Must be one of: ${Object.keys(userRoles).join(", ")}`);
+    }
+    const result = await queries.teamMember.updateMemberRole(userId, teamId,userRole);
+    
+    if (!result || result.length === 0) {
+        throw new Error("Failed to update team member or user may not exist in this team.");
+    }
+    const resData={
+        result:result[0],
+        userName:`${user.firstName} ${user.lastName}`
+    }
+
+    return resData;
+}
+
+export const updateTeamMemberMGT = async(userId:string,teamId:string,manage:boolean)=>{
+    const clerkID= await clerkAuthCheck()
+    await teamMGTAuthCheck(teamId,clerkID)
+    const user=await getUserById(userId)
+
+    const result = await queries.teamMember.updateMemberPermissions(userId, teamId,manage);
+    
+    if (!result || result.length === 0) {
+        throw new Error("Failed to update team member or user may not exist in this team.");
+    }
+    const resData={
+        result:result[0],
+        userName:`${user.firstName} ${user.lastName}`
+    }
+
+    return resData;
+}
+
+export const removeTeamMember = async(userId:string, teamId:string)=>{
+    const clerkID= await clerkAuthCheck()
+    await teamMGTAuthCheck(teamId,clerkID)
+    const user=await getUserById(userId)
 
     const result = await queries.teamMember.removeTeamMember(userId,teamId)
     
     if (!result || result.length === 0) {
-    throw new Error("Failed to remove team member. User may not exist in this team.");
+        throw new Error("Failed to remove team member. User may not exist in this team.");
     }
 
-    return result[0];
+    const resData={
+        result:result[0],
+        userName:`${user.firstName} ${user.lastName}`
     }
+
+    return resData;
+
+}

@@ -77,6 +77,23 @@ export const commentSchema = z.object({
 })
 
 
+const Roles = z.enum([
+  "Developer",
+  "QA",
+  "Scrum Master",
+  "Product Owner",
+  "Designer",
+  "DevOps",
+  "Business Analyst",
+]);
+
+export const teamMemberSchema = z.object({
+  userEmail: z.email("Invalid email address").max(254, "Email is too long"),
+  role: Roles,
+  teamManager:z.boolean()
+})
+
+
 export const teamSchema = z.object({
   teamName: z.string().min(1, 'Name is required').max(20, 'Name too long'),
 

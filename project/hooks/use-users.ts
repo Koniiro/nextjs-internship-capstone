@@ -13,16 +13,16 @@ export function useDBUser(userId:string){
     } = useQuery({
         queryKey: ['user',userId],
         queryFn: async () => {
-        const res = await getUserById(userId);
-        if (!res.success) throw new Error(res.error);
-        return res.data;
+            return await getUserById(userId);
+
         },
+
     })
 
     return {
         user: user,
-        isLoading: isLoading,
-        error: error,
+        userLoading: isLoading,
+        userError: error,
     }
 
 }
