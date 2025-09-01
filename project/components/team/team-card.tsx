@@ -9,9 +9,10 @@ import Link from "next/link";
 
 interface TeamCardProps{
     team:Team
+    managerPermissions:boolean
 }
 
-export default function TeamCard({team}:TeamCardProps){
+export default function TeamCard({team,managerPermissions}:TeamCardProps){
     let { deleteTeam} = useTeams();
     const[openDiag,setOpenDiag] = useState(false)
     
@@ -35,7 +36,7 @@ export default function TeamCard({team}:TeamCardProps){
                
             </div>
             </div>
-            <Dialog open={openDiag} onOpenChange={setOpenDiag}>
+            {managerPermissions && <Dialog open={openDiag} onOpenChange={setOpenDiag}>
                 <DropdownMenu>
                 <DropdownMenuTrigger ><MoreHorizontal size={16} /></DropdownMenuTrigger>
                 <DropdownMenuContent className="bg-white">
@@ -60,7 +61,8 @@ export default function TeamCard({team}:TeamCardProps){
                 </DropdownMenu>
                 <UpdateTeamModal team={team} setOpen={setOpenDiag}/>
                 
-            </Dialog>
+            </Dialog>}
+            
         </div>
 
 

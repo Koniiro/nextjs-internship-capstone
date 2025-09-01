@@ -26,8 +26,8 @@ export default function TeamPage() {
       {userTeams.length > 0 ? (
         // Teams exist → show grid of cards
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {userTeams.map((team, index) => (
-            <TeamCard key={index} team={team.teamTable} />
+          {userTeams.map((teamRecord, index) => (
+            <TeamCard key={index} team={teamRecord.teamData} managerPermissions={teamRecord.permission.isManager} />
           ))}
         </div>
       ) : (

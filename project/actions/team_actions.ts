@@ -71,10 +71,23 @@ export const getUserTeams= async()=>{
         if (!internalUser) {
             throw new Error("User not found.");
         }
-        const result = await queries.teamMember.getUserTeams(internalUser.id)
-        if (!result || result.length === 0) return [];
+        const teams = await queries.teamMember.getUserTeams(internalUser.id)
+        if (!teams || teams.length === 0) return [];
 
-        return result
+        const teamsWithPermissions = await Promise.all(
+            teams.map(async (team) => {
+                const manager = await queries.teamMember.getTeamManagerRole(internalUser.id, team.teamTable.id);
+
+                return {
+                    teamData:team.teamTable,
+                    permission: {
+                        isManager: !!manager,
+                    },
+                };
+            })
+        );
+
+        return teamsWithPermissions
     }
 
 export const getTeamByID = async(teamId:string)=>{
