@@ -1,9 +1,47 @@
+"use client"
 import { Plus, Search, Filter } from "lucide-react"
 import  ProjectGrid  from "@/components/project/project-grid"
 import { CreateProjectModal } from "@/components/modals/create-project-modal"
+import { useTeams } from "@/hooks/use-teams"
+import { useProjects } from "@/hooks/use-projects";
 
-export default async function ProjectsPage() {
- 
+export default function ProjectsPage() {
+  let {
+    userTeams,
+    isLoading: isLoadingTeams,
+    error: errorTeams,
+  } = useTeams();
+
+  const {
+    projects,
+    isLoading: isLoadingProjects,
+    error: errorProjects,
+    deleteProject,
+    updateProject,
+  } = useProjects();
+
+  if (isLoadingTeams || isLoadingProjects) {
+    return <p>Loading...</p>;
+  }
+
+ if (errorTeams || errorProjects) {
+    return (
+      <p>
+        Failed to load{" "}
+        {errorTeams instanceof Error
+          ? `teams: ${errorTeams.message}`
+          : errorProjects instanceof Error
+          ? `projects: ${errorProjects.message}`
+          : "unknown error"}
+      </p>
+    );
+  }
+
+   if (!userTeams || !projects) {
+    return (
+      <p>Failed to load{" "}</p>
+    )}
+
   return (
 
       <div className="space-y-6">
@@ -12,7 +50,7 @@ export default async function ProjectsPage() {
             <h1 className="text-3xl font-bold text-outer_space-500 dark:text-platinum-500">Projects</h1>
             <p className="text-payne's_gray-500 dark:text-french_gray-500 mt-2">Manage and organize your team projects</p>
           </div>
-          <CreateProjectModal/>
+          <CreateProjectModal userTeams={userTeams}/>
         </div>
 
         {/* Implementation Tasks Banner 
@@ -47,30 +85,9 @@ export default async function ProjectsPage() {
         </div>
 
   
-        <ProjectGrid/>
+        <ProjectGrid projects={projects} updateProject={updateProject} deleteProject={deleteProject}/>
 
-        {/* Component Placeholders */}
-        <div className="mt-8 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">📁 Components to Implement</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
-            <div>
-              <strong>components/project-card.tsx</strong>
-              <p>Project display component with progress, members, and actions</p>
-            </div>
-            <div>
-              <strong>components/modals/create-project-modal.tsx</strong>
-              <p>Modal for creating new projects with form validation</p>
-            </div>
-            <div>
-              <strong>hooks/use-projects.ts</strong>
-              <p>Custom hook for project data fetching and mutations</p>
-            </div>
-            <div>
-              <strong>lib/db/schema.ts</strong>
-              <p>Database schema for projects, lists, and tasks</p>
-            </div>
-          </div>
-        </div>
+      
       </div>
 
   )
