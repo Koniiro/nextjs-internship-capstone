@@ -39,46 +39,45 @@ import { useProjects } from "@/hooks/use-projects";
 import { UpdateProjectForm } from "../forms/update-project-form";
 import { Project } from "@/types";
 import { useState } from "react";
+import { ScrollArea } from "../ui/scroll-area";
 
 type UpdateProjectModalProps = {
   projectData: Project;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+
 };
 
-export  function UpdateProjectModal( { projectData }: UpdateProjectModalProps) {
-  const[openDiag,setOpenDiag] = useState(false)  
+export  function UpdateProjectModal( { projectData,setOpen }: UpdateProjectModalProps) {
+
   const {
       isUpdating
     } = useProjects();
   
   return (
-    <Dialog open={openDiag} onOpenChange={setOpenDiag}>
-        <DialogTrigger className="inline-flex items-center px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600 transition-colors">
-            Update Project
-        </DialogTrigger>
-        <DialogContent className="bg-white">
-        <DialogHeader>
-          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Update your project</DialogTitle>
-          <DialogDescription className="text-payne's_gray-500 dark:text-french_gray-500 mt-2">
-            Need to change a few things?
-          </DialogDescription>
-        </DialogHeader>
-        <UpdateProjectForm projectData={projectData} setOpen={setOpenDiag}/>
+    <DialogContent className="bg-white">
+      <DialogHeader>
+        <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Update your project</DialogTitle>
+        <DialogDescription className="text-payne's_gray-500 dark:text-french_gray-500 mt-2">
+          Need to change a few things?
+        </DialogDescription>
+      </DialogHeader>
+      <ScrollArea  className="h-72 w-full rounded-md border">
+        <div className="p-4">
+          <UpdateProjectForm projectData={projectData} setOpen={setOpen}/>
+
+        </div>
+      </ScrollArea>
+      <DialogFooter className="flex flex-col gap-3 sm:flex-row">
+        <DialogClose asChild>
+          <Button variant="outline">Cancel</Button>
+        </DialogClose>
         
-        <DialogFooter className="flex flex-col gap-3 sm:flex-row">
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          
-          <Button disabled={isUpdating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`update-project-form-${projectData.id}`}>
-            {isUpdating ? "Updating..." : "Update Project"}
-          </Button>
-          
-        </DialogFooter>
+        <Button disabled={isUpdating} className="bg-blue_munsell-500 hover:bg-blue_munsell-300 text-white" type="submit" variant="outline"form={`update-project-form-${projectData.id}`}>
+          {isUpdating ? "Updating..." : "Update Project"}
+        </Button>
         
-      </DialogContent>
-     
-            
-    </Dialog>
-    
+      </DialogFooter>
+      
+    </DialogContent>
   )
 }
