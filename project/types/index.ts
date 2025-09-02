@@ -38,6 +38,10 @@ export interface Project {
   updated_at: Date
   due_date?: Date |null
 }
+export interface ProjectCardHandler{
+  project:Project
+  role:string
+}
 export interface ProjectCreator {
   name: string
   description: string
@@ -147,5 +151,6 @@ export interface TeamPermissionStruct {
 
 export interface TeamProjectsStruct {
   team: Team;
+  role:string
   projects: Project[];
 }
