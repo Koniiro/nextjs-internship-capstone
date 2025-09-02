@@ -35,8 +35,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useProjects } from "@/hooks/use-projects";
-import { Project, ProjectCreator } from "@/types";
+import { Project, ProjectCreator, TeamPermissionStruct } from "@/types";
 import { colors, projectStatus } from "@/lib/constants";
+import { useTeams } from "@/hooks/use-teams";
 
 type UpdateProjectFormProps = {
   projectData: Project;
@@ -44,7 +45,36 @@ type UpdateProjectFormProps = {
 };
 
 export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProps){
+  let {
+      userTeams,
+      isLoading: isLoadingTeams,
+      error: errorTeams,
+    } = useTeams();  
 
+  if (isLoadingTeams) {
+    return <p>Loading...</p>;
+  }
+  if (errorTeams) {
+  return (
+    <p>
+      Failed to load{" "}
+      {errorTeams instanceof Error
+        ? `teams: ${errorTeams.message}`
+        : "unknown error"}
+    </p>
+  );
+}
+
+
+   if (!userTeams ) {
+    return (
+      <p>Failed to load{" "}</p>
+    )}
+  const managerTeams = userTeams.filter(team => team.permission.isManager);
+
+    const managerTeamRecord: Record<string, string> = Object.fromEntries(
+      managerTeams.map(team => [team.teamData.teamName, team.teamData.id])
+    );
   
     const {
       updateProject,
@@ -54,6 +84,7 @@ export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProp
         resolver: zodResolver(projectUpdateSchema),
           defaultValues: {
           name: projectData.name,
+          teamOwner:projectData.teamOwner,
           description: projectData.description||"",
           color: projectData.color,
           dueDate: projectData.due_date ? new Date(projectData.due_date) : new Date(),
@@ -66,6 +97,7 @@ export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProp
         const newProjData:ProjectCreator={
         name:data.name,
         description:data.description||'',
+        teamOwner:data.teamOwner,
         color:data.color,
         dueDate:data.dueDate,
         statusId:data.statusId||5,
@@ -115,21 +147,21 @@ export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProp
                 )}
               /> 
               <FormField
-                control={form.control} name="color"
+                control={form.control} name="teamOwner"
                 render={({field})=>(
                   <FormItem className="flex flex-col">
-                    <FormLabel >Project Color</FormLabel>
+                    <FormLabel >Team</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder="Select a color for your project" />
+                            <SelectValue placeholder="Select a team for your project" />
                         </SelectTrigger>
                         </FormControl>
                         <SelectContent className="bg-white">
-                            {Object.entries(colors).map(([name, value]) => (
+                            {Object.entries(managerTeamRecord).map(([name, value]) => (
                                 <SelectItem key={value} value={value} className="cursor-pointer" >
                                 <div className="flex flex-row items-center gap-2">
-                                    <div className={`w-3 h-3 rounded-full bg-${value}`} />
+ 
                                     {name}
                                 </div>                               
                                 </SelectItem>
@@ -203,6 +235,33 @@ export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProp
               
                 )}
               />
+              <FormField
+                control={form.control} name="color"
+                render={({field})=>(
+                  <FormItem className="flex flex-col">
+                    <FormLabel >Project Color</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select a color for your project" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white">
+                            {Object.entries(colors).map(([name, value]) => (
+                                <SelectItem key={value} value={value} className="cursor-pointer" >
+                                <div className="flex flex-row items-center gap-2">
+                                    <div className={`w-3 h-3 rounded-full bg-${value}`} />
+                                    {name}
+                                </div>                               
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    
+                    <FormMessage className="text-red-600"/>
+                  </FormItem>
+                )}
+              /> 
               
             </form>
           </Form>

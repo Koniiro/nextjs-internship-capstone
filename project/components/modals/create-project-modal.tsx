@@ -37,10 +37,15 @@ import { CreateProjectForm } from '../forms/create-project-form';
 import { Button } from "../ui/button";
 import { useProjects } from "@/hooks/use-projects";
 import { useState } from "react";
+import { TeamPermissionStruct } from "@/types";
+import { ScrollArea } from "../ui/scroll-area";
 
+interface CreateProjectModalProps{
+    userTeams:TeamPermissionStruct[]
 
+}
 
-export  function CreateProjectModal() {
+export  function CreateProjectModal({userTeams}:CreateProjectModalProps) {
     const[openDiag,setOpenDiag] = useState(false)
   
     const {
@@ -55,14 +60,18 @@ export  function CreateProjectModal() {
             <Plus size={20} className="mr-2" />
             New Project
         </DialogTrigger>
-        <DialogContent className="bg-white">
+        <DialogContent className="bg-white my-3">
         <DialogHeader>
           <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Create a New Project</DialogTitle>
           <DialogDescription className="text-payne's_gray-500 dark:text-french_gray-500 mt-2">
             Ready to start a new project?
           </DialogDescription>
         </DialogHeader>
-        <CreateProjectForm setOpen={setOpenDiag}/>
+        <ScrollArea  className="h-72 w-full rounded-md border">
+          <div className="p-4">
+            <CreateProjectForm setOpen={setOpenDiag} userTeam={userTeams}/>
+          </div>
+        </ScrollArea>
         
         <DialogFooter className="flex flex-col gap-3 sm:flex-row">
           <DialogClose asChild>
