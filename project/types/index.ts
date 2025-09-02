@@ -29,6 +29,7 @@ export interface UserCreator {
 export interface Project {
   id: string
   projectOwner: string
+  teamOwner: string
   name: string
   statusId:number
   description: string 
@@ -40,6 +41,7 @@ export interface Project {
 export interface ProjectCreator {
   name: string
   description: string
+  teamOwner: string
   statusId:number
   color?:string
   dueDate?: Date
@@ -134,4 +136,16 @@ export interface MemberInviteSchema{
     | "DevOps"
     | "Business Analyst";
   teamManager:boolean
+}
+interface TeamPermission {
+  isManager: boolean;
+}
+export interface TeamPermissionStruct {
+  teamData: Team;
+  permission: TeamPermission;
+}
+
+export interface TeamProjectsStruct {
+  team: Team;
+  projects: Project[];
 }
