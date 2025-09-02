@@ -55,8 +55,10 @@ export const getUserProjects=async()=>{
       const projectsByTeam = await Promise.all(
         teams.map(async team => {
           const projects = await queries.projects.getByTeamId(team.teamTable.id);
+          const role = await queries.teamMember.getTeamMemberRole(internalUser.id,team.teamTable.id)
           return {
             team: team.teamTable,
+            role:role,
             projects: projects,
           };
         })
