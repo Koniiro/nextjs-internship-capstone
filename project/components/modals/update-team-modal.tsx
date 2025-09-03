@@ -8,6 +8,7 @@ import { useState } from "react";
 import { UpdateTeamForm } from "../forms/update-team-form";
 import { updateTeam } from '../../actions/team_actions';
 import { useTeams } from "@/hooks/use-teams";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 type UpdateTeamModalpProps = {
   team:Team
@@ -20,8 +21,8 @@ export  function UpdateTeamModal({team,setOpen}:UpdateTeamModalpProps) {
   return (
     <DialogContent  className="bg-white">
         <DialogHeader>
-          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Column</DialogTitle>
-
+          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Team</DialogTitle>
+          <DialogDescription>Edit your team's details</DialogDescription>
         </DialogHeader>
         <UpdateTeamForm teamData={team} setOpen={setOpen} updateTeam={updateTeam}/>
         

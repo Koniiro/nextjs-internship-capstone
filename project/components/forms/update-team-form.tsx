@@ -2,7 +2,7 @@ import { teamSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { Form,FormControl, FormField, FormItem, FormMessage } from "../ui/form";
+import { Form,FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Team, TeamCreate } from "@/types";
 
@@ -44,6 +44,7 @@ export function UpdateTeamForm({setOpen,updateTeam,teamData}:UpdateTeamFormProps
                     control={form.control} name="teamName"
                     render={({field})=>(
                         <FormItem className="flex flex-col">
+                            <FormLabel >Team Name</FormLabel>
                             <FormControl>
                                 <Input placeholder="Team UmaPyoi" {...field} />
                                 
