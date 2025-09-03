@@ -30,13 +30,11 @@ export function UpdateTeamForm({setOpen,updateTeam,teamData}:UpdateTeamFormProps
             team_name:data.teamName
         }
         
-        try {
-            await updateTeam(teamData.id,updatedTeam)
-            setOpen(false)
-            form.reset(); // clears the "content" field
-        } catch (err) {
-            console.error(err);
-        } 
+       
+        await updateTeam(teamData.id,updatedTeam)
+        setOpen(false)
+        form.reset(); // clears the "content" field
+
     }
     return <Form {...form}>
             <form id={`update-team-form-${teamData.id}`} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

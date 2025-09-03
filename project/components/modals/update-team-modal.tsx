@@ -21,7 +21,7 @@ export  function UpdateTeamModal({team,setOpen}:UpdateTeamModalpProps) {
   return (
     <DialogContent  className="bg-white">
         <DialogHeader>
-          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Team</DialogTitle>
+          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Team Form</DialogTitle>
           <DialogDescription>Edit your team's details</DialogDescription>
         </DialogHeader>
         <UpdateTeamForm teamData={team} setOpen={setOpen} updateTeam={updateTeam}/>

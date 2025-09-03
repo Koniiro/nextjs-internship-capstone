@@ -171,18 +171,18 @@ describe("TeamCard", () => {
         await user.click(screen.getByText("Edit Team"));
 
         //Dialog is Open
-        expect(screen.getByText("Edit Team")).toBeInTheDocument();
+        expect(screen.getByText("Edit Team Form")).toBeInTheDocument();
     
 
         await user.click(screen.getByText("Cancel"));
         //Closes Dialog
         expect(
-            screen.queryByText("Edit Team")
+            screen.queryByText("Edit Team Form")
         ).not.toBeInTheDocument();
 
         expect(editTeamMock).not.toHaveBeenCalledWith(
             mockTeam.id,
-            {teamName: "New Team Name"}
+            {teamName: "Mock Team"}
         );
 
         // deleteTeam should NOT have been called
@@ -201,7 +201,7 @@ describe("TeamCard", () => {
         await user.click(screen.getByText("Edit Team"));
 
         //Dialog is Open
-        expect(screen.getByText("Edit Team")).toBeInTheDocument();
+        expect(screen.getByText("Edit Team Form")).toBeInTheDocument();
         
         const input = screen.getByLabelText(/team name/i);
         await user.clear(input); // clear default value
@@ -212,7 +212,7 @@ describe("TeamCard", () => {
         await user.click(screen.getByText("Save"));
         //Closes Dialog
         expect(
-            screen.queryByText("Edit Team")
+            screen.queryByText("Edit Team Form")
         ).not.toBeInTheDocument();
 
         expect(editTeamMock).toHaveBeenCalledWith(

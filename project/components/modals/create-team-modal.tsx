@@ -1,6 +1,6 @@
 "use client"
 import {  UserPlus } from "lucide-react";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { useTeams } from "@/hooks/use-teams";
@@ -23,7 +23,8 @@ export  function CreateTeamModal({}:CreateTeamModalpProps) {
             </DialogTrigger>
             <DialogContent className="bg-white">
             <DialogHeader>
-            <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Create Team</DialogTitle>
+            <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Team Creation Form</DialogTitle>
+            <DialogDescription>Create a new Team</DialogDescription>
 
             </DialogHeader>
             <CreateTeamForm setOpen={setOpenDiag} createTeam={createTeam}/>
