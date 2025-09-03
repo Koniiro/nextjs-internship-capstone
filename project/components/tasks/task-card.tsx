@@ -78,8 +78,13 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
   const { setTaskToEdit } = useUpdateTaskModal();
   
   const { setActiveTask } = useTaskSheet();
-  const [isOpen,setIsOpen] = useState(false)
- 
+
+
+  //const{deleteTask,isDeleting,deleteError}=useTasks(task.columnId)
+
+
+  //const [isOpen,setIsOpen] = useState(false)
+
   const disableCheckTop =
     arrayPosition == null ? true : arrayPosition === 0;
 

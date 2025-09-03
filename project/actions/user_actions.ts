@@ -6,22 +6,26 @@ import { usersTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { clerkAuthCheck } from '@/lib/server_util';
 import { UserCreator } from '@/types';
+import { Console } from 'console';
 
 export const getUserById = async (userId:string) => {
-  try {
-    clerkAuthCheck()
-    const user = await queries.users.getById(userId)
-    return {
-      success: true,
-      data: user,
-    };
-  } catch (error) {
-    console.error("❌ Error fetching User:",userId,"Error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
+  await clerkAuthCheck()
+  const user = await queries.users.getById(userId)
+  if (!user) {
+    console.error(`User with ID ${userId} not found`);
+    throw new Error(`User with ID ${userId} not found`);
   }
+  return user
+};
+
+export const getUserIDByClerkId = async () => {
+  const clerkId=await clerkAuthCheck()
+  const user = await queries.users.getByClerkId(clerkId)
+  if (!user) {
+    console.error(`User with ID ${clerkId} not found`);
+    throw new Error(`User with ID ${clerkId} not found`);
+  }
+  return user
 };
 
 

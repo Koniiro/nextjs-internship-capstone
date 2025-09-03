@@ -4,9 +4,10 @@
 import {config} from "dotenv";
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/db/schema';
-import { ColumnCreate, CommentCreate, ProjectCreator, Task, TaskCreate, UserCreator } from "@/types";
-import { columnTable,usersTable, projectMembers, projectTable, taskTable, commentsTable } from "@/lib/db/schema";
-import { asc, eq, sql } from "drizzle-orm";
+import { ColumnCreate, CommentCreate, ProjectCreator, Task, TaskCreate, TeamCreateDataSchema, UserCreator } from "@/types";
+import { columnTable,usersTable, projectMembers, projectTable, taskTable, commentsTable, teamTable, teamMembersTable } from "@/lib/db/schema";
+import { and, asc, eq, sql } from "drizzle-orm";
+import { add } from "date-fns";
 
 config({path:".env"});
 export const db = drizzle(process.env.DATABASE_URL!,{schema});
@@ -26,6 +27,14 @@ export const queries = {
           .select()
           .from(usersTable)
           .where(eq(usersTable.id, id))
+          .limit(1); 
+        return result[0] ?? null;
+    },
+    getByEmail: async (email:string)=>{
+      const result = await  db
+          .select()
+          .from(usersTable)
+          .where(eq(usersTable.email, email))
           .limit(1); 
         return result[0] ?? null;
     },
@@ -104,7 +113,7 @@ export const queries = {
         }).where(eq(projectTable.id,id));
     },
     delete: async (id: string) => {
-      const res =await  db.delete(projectTable).where(eq(projectTable.id,id)).returning({ deletedId: projectTable.id});
+      const res =await  db.delete(projectTable).where(eq(projectTable.id,id)).returning({ deletedId: projectTable.id, deletedName:projectTable.name});
       return res
     },
     closeProject:(id:string)=>{
@@ -250,7 +259,130 @@ export const queries = {
     delete: (id: string) => {
       return db.delete(commentsTable).where(eq(commentsTable.id,id)).returning({ deletedId: commentsTable.id});
     },
+  },
+
+  team:{
+
+    
+    getById: async(teamId:string)=>{
+      return await db
+          .select()
+          .from(teamTable)
+          .where(eq(teamTable.id, teamId))
+          .limit(1); 
+    },
+
+    createTeam: async (teamData: TeamCreateDataSchema) => {
+      return db.insert(teamTable).values(teamData).onConflictDoNothing().returning()
+    },
+    
+    updateTeam: async(teamId:string, teamName:string)=>{
+      return db.update(teamTable)
+        .set({
+          teamName:teamName,
+          updated_at:sql`now()`
+        }).where(eq(teamTable.id,teamId)).returning();
+
+    },
+    deleteTeam: async(teamId:string)=>{
+      return db.delete(teamTable).where(eq(teamTable.id,teamId)).returning({ deletedId: teamTable.id, deletedName:teamTable.teamName});
+
+    }
+
+  },
+
+  teamMember:{
+    addTeamMember: async (userId: string,teamId:string,role:string,manager:boolean) => {
+      const data={
+        userId:userId,
+        teamId:teamId,
+        role: role && role !== "" ? role : undefined,
+        teamManager:manager
+      }
+      return db.insert(teamMembersTable).values(data).onConflictDoNothing().returning()
+    },
+    removeTeamMember: async (userId: string,teamId:string) => {
+
+      return db.delete(teamMembersTable)
+      .where(and(eq(teamMembersTable.userId, userId), eq(teamMembersTable.teamId, teamId)))
+      .returning();
+    },
+    getTeamMemberRole: async (userId: string,teamId:string) => {
+
+      const result = await db.select({role: teamMembersTable.role})
+        .from(teamMembersTable)
+        .where(
+          and(
+            eq(teamMembersTable.userId, userId),
+            eq(teamMembersTable.teamId, teamId)
+          )
+        );
+      return result[0]?.role ?? null;
+    },
+    getTeamMember: async (userId: string,teamId:string) => {
+
+      const result = await db.select()
+        .from(teamMembersTable)
+        .where(
+          and(
+            eq(teamMembersTable.userId, userId),
+            eq(teamMembersTable.teamId, teamId)
+          )
+        );
+      return result[0] ?? null;
+    },
+    getTeamManagerRole: async (userId: string,teamId:string) => {
+
+      const result = await db.select({role: teamMembersTable.teamManager})
+        .from(teamMembersTable)
+        .where(
+          and(
+            eq(teamMembersTable.userId, userId),
+            eq(teamMembersTable.teamId, teamId)
+          )
+        );
+      return result[0]?.role ?? null;
+    },
+    getTeamMembers: async (teamId:string) => {
+      return  await db.select({
+        
+        id: usersTable.id,
+        firstName: usersTable.firstName,
+        lastName:usersTable.lastName,
+        email: usersTable.email,
+        avatar:usersTable.avatarURL,
+        role: teamMembersTable.role,
+        joinedAt: teamMembersTable.joinedAt,
+        teamManager:teamMembersTable.teamManager
+    
+      }).from(teamMembersTable)
+      .innerJoin(usersTable,eq(teamMembersTable.userId,usersTable.id))
+      .where(eq(teamMembersTable.teamId,teamId))
+    },
+    getUserTeams: async (userId:string) => {
+      return  await db.select({teamTable}).from(teamMembersTable)
+      .innerJoin(teamTable,eq(teamMembersTable.teamId,teamTable.id))
+      .where(eq(teamMembersTable.userId,userId))
+    },
+
+    updateMemberRole:async (userId:string,teamId:string,userRole:string)=>{
+      return db.update(teamMembersTable)
+      .set({
+          role:userRole,
+          updated_at:sql`now()`
+        })
+      .where(and(eq(teamMembersTable.userId, userId), eq(teamMembersTable.teamId, teamId)))
+      .returning();
+    },
+
+    updateMemberPermissions:async (userId:string,teamId:string,manage:boolean)=>{
+      return db.update(teamMembersTable)
+      .set({
+          teamManager:manage,
+          updated_at:sql`now()`
+        })
+      .where(and(eq(teamMembersTable.userId, userId), eq(teamMembersTable.teamId, teamId)))
+      .returning();
+    }
   }
-
-
 }

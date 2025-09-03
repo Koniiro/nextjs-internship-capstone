@@ -39,9 +39,9 @@ function timeAgo(dateString: Date) {
 
 
 export default function TaskCommentCard({userId,commentData}:taskCommentCardProps){
-    const {user, isLoading,error} =useDBUser(userId)
-    if (isLoading) return <p>Loading...</p>;
-    if (error) return <p>Failed to load user {error.message}</p>;
+    const {user, userLoading,userError} =useDBUser(userId)
+    if (userLoading) return <p>Loading...</p>;
+    if (userError) return <p>Failed to load user {userError.message}</p>;
     if (!user) return <p>Failed to load user</p>;
     return <div className="flex flex-col border px-5 py-2 w-auto border-blue-900 rounded-md text-wrap">
         <div className="flex flex-row gap-2 items-center">

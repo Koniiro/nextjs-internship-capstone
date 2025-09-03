@@ -25,7 +25,7 @@ export function ProjectHeader({project,taskLength,completedTasks}:ProjectHeaderP
             >
               <ArrowLeft size={20} />
             </Link>
-              <div className="w-3 h-3 bg-blue_munsell-500 rounded-full" />
+              <div className={`w-3 h-3 bg-${project.color} rounded-full`} />
               <h1 className="text-2xl font-bold text-outer_space-500 dark:text-platinum-500">{project.name}</h1>
             </div>
 
@@ -60,37 +60,3 @@ export function ProjectHeader({project,taskLength,completedTasks}:ProjectHeaderP
     </div>
   )
 }
-{/*<div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            
-            <div>
-              <h1 className="text-3xl font-bold text-outer_space-500 dark:text-platinum-500">Project: {project?.name}</h1>
-              <p className="text-payne's_gray-500 dark:text-french_gray-500 mt-1">
-                {project?.description}
-              </p>
-              <p className="text-payne's_gray-500 dark:text-french_gray-500 mt-1">
-                Due Date: {project?.due_date ? project.due_date.toLocaleDateString() : "No due date set"}
-              </p>
-              <p className="text-payne's_gray-500 dark:text-french_gray-500 mt-1">
-                Created On: {project?.created_at.toLocaleDateString()}  Last Updated: {project?.updated_at.toLocaleDateString()}
-              </p>
-            </div>
-
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <ProjectStatusChip statusId={project?.statusId||5} />
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
-              <Users size={20} />
-            </button>
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
-              <Calendar size={20} />
-            </button>
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
-              <Settings size={20} />
-            </button>
-            <button className="p-2 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400 rounded-lg transition-colors">
-              <MoreHorizontal size={20} />
-            </button>
-          </div>
-        </div>*/}
