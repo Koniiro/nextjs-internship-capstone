@@ -18,7 +18,7 @@ export default function TeamPage({ params }: { params: Promise<{ id: string }> }
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Failed: {error.message}</p>;
     if (!teamData || !teamMembers) return <p>No team data</p>;
-    if (!userPermissions) return <p>No permissions</p>;
+    if (userPermissions===undefined) return <p>No permissions</p>;
 
     return(
         <div className="space-y-6">

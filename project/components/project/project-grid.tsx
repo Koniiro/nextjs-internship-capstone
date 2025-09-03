@@ -4,16 +4,16 @@ import { mapProjectsToCardProjects } from "@/lib/mappers";
 import { getUserProjects } from "@/actions/project_actions";
 import { useProjects } from "@/hooks/use-projects";
 import { de } from "zod/v4/locales";
-import { Project, ProjectCreator } from "@/types";
+import { Project, ProjectCreator, TeamProjectsStruct } from "@/types";
 
+type ProjectGridProps = {
 
-export default  function ProjectGrid() {
+  projects: TeamProjectsStruct[]
+  deleteProject:(id: string) => void
+  updateProject:(id: string, data: ProjectCreator) => void
+};
 
-  const { projects, isLoading, error, deleteProject,updateProject} = useProjects();
-
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Failed to load projects {error.message}</p>;
-
+export default  function ProjectGrid({projects,deleteProject,updateProject}:ProjectGridProps) {
 
   const cardData = mapProjectsToCardProjects(projects?? []);
 
@@ -21,7 +21,7 @@ export default  function ProjectGrid() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
       {cardData.map((project) => (
-        <ProjectCard key={project.id} project={project} onDelete={(id:string)=>{deleteProject(id)}} onEdit={(id:string, data:ProjectCreator)=>{updateProject(id,data)}} />
+        <ProjectCard key={project.project.id} projectData={project} onDelete={(id:string)=>{deleteProject(id)}} onEdit={(id:string, data:ProjectCreator)=>{updateProject(id,data)}} />
       ))}
     </div>
   );

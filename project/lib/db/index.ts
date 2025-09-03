@@ -66,6 +66,14 @@ export const queries = {
           },
       });
     },
+    getByTeamId: async (teamId: string) => {
+      const result = await db
+          .select()
+          .from(projectTable)
+          .where(eq(projectTable.teamOwner,teamId))
+
+      return result;
+    },
     getById: async (projectId: string) => {
       const result = await db
           .select()
@@ -78,6 +86,7 @@ export const queries = {
     create: async (projectOwner:string,projectData:ProjectCreator) => {
       const data={
         projectOwner:projectOwner,
+        teamOwner:projectData.teamOwner,
         name:projectData.name,
         statusId:projectData.statusId,
         description:projectData.description,

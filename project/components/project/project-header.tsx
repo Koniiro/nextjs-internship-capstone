@@ -12,7 +12,10 @@ type ProjectHeaderProps = {
 
 export function ProjectHeader({project,taskLength,completedTasks}:ProjectHeaderProps) {
 
-  const completionRatio = Math.round((completedTasks / taskLength) * 100) / 100; 
+const completionRatio =
+  taskLength > 0 && !isNaN(completedTasks)
+    ? Math.round((completedTasks / taskLength) * 100) / 100
+    : 0;  
   return (
     <div className="bg-white dark:bg-outer_space-500 rounded-lg border border-french_gray-300 dark:border-payne's_gray-400 p-6">
       <div className="flex items-start justify-between">
@@ -42,9 +45,16 @@ export function ProjectHeader({project,taskLength,completedTasks}:ProjectHeaderP
               Due {project.due_date?.toLocaleDateString()}
             </div>
             <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
-              {completionRatio*100}% complete
-            </div>
+            <div
+              className={`w-2 h-2 rounded-full mr-2 ${
+                taskLength === 0 ? "bg-gray-400" : "bg-green-500"
+              }`}
+            />
+            {taskLength === 0
+              ? "No tasks"
+              : `${completionRatio}% complete`}
+          </div>
+
           </div>
         </div>
 
