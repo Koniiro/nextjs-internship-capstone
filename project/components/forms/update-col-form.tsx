@@ -73,7 +73,7 @@ export function UpdateColumnForm({column,setOpen,setLocked}:UpdateColumnFormProp
                 control={form.control} name="name"
                 render={({field})=>(
                   <FormItem className="flex flex-col">
-                    <FormLabel>Label text*</FormLabel>
+                    <FormLabel>Column Title*</FormLabel>
                     <FormControl>
                         <Input placeholder="a-preposterous-lemming" {...field} />
                        

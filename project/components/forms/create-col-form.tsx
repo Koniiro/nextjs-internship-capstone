@@ -54,7 +54,7 @@ export function CreateColumnForm({projectId,setOpen}:CreateColumnFormProps){
     })
 
     async function onSubmit(data: z.infer<typeof colSchema>) {
-      try{
+      
           const newColData:ColumnCreate={
           name:data.name,
           description:data.description||'',
@@ -67,10 +67,6 @@ export function CreateColumnForm({projectId,setOpen}:CreateColumnFormProps){
         setOpen(false);
        
 
-
-      } catch(err){
-        console.error("Failed to create column", err);
-      }
       
     
     }
@@ -82,7 +78,7 @@ export function CreateColumnForm({projectId,setOpen}:CreateColumnFormProps){
                 control={form.control} name="name"
                 render={({field})=>(
                   <FormItem className="flex flex-col">
-                    <FormLabel>Label text*</FormLabel>
+                    <FormLabel>Column Name</FormLabel>
                     <FormControl>
                         <Input placeholder="a-preposterous-lemming" {...field} />
                        
@@ -95,7 +91,7 @@ export function CreateColumnForm({projectId,setOpen}:CreateColumnFormProps){
                 control={form.control} name="description"
                 render={({field})=>(
                   <FormItem className="flex flex-col">
-                    <FormLabel >Project Description</FormLabel>
+                    <FormLabel >Column Description</FormLabel>
                     <FormControl>
                         <Textarea placeholder="I want to make something today.." {...field} />
                     </FormControl>

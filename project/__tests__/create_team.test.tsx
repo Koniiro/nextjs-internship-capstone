@@ -9,7 +9,7 @@ import userEvent from "@testing-library/user-event";
 
 
 const createTeamMock = jest.fn();
-jest.mock("../hooks/use-teams", () => ({
+jest.mock("../hooks/use-teams.ts", () => ({
     useTeams: () => ({
         createTeam: createTeamMock, 
     }),
