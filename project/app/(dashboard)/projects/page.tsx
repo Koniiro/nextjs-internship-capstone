@@ -1,12 +1,11 @@
 "use client"
-import { Plus, Search, Filter, MoreHorizontal, Pencil, ChevronDown, ArrowDownNarrowWide, Users, BadgeInfo, Check, ArrowDownAZ, ArrowDownZA, CalendarArrowUp, CalendarArrowDown } from "lucide-react"
+import { Search, ChevronDown, ArrowDownNarrowWide, Users, BadgeInfo, Check, ArrowDownAZ, ArrowDownZA, CalendarArrowUp, CalendarArrowDown } from "lucide-react"
 import  ProjectGrid  from "@/components/project/project-grid"
 import { CreateProjectModal } from "@/components/modals/create-project-modal"
 import { useTeams } from "@/hooks/use-teams"
 import { useProjects } from "@/hooks/use-projects";
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { TeamProjectsStruct } from "@/types"
 import { mapProjectsToCardProjects } from "@/lib/mappers"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
@@ -85,7 +84,9 @@ export default function ProjectsPage() {
 
   const filteredProjects = projectData.filter((proj) =>{
 
-    let searchMatch=true
+    const searchMatch =
+      search === "" ||
+      proj.project.name.toLowerCase().includes(search.toLowerCase());
     
     
     const matchesStatus =
