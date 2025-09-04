@@ -5,7 +5,8 @@ type ProjectAction =
   | "createTask"
   | "updateTask"
   | "deleteTask"
-  | "markDone";
+  | "markDone"
+  | "manageTasks"
 
 export type Role =
   | "Developer"
@@ -15,7 +16,8 @@ export type Role =
   | "Designer"
   | "DevOps"
   | "Business Analyst"
-  | "Team Leader";
+  | "Team Leader"
+  | "view";
 
 const rolePermissions: Record<Role, ProjectAction[]> = {
   "Team Leader": [
@@ -24,7 +26,8 @@ const rolePermissions: Record<Role, ProjectAction[]> = {
     "manageBoard",
     "createTask",
     "updateTask",
-    "deleteTask"
+    "deleteTask",
+    "manageTasks"
   ],
   "Product Owner": [
     "view",
@@ -32,22 +35,25 @@ const rolePermissions: Record<Role, ProjectAction[]> = {
     "manageBoard",
     "createTask",
     "updateTask",
-    "deleteTask"
+    "deleteTask",
+    "manageTasks"
   ],
   "Scrum Master": [
     "view",
     "edit/delete",
     "manageBoard",
+    "manageTasks",
     "createTask",
     "updateTask",
     "deleteTask"
 
   ],
-  Developer: ["view", "createTask", "updateTask"],
-  QA: ["view", "createTask", "updateTask"],
-  Designer: ["view", "createTask", "updateTask"],
-  DevOps: ["view", "createTask", "updateTask"],
-  "Business Analyst": ["view", "createTask", "updateTask"],
+  Developer: ["view", "createTask", ],
+  QA: ["view", "createTask", ],
+  Designer: ["view", "createTask", ],
+  DevOps: ["view", "createTask", ],
+  "Business Analyst": ["view", "createTask", ],
+  "view":[]
 };
 
 export function hasProjectPermission(role: Role, action: ProjectAction): boolean {

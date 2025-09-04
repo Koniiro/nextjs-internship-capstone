@@ -154,3 +154,14 @@ export interface TeamProjectsStruct {
   role:string
   projects: Project[];
 }
+
+export interface teamMember{
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+    avatar: string | null;
+    role: string;
+    joinedAt: Date;
+    teamManager: boolean;
+}
