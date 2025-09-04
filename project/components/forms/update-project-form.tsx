@@ -53,34 +53,7 @@ export function UpdateProjectForm({ projectData,setOpen,updateProject, }: Update
       isLoading: isLoadingTeams,
       error: errorTeams,
     } = useTeams();  
-
-  if (isLoadingTeams) {
-    return <p>Loading...</p>;
-  }
-  if (errorTeams) {
-  return (
-    <p>
-      Failed to load{" "}
-      {errorTeams instanceof Error
-        ? `teams: ${errorTeams.message}`
-        : "unknown error"}
-    </p>
-  );
-}
-
-
-   if (!userTeams ) {
-    return (
-      <p>Failed to load{" "}</p>
-    )}
-  const managerTeams = userTeams.filter(team => team.permission.isManager);
-
-    const managerTeamRecord: Record<string, string> = Object.fromEntries(
-      managerTeams.map(team => [team.teamData.teamName, team.teamData.id])
-    );
-  
-
-    const form = useForm<z.infer<typeof projectUpdateSchema>>({
+  const form = useForm<z.infer<typeof projectUpdateSchema>>({
         resolver: zodResolver(projectUpdateSchema),
           defaultValues: {
           name: projectData.name,
@@ -111,6 +84,34 @@ export function UpdateProjectForm({ projectData,setOpen,updateProject, }: Update
       
       
     }
+
+  if (isLoadingTeams) {
+    return <p>Loading...</p>;
+  }
+  if (errorTeams) {
+  return (
+    <p>
+      Failed to load{" "}
+      {errorTeams instanceof Error
+        ? `teams: ${errorTeams.message}`
+        : "unknown error"}
+    </p>
+  );
+}
+
+
+   if (!userTeams ) {
+    return (
+      <p>Failed to load{" "}</p>
+    )}
+  const managerTeams = userTeams.filter(team => team.permission.isManager);
+
+    const managerTeamRecord: Record<string, string> = Object.fromEntries(
+      managerTeams.map(team => [team.teamData.teamName, team.teamData.id])
+    );
+  
+
+    
 
     return(
          <Form {...form}>
