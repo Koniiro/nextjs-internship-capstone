@@ -16,6 +16,7 @@ export function useDBUser(userId:string){
             return await getUserById(userId);
 
         },
+        refetchInterval: 5000,
 
     })
 
@@ -39,6 +40,7 @@ export function useClerkUser(){
             return await getUserIDByClerkId();
 
         },
+        refetchInterval: 5000,
 
     })
 

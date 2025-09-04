@@ -93,6 +93,32 @@ export const getTasksByProject = async (projectId:string)=>{
   }
 }
 
+export const getTasksByUser = async ()=>{
+  try {
+      const clerkID= await clerkAuthCheck()
+
+      const internalUser = await queries.users.getByClerkId(clerkID)
+
+      if (!internalUser) {
+        throw new Error("User not found.");
+      }
+
+      const taskRows=await queries.tasks.getByUser(internalUser.id)
+     
+
+      return {success: true,data: taskRows}
+    
+  } catch (error) {
+
+    console.error(`❌ Error fetching tasks for User `, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+    
+  }
+}
+
 export const getTasks=async(colId:number)=>{
   try {
       clerkAuthCheck()

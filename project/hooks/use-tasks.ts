@@ -1,11 +1,11 @@
 "use client"
-import { closeTask, createTask, deleteTask, getTasks, getTasksByProject, openTask, updateTask } from "@/actions/task-col_actions";
+import { closeTask, createTask, deleteTask, getTasks, getTasksByProject, getTasksByUser, openTask, updateTask } from "@/actions/task-col_actions";
 import { TaskCreate } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { taskPriority } from '../lib/constants';
 
-
+/*
 export function useTasks(colId: number) {
   const queryClient = useQueryClient()
   const {
@@ -86,7 +86,7 @@ export function useTasks(colId: number) {
     moveTask: (taskId: string, newListId: string, position: number) =>
       console.log(`TODO: Move task ${taskId} to list ${newListId} at position ${position}`),
   }
-}
+}*/
 
 
 export function useProjectTasks(projectId: string) {
@@ -102,6 +102,7 @@ export function useProjectTasks(projectId: string) {
       if (!res.success) throw new Error(res.error);
       return res.data;
       },
+      refetchInterval: 5000,
   })
 
   const{
@@ -236,5 +237,34 @@ export function useProjectTasks(projectId: string) {
     
     closeTask:(taskId:number) =>useCloseTask({taskId}),
     openTask:(taskId:number) =>useOpenTask({taskId}),
+  }
+}
+
+
+export function useUserTasks() {
+  const queryClient = useQueryClient()
+  const {
+      data: userTasks,
+      isLoading,
+      error
+  } = useQuery({
+      queryKey: ['userTasks'],
+      queryFn: async () => {
+      const res = await getTasksByUser();
+      if (!res.success) throw new Error(res.error);
+      return res.data;
+      },
+      refetchInterval: 10000,
+  })
+
+
+
+
+  
+  return {
+    userTasks,
+    isLoading,
+    error,
+
   }
 }

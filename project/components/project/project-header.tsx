@@ -91,7 +91,7 @@ export function ProjectHeader({project,taskLength,completedTasks,role}:ProjectHe
             />
             {taskLength === 0
               ? "No tasks"
-              : `${completionRatio}% complete`}
+              : `${completionRatio*100}% complete`}
           </div>
 
           </div>

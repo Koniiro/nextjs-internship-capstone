@@ -18,6 +18,7 @@ export function useTaskComments(taskId:number) {
         if (!res.success) throw new Error(res.error);
             return res.data;
         },
+        refetchInterval: 5000,
     })
 
     const{

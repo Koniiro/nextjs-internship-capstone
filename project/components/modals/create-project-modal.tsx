@@ -42,10 +42,10 @@ import { ScrollArea } from "../ui/scroll-area";
 
 interface CreateProjectModalProps{
     userTeams:TeamPermissionStruct[]
-
+    className?:string
 }
 
-export  function CreateProjectModal({userTeams}:CreateProjectModalProps) {
+export  function CreateProjectModal({userTeams,className}:CreateProjectModalProps) {
     const[openDiag,setOpenDiag] = useState(false)
   
     const {
@@ -56,7 +56,7 @@ export  function CreateProjectModal({userTeams}:CreateProjectModalProps) {
   
   return (
     <Dialog open={openDiag} onOpenChange={setOpenDiag}>
-        <DialogTrigger className="inline-flex items-center px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600 transition-colors">
+        <DialogTrigger   className={`inline-flex items-center justify-center px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600 transition-colors ${className ?? ""}`}>
             <Plus size={20} className="mr-2" />
             New Project
         </DialogTrigger>

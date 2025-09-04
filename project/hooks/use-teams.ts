@@ -15,6 +15,7 @@ export function useTeams() {
         queryFn: async () => {
             return await getUserTeams();
         },
+        refetchInterval: 10000,
     })
 
     const{
@@ -113,6 +114,7 @@ export function useTeamData(teamId:string){
         queryFn: async () => {
             return await getTeamByID(teamId);
         },
+        refetchInterval: 5000,
     })
 
 

@@ -15,6 +15,7 @@ export function useTeamMembers(teamID:string) {
         queryFn: async () => {
             return await getTeamMembers(teamID);
         },
+        refetchInterval: 7000,
     })
 
     //Grab Team Data
