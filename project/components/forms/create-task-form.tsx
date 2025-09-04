@@ -34,7 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { TaskCreate } from "@/types";
+import { TaskCreate, teamMember } from "@/types";
 import { taskPriority } from "@/lib/constants";
 import { useProjectTasks } from "@/hooks/use-tasks";
 
@@ -43,10 +43,11 @@ type CreateTaskFormProps = {
   projectId:string,
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   setLocked: React.Dispatch<React.SetStateAction<boolean>>
+  teamMembers:teamMember[]
 
 };
 
-export function CreateTaskForm({colId,projectId, setOpen, setLocked}:CreateTaskFormProps){
+export function CreateTaskForm({colId,projectId, setOpen, setLocked,teamMembers}:CreateTaskFormProps){
     const {projectTasks,
       createTask,
     } = useProjectTasks(projectId);
@@ -63,6 +64,7 @@ export function CreateTaskForm({colId,projectId, setOpen, setLocked}:CreateTaskF
         resolver: zodResolver(taskSchema),
           defaultValues: {
           title: "",
+          taskOwner:"",
           description: "",
           priority: "low",
           dueDate: new Date(),
@@ -72,7 +74,7 @@ export function CreateTaskForm({colId,projectId, setOpen, setLocked}:CreateTaskF
     async function onSubmit(data: z.infer<typeof taskSchema>) {
       try{
           const newTaskData:TaskCreate={
-          assigneeId:null,
+          assigneeId:data.taskOwner||null,
           position:nextPosition,
           columnId:colId,
           title:data.title,
@@ -91,6 +93,9 @@ export function CreateTaskForm({colId,projectId, setOpen, setLocked}:CreateTaskF
       
     }
 
+    const teamMemberRecord: Record<string, string> = Object.fromEntries(
+      teamMembers.map(member => [`${member.firstName} ${member.lastName}`, member.id])
+    );
     return(
          <Form {...form}>
             <form id={`create-project-form-${colId}`} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -119,6 +124,32 @@ export function CreateTaskForm({colId,projectId, setOpen, setLocked}:CreateTaskF
                     <FormDescription>
                         What's going to happen?
                     </FormDescription>
+                    <FormMessage className="text-red-600"/>
+                  </FormItem>
+                )}
+              /> 
+              <FormField
+                control={form.control} name="taskOwner"
+                render={({field})=>(
+                  <FormItem className="flex flex-col">
+                    <FormLabel >Task Owner</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Who own's this task" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white">
+                            {Object.entries(teamMemberRecord).map(([name, value]) => (
+                                <SelectItem key={value} value={value} className="cursor-pointer" >
+                                <div className="flex flex-row items-center gap-2">
+                                    {name}
+                                </div>                               
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    
                     <FormMessage className="text-red-600"/>
                   </FormItem>
                 )}

@@ -13,9 +13,11 @@ export function useDBUser(userId:string){
     } = useQuery({
         queryKey: ['user',userId],
         queryFn: async () => {
+            if (userId==='') return null;
             return await getUserById(userId);
 
         },
+        enabled: !!userId,
 
     })
 

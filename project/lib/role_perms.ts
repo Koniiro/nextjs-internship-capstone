@@ -15,7 +15,8 @@ export type Role =
   | "Designer"
   | "DevOps"
   | "Business Analyst"
-  | "Team Leader";
+  | "Team Leader"
+  | "view";
 
 const rolePermissions: Record<Role, ProjectAction[]> = {
   "Team Leader": [
@@ -48,6 +49,7 @@ const rolePermissions: Record<Role, ProjectAction[]> = {
   Designer: ["view", "createTask", "updateTask"],
   DevOps: ["view", "createTask", "updateTask"],
   "Business Analyst": ["view", "createTask", "updateTask"],
+  "view":[]
 };
 
 export function hasProjectPermission(role: Role, action: ProjectAction): boolean {

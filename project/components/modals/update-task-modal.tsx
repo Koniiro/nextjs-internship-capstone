@@ -37,28 +37,28 @@ Integration:
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useProjectTasks } from "@/hooks/use-tasks";
-import { Task } from "@/types";
+import { Task, teamMember } from "@/types";
 import { UpdateTaskForm } from "../forms/update-task-form";
 import { useUpdateTaskModal } from "../tasks/task-update-modal-context";
 import { useState } from "react";
+import { useTeamMembers } from "@/hooks/use-team-members";
 
 type UpdateTaskModalpProps = {
 
   projectId:string
- 
+  projectOwnerTeam:string
 
 };
 
 
-export  function UpdateTaskModal({ projectId }: UpdateTaskModalpProps) {
+export  function UpdateTaskModal({ projectId,projectOwnerTeam }: UpdateTaskModalpProps) {
     const { taskToEdit, setTaskToEdit } = useUpdateTaskModal();
-    //const [isOpen,setIsOpen] = useState(false)
-    
-    const {
+    const { teamMembers, membersLoading, membersError } = useTeamMembers(projectOwnerTeam);
+    const {isCreating} = useProjectTasks(projectId);
 
-      isCreating
-
-    } = useProjectTasks(projectId);
+    if (membersLoading ) return <p>Loading...</p>;
+    if (membersError) return <p>Failed to load team members {membersError.message}</p>;
+    if (!teamMembers) return <p>Failed to load team data</p>;
   
   return (
     <>
@@ -69,7 +69,7 @@ export  function UpdateTaskModal({ projectId }: UpdateTaskModalpProps) {
             <DialogHeader>
               <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Task</DialogTitle>
             </DialogHeader>
-            <UpdateTaskForm task={taskToEdit}  projectId={projectId}/>
+            <UpdateTaskForm task={taskToEdit}  projectId={projectId} teamMembers={teamMembers}/>
             
             <DialogFooter className="flex flex-col gap-3 sm:flex-row">
               <DialogClose asChild>

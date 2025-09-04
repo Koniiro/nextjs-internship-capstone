@@ -13,18 +13,20 @@ import { UpdateTaskModalProvider } from "@/components/tasks/task-update-modal-co
 import { UpdateTaskModal } from "@/components/modals/update-task-modal"
 import { useTeamData } from "@/hooks/use-teams"
 import { hasProjectPermission, Role } from "@/lib/role_perms"
+import { useTeamMembers } from "@/hooks/use-team-members"
 
 
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params); 
   const { project, isLoading, error } = useSpecProject(id);
-  
-  let { projectTasks, openTask,closeTask,isOpening,isClosing } = useProjectTasks(id);
-  
+  const { projectTasks, openTask, closeTask, isOpening, isClosing } = useProjectTasks(id);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading ) return <p>Loading...</p>;
   if (error) return <p>Failed to load projects {error.message}</p>;
   if (!project || !projectTasks) return <p>Failed to load projects</p>;
+
+
+
   
   const completedTasks = projectTasks.filter(p => p.openStatus === false).length;
   const taskLength=projectTasks.length
@@ -61,10 +63,10 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           {hasProjectPermission(role,"manageBoard") &&
             <CreateColumnModal projectId={id}/>
           }
-          <KanbanBoard projectId={project.projectData.id} projectTasks={projectTasks} role={role}/>
+          <KanbanBoard teamId={project.projectData.teamOwner}projectId={project.projectData.id} projectTasks={projectTasks} role={role}/>
           <TaskSheetRoot isClosing={isClosing} isOpening={isOpening} openTask={openTask} closeTask={closeTask}/>
           {hasProjectPermission(role,"updateTask") &&
-            <UpdateTaskModal  projectId={id}/>
+            <UpdateTaskModal  projectId={id} projectOwnerTeam={project.projectData.teamOwner}/>
           }
         </div>
       </UpdateTaskModalProvider>

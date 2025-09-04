@@ -180,6 +180,7 @@ export const queries = {
       return db.update(taskTable)
         .set({
           title:data.title,
+          assigneeId:data.assigneeId,
           columnId:data.columnId,
           description:data.description,
           priority:data.priority,
