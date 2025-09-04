@@ -13,10 +13,14 @@ export function useDBUser(userId:string){
     } = useQuery({
         queryKey: ['user',userId],
         queryFn: async () => {
+            if (userId==='') return null;
             return await getUserById(userId);
 
         },
+
         refetchInterval: 5000,
+        enabled: !!userId,
+
 
     })
 

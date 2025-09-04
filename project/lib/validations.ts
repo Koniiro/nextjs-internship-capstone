@@ -59,6 +59,7 @@ export const projectUpdateSchema = z.object({
 const TaskPrio=z.enum(["low","medium","high"])
 export const taskSchema =  z.object({
   title: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  taskOwner: z.string().optional(),
   description: z.string().max(500, 'Description too long').optional(),
   priority: TaskPrio,
   dueDate: z.date().min(today, 'Due date must today or be in future').optional(),

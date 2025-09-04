@@ -1,7 +1,7 @@
 import { CreateTaskModal } from "@/components/modals/create-task-modal";
 import { TaskCard } from "@/components/tasks/task-card";
 import { useProjectTasks } from "@/hooks/use-tasks";
-import { Column, Task, TaskCreate } from "@/types";
+import { Column, Task, TaskCreate, teamMember } from "@/types";
 import {  MoreHorizontal,ArrowRight, ArrowLeft, Trash, Pencil } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
@@ -31,10 +31,10 @@ export interface KanbanColumnProps {
   role:Role
   leftHandler: () => void;
   rightHandler: () => void;
-
+  teamMembers:teamMember[]
 }
 
-export default function KanbanColumn({id,colArrayLength,column,taskArray,colLocalPosition ,leftHandler, rightHandler,role}:KanbanColumnProps){
+export default function KanbanColumn({id,teamMembers,colArrayLength,column,taskArray,colLocalPosition ,leftHandler, rightHandler,role}:KanbanColumnProps){
 
     const {updateTask,  deleteTask } = useProjectTasks(column.projectId);
     
@@ -153,7 +153,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                         `}
                     />
                   <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
-                    {column.name} {column.id} {column.position}
+                    {column.name} 
                   </h3>
                   <div className=" p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
                     {dragTasks.length}
@@ -217,7 +217,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                   ))}
                 </SortableContext>
               </ScrollArea>
-              <CreateTaskModal colId={column.id} projectId={column.projectId} setLocked={setLocked}/>
+              <CreateTaskModal teamMembers={teamMembers} colId={column.id} projectId={column.projectId} setLocked={setLocked}/>
             </div>
           </div>
         </div>

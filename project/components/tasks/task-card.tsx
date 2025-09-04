@@ -21,6 +21,8 @@ import { TaskPriorityBadge, TaskStatusBadge } from "../ui/status_badges"
 import { useTaskSheet } from "./task-sheet-context"
 import { useUpdateTaskModal } from "./task-update-modal-context"
 import { hasProjectPermission, Role } from "@/lib/role_perms"
+import { useDBUser } from "@/hooks/use-users"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
 
 /*
@@ -75,16 +77,7 @@ interface TaskCardProps {
 
 export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArrayLength, delTaskHandler , topHandler,bottomHandler,role }: TaskCardProps) {
   const { setTaskToEdit } = useUpdateTaskModal();
-  
   const { setActiveTask } = useTaskSheet();
-
-
-
-  const disableCheckTop =
-    arrayPosition == null ? true : arrayPosition === 0;
-
-  const disableCheckBottom =
-    taskArrayLength == null ? true : arrayPosition === taskArrayLength - 1;
   const {attributes, listeners, setNodeRef, transform, transition} =useSortable(
     {id:id,
     data: {
@@ -93,6 +86,18 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
    }
 
   })
+  const {user, userLoading,userError} =useDBUser(task.assigneeId||'')
+  if (userLoading) return <p>Loading...</p>;
+  //if (userError) return <p>Failed to load user {userError.message}</p>;
+  //if (!user) return <p>Failed to load user</p>;
+
+
+  const disableCheckTop =
+    arrayPosition == null ? true : arrayPosition === 0;
+
+  const disableCheckBottom =
+    taskArrayLength == null ? true : arrayPosition === taskArrayLength - 1;
+  
   
   const style = {
         transition,
@@ -112,7 +117,7 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
           <div onClick={() => setActiveTask(task)}>
             {/* Task content */}
             <h4 className="font-medium hover:underline hover:font-bold hover:text-outer_space-700 hover text-outer_space-500 dark:text-platinum-500 text-sm mb-2 cursor-pointer" >
-                {task.title}-{task.id}-{task.position}-{task.columnId}
+                {task.title}
             </h4>
           </div>
           
@@ -121,13 +126,17 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
               <DropdownMenuTrigger disabled={isDragging}><MoreHorizontal size={16} /></DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white">
                 <DropdownMenuLabel>Task</DropdownMenuLabel>
+                  {hasProjectPermission(role,"updateTask") &&
+                  <div>
                   <DropdownMenuGroup>
+                    
                     <DropdownMenuItem 
                      onClick={editTaskHandler}
                      className="cursor-pointer hover:bg-muted flex flex-row items-center gap-2">
                       <Pencil size={16}/> Edit Task
                     </DropdownMenuItem>
-                    {hasProjectPermission(role,"deleteTask") &&
+                    
+           
                       <DropdownMenuItem
                         onClick={delTaskHandler}
                         className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
@@ -135,9 +144,13 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
                           <Trash size={16} />
                           Delete
                       </DropdownMenuItem>
-                    }
+                    
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
+                  </div>
+                  }
+                  
+                
                   <DropdownMenuLabel>Position</DropdownMenuLabel>
                     <DropdownMenuGroup>
                       <DropdownMenuItem className=" flex flex-row items-center cursor-pointer" disabled={disableCheckTop} onClick={topHandler}>
@@ -161,10 +174,16 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
           <div className="flex flex-row gap-2">
             <TaskStatusBadge status={task.openStatus}/>
             <TaskPriorityBadge priority={task.priority}/>
+            <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+              @{user?.userName}
+            </span>
           </div>
-          <div className="w-6 h-6 bg-blue_munsell-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-            U
-          </div>
+          <Avatar className="h-5 w-5 rounded-full border-outer_space-200 border">
+              <AvatarImage src={user?.avatarURL ?? undefined}  className="h-5 w-5  rounded-full object-cover object-center"/>
+              <AvatarFallback className="rounded-full">{user?.firstName && user?.lastName
+                ? `${user?.firstName[0]}${user?.lastName[0]}`
+                : "人"}</AvatarFallback>
+          </Avatar>
         </div>
         
       </div>
