@@ -3,14 +3,27 @@ import { CreateColumnModal } from "@/components/modals/create-col-modal";
 import { CreateTeamModal } from "@/components/modals/create-team-modal";
 import TeamCard from "@/components/team/team-card";
 import { Button } from "@/components/ui/button";
+import { useProjects } from "@/hooks/use-projects";
 import { useTeams } from "@/hooks/use-teams";
 import { UserPlus, Mail, MoreHorizontal } from "lucide-react"
 
 export default function TeamPage() {
-  let { userTeams,isLoading,error } = useTeams();
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Failed to load teams {error.message}</p>;
+  let { userTeams, isLoading: isLoadingTeams, error: errorTeams } = useTeams();
+  let { projects, isLoading: isLoadingProjects, error: errorProjects } = useProjects();
+
+  if (isLoadingTeams || isLoadingProjects) return <p>Loading...</p>;
+
+  if (errorTeams) return <p>Failed to load teams {errorTeams.message}</p>;
+  if (errorProjects) return <p>Failed to load projects {errorProjects.message}</p>;
+
   if (!userTeams) return <p>Failed to load teams</p>;
+  if (!projects) return <p>Failed to load projects</p>;
+  const result=projects.map((entry) => ({
+      teamId: entry.team.id,
+      projects: entry.projects.map((p) => p.name),
+      projectCount: entry.projects.length,
+    }));
+  
   
 
   
@@ -27,7 +40,7 @@ export default function TeamPage() {
         // Teams exist → show grid of cards
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {userTeams.map((teamRecord, index) => (
-            <TeamCard key={index} team={teamRecord.teamData} managerRole={teamRecord.permission.isManager} />
+            <TeamCard key={index} projectCount={result.find(r => r.teamId === teamRecord.teamData.id)?.projectCount??0} team={teamRecord.teamData} managerRole={teamRecord.permission.isManager} />
           ))}
         </div>
       ) : (

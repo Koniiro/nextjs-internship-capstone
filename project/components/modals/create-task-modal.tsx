@@ -7,6 +7,7 @@ import { useProjectTasks } from "@/hooks/use-tasks";
 import { CreateTaskForm } from "../forms/create-task-form";
 import { useState } from "react";
 import { teamMember } from "@/types";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 type CreateTaskModalpProps = {
   projectId:string
@@ -37,6 +38,7 @@ export  function CreateTaskModal({ colId,projectId,setLocked,teamMembers }: Crea
         <DialogHeader>
           <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">New Task</DialogTitle>
         </DialogHeader>
+        <DialogDescription>Create a new task for your project</DialogDescription>
         <CreateTaskForm teamMembers={teamMembers} colId={colId} projectId={projectId} setOpen={setIsOpen} setLocked={setLocked}/>
         
         <DialogFooter className="flex flex-col gap-3 sm:flex-row">

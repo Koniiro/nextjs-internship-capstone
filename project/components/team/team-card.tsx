@@ -10,10 +10,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 interface TeamCardProps{
     team:Team
+    projectCount:number
     managerRole:boolean
 }
 
-export default function TeamCard({team,managerRole}:TeamCardProps){
+export default function TeamCard({team,managerRole,projectCount}:TeamCardProps){
     let { deleteTeam} = useTeams();
     const[openDiag,setOpenDiag] = useState(false)
     
@@ -97,7 +98,7 @@ export default function TeamCard({team,managerRole}:TeamCardProps){
 
             </div>
             <div className="text-sm text-payne's_gray-500 dark:text-french_gray-400">
-                {Math.floor(Math.random() * 10) + 1} projects
+                {projectCount} projects
             </div>
         </div>
     </div>

@@ -5,6 +5,7 @@ import { useColumns } from "@/hooks/use-columns";
 import { Column } from "@/types";
 import { UpdateColumnForm } from "../forms/update-col-form";
 import { useState } from "react";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 type UpdateColumnModalpProps = {
   column:Column
@@ -25,7 +26,7 @@ export  function UpdateColumnModal({column,setOpen,setLocked}:UpdateColumnModalp
     <DialogContent  className="bg-white">
         <DialogHeader>
           <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Edit Column</DialogTitle>
-
+          <DialogDescription>Edit your column details</DialogDescription>
         </DialogHeader>
         <UpdateColumnForm column={column} setOpen={setOpen} setLocked={setLocked}/>
         

@@ -11,22 +11,7 @@ export async function clerkAuthCheck(){
     return clerkID
 }
 
-export async function roleAuthCheck(teamId:string,clerkId:string){
-    const internalUser = await  queries.users.getByClerkId(clerkId)
-    if (!internalUser) {
-        throw new Error("User not found.");
-    }
 
-    /*const manager = await queries.teamMember.getTeamManagerRole(internalUser.id,teamId)
-    if (!manager) {
-      throw new Error(`User ${internalUser.id} is not a member of team ${teamId}`);
-    }else if (!manager==false) {
-      
-    }*/
-
-   
-
-}
 
 export async function teamMGTAuthCheck(teamId:string,clerkId:string){
     const internalUser = await  queries.users.getByClerkId(clerkId)

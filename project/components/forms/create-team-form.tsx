@@ -2,7 +2,7 @@ import { teamSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { Form,FormControl, FormField, FormItem, FormMessage } from "../ui/form";
+import { Form,FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { TeamCreate } from "@/types";
 
@@ -29,13 +29,11 @@ export function CreateTeamForm({setOpen,createTeam}:CreateTeamFormProps){
             team_name:data.teamName
         }
         
-        try {
-            await createTeam(newTeam)
-            setOpen(false)
-            form.reset(); // clears the "content" field
-        } catch (err) {
-            console.error(err);
-        } 
+        
+        await createTeam(newTeam)
+        setOpen(false)
+        form.reset(); // clears the "content" field
+
     }
     return <Form {...form}>
             <form id="create-team-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -43,6 +41,8 @@ export function CreateTeamForm({setOpen,createTeam}:CreateTeamFormProps){
                     control={form.control} name="teamName"
                     render={({field})=>(
                         <FormItem className="flex flex-col">
+                            <FormLabel >Team Name</FormLabel>
+
                             <FormControl>
                                 <Input placeholder="Team UmaPyoi" {...field} />
                                 

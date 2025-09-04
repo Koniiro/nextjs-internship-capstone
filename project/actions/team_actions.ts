@@ -1,7 +1,7 @@
 "use server";
 import { userRoles } from '@/lib/constants';
 import { queries } from '@/lib/db';
-import { clerkAuthCheck, roleAuthCheck, teamMGTAuthCheck } from '@/lib/server_util';
+import { clerkAuthCheck, teamMGTAuthCheck } from '@/lib/server_util';
 import { MemberInviteSchema, TeamCreate, TeamCreateDataSchema } from '@/types';
 import 'dotenv/config';
 import { getUserById } from './user_actions';

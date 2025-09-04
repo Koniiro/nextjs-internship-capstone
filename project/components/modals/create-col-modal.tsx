@@ -28,7 +28,8 @@ export  function CreateColumnModal({projectId}:CreateColumnModalpProps) {
         </DialogTrigger>
         <DialogContent className="bg-white">
         <DialogHeader>
-          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Add Column</DialogTitle>
+          <DialogTitle className="font-bold text-outer_space-500 dark:text-platinum-500">Add Column Form</DialogTitle>
+          <DialogDescription>Create a new column to store tasks</DialogDescription>
 
         </DialogHeader>
         <CreateColumnForm projectId={projectId} setOpen={setOpenDiag}/>
