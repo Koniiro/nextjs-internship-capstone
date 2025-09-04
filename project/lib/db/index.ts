@@ -115,6 +115,7 @@ export const queries = {
         .set({
           name:projectData.name,
           description:projectData.description,
+          teamOwner:projectData.teamOwner,
           color:projectData.color,
           due_date:projectData.dueDate,
           statusId:projectData.statusId,

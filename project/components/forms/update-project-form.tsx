@@ -42,9 +42,12 @@ import { useTeams } from "@/hooks/use-teams";
 type UpdateProjectFormProps = {
   projectData: Project;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  updateProject: (projectId: string, newProjectData: ProjectCreator) => void;
+
+
 };
 
-export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProps){
+export function UpdateProjectForm({ projectData,setOpen,updateProject, }: UpdateProjectFormProps){
   let {
       userTeams,
       isLoading: isLoadingTeams,
@@ -76,9 +79,6 @@ export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProp
       managerTeams.map(team => [team.teamData.teamName, team.teamData.id])
     );
   
-    const {
-      updateProject,
-    } = useProjects();
 
     const form = useForm<z.infer<typeof projectUpdateSchema>>({
         resolver: zodResolver(projectUpdateSchema),

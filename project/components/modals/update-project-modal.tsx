@@ -31,27 +31,23 @@ Integration:
 - Handle errors gracefully
 */
 "use client"
-import {  Plus } from "lucide-react";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { CreateProjectForm } from '../forms/create-project-form';
+import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { useProjects } from "@/hooks/use-projects";
 import { UpdateProjectForm } from "../forms/update-project-form";
-import { Project } from "@/types";
-import { useState } from "react";
+import { Project, ProjectCreator } from "@/types";
 import { ScrollArea } from "../ui/scroll-area";
 
 type UpdateProjectModalProps = {
   projectData: Project;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  updateProject: (projectId: string, newProjectData: ProjectCreator) => void;
+  isUpdating:boolean
+
 
 };
 
-export  function UpdateProjectModal( { projectData,setOpen }: UpdateProjectModalProps) {
+export  function UpdateProjectModal( { projectData,setOpen,isUpdating,updateProject }: UpdateProjectModalProps) {
 
-  const {
-      isUpdating
-    } = useProjects();
   
   return (
     <DialogContent className="bg-white">
@@ -63,7 +59,7 @@ export  function UpdateProjectModal( { projectData,setOpen }: UpdateProjectModal
       </DialogHeader>
       <ScrollArea  className="h-72 w-full rounded-md border">
         <div className="p-4">
-          <UpdateProjectForm projectData={projectData} setOpen={setOpen}/>
+          <UpdateProjectForm updateProject={updateProject}projectData={projectData} setOpen={setOpen}/>
 
         </div>
       </ScrollArea>
