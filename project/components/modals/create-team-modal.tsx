@@ -7,16 +7,16 @@ import { useTeams } from "@/hooks/use-teams";
 import { CreateTeamForm } from "../forms/create-team-form";
 
 type CreateTeamModalpProps = {
-    
+    className?:string
 };
 
-export  function CreateTeamModal({}:CreateTeamModalpProps) {
+export  function CreateTeamModal({className}:CreateTeamModalpProps) {
     const[openDiag,setOpenDiag] = useState(false)
     const {createTeam,isCreating}=useTeams();
     return (
         <Dialog open={openDiag} onOpenChange={setOpenDiag}>
             <DialogTrigger asChild>
-                <Button className="cursor-pointer nline-flex items-center px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600 transition-colors">
+                <Button   className={`inline-flex items-center justify-center px-4 py-2 bg-blue_munsell-500 text-white rounded-lg hover:bg-blue_munsell-600 transition-colors ${className ?? ""}`}>
                     <UserPlus size={20} className="mr-2" />
                     Create Team
                 </Button>

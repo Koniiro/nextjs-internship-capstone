@@ -91,10 +91,6 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
   //if (userError) return <p>Failed to load user {userError.message}</p>;
   //if (!user) return <p>Failed to load user</p>;
 
-  //const{deleteTask,isDeleting,deleteError}=useTasks(task.columnId)
-
-
-  //const [isOpen,setIsOpen] = useState(false)
 
   const disableCheckTop =
     arrayPosition == null ? true : arrayPosition === 0;

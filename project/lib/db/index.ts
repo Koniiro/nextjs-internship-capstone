@@ -173,6 +173,15 @@ export const queries = {
         orderBy:[asc(taskTable.position)]
       })
     },
+    getByUser:async(userId:string)=>{
+      const result = await db
+          .select()
+          .from(taskTable)
+          .where(eq(taskTable.assigneeId,userId))
+
+      return result;
+    },
+    
     create: async (data: TaskCreate) => {
       return db.insert(taskTable).values(data).onConflictDoNothing().returning()
     },

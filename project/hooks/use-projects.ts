@@ -19,6 +19,7 @@ export function useProjects() {
       if (!res.success) throw new Error(res.error);
       return res.data;
     },
+    refetchInterval: 5000,
   })
   
 
@@ -124,6 +125,7 @@ export function useSpecProject(projectId:string){
       if (!res.success) throw new Error(res.error);
       return res.data;
     },
+    refetchInterval: 5000,
   })
 
   const{

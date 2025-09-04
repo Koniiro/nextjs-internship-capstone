@@ -19,6 +19,7 @@ export function useColumns(projectId:string){
         if (!res.success) throw new Error(res.error);
         return res.data;
         },
+        refetchInterval: 5000,
     })
       //Create Column
     const{
