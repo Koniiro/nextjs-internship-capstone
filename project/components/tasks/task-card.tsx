@@ -14,15 +14,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { UpdateTaskModal } from "../modals/update-task-modal"
-import { Dialog, DialogTrigger } from "../ui/dialog"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities";
 
 import { TaskPriorityBadge, TaskStatusBadge } from "../ui/status_badges"
 import { useTaskSheet } from "./task-sheet-context"
-import { useState } from "react"
 import { useUpdateTaskModal } from "./task-update-modal-context"
+import { hasProjectPermission, Role } from "@/lib/role_perms"
 
 
 /*
@@ -68,13 +66,14 @@ interface TaskCardProps {
   arrayPosition?:number
   taskArrayLength?:number
   projectId:string
+  role:Role
   topHandler?: () => void;
   bottomHandler?: () => void;
   delTaskHandler?: () => void;
 }
 
 
-export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArrayLength, delTaskHandler , topHandler,bottomHandler }: TaskCardProps) {
+export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArrayLength, delTaskHandler , topHandler,bottomHandler,role }: TaskCardProps) {
   const { setTaskToEdit } = useUpdateTaskModal();
   
   const { setActiveTask } = useTaskSheet();
@@ -132,13 +131,15 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
                      className="cursor-pointer hover:bg-muted flex flex-row items-center gap-2">
                       <Pencil size={16}/> Edit Task
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={delTaskHandler}
-                      className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
-                      >
-                        <Trash size={16} />
-                        Delete
-                    </DropdownMenuItem>
+                    {hasProjectPermission(role,"deleteTask") &&
+                      <DropdownMenuItem
+                        onClick={delTaskHandler}
+                        className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
+                        >
+                          <Trash size={16} />
+                          Delete
+                      </DropdownMenuItem>
+                    }
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuLabel>Position</DropdownMenuLabel>

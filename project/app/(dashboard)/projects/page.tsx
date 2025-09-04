@@ -24,6 +24,7 @@ export default function ProjectsPage() {
     error: errorProjects,
     deleteProject,
     updateProject,
+    isUpdating
   } = useProjects();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState(0);
@@ -283,7 +284,7 @@ export default function ProjectsPage() {
         </div>
 
   
-        <ProjectGrid projectArray={filteredProjects} updateProject={updateProject} deleteProject={deleteProject}/>
+        <ProjectGrid isUpdating={isUpdating} projectArray={filteredProjects} updateProject={updateProject} deleteProject={deleteProject}/>
 
       
       </div>

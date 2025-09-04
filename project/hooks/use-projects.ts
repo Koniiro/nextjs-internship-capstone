@@ -56,7 +56,7 @@ export function useProjects() {
     onSuccess: (data) => {
       toast.success(
         "Project Deleted!", {
-        description: `Project ${data.deletedId} has been successfully deleted.`,
+        description: `Project "${data.deletedId}" has been successfully deleted.`,
       })
       queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
@@ -110,12 +110,15 @@ export function useProjects() {
 }
 
 export function useSpecProject(projectId:string){
+  const queryClient = useQueryClient()
+
+
   const {
     data: project,
     isLoading,
     error
   } = useQuery({
-    queryKey: ['projects',projectId],
+    queryKey: ['project',projectId],
     queryFn: async () => {
       const res = await getProjectsById(projectId);
       if (!res.success) throw new Error(res.error);
@@ -123,9 +126,60 @@ export function useSpecProject(projectId:string){
     },
   })
 
+  const{
+      mutate: useDeleteProject,
+      isPending: isDeleting,
+      error: deleteError,
+  }  = useMutation({
+  mutationFn: async (teamId:string) => {
+      return await deleteProject(teamId);
+  },
+  onSuccess: (data) => {
+      toast.success(
+          "Project Deleted!", {
+          description: `Project "${data.deletedName}" has been successfully deleted.`,
+          })
+      queryClient.invalidateQueries({ queryKey: ['project',projectId] })
+      },
+  onError: (err) => {
+          // React Query passes the thrown error here
+      toast.error("Failed to delete project", { description: err.message });
+      console.error("Project deletion failed:", err);
+      },
+  })
+
+    const{
+    mutate: useUpdateProject,
+    isPending: isUpdating,
+    error: updateError,
+  }  = useMutation({
+    mutationFn: async ({ projectId, updateData }: { projectId: string; updateData: ProjectCreator }) => {
+      return await updateProject(projectId,updateData);
+    },
+    onSuccess: (data) => {
+      toast.success(
+        "Project Updated!", {
+        description: `Project "${data.name}" has been successfully updated.`,
+      })
+      queryClient.invalidateQueries({ queryKey: ['project',projectId] })
+    },
+    onError: (err) => {
+      // React Query passes the thrown error here
+      toast.error("Failed to update project", { description: err.message });
+      console.error("Project update failed:", err);
+    },
+  })
+
   return {
     project,
     isLoading,
     error,
+
+    deleteProject: (id: string) => useDeleteProject(id),
+    isDeleting:isDeleting,
+
+    updateProject: (id: string, data:ProjectCreator) => useUpdateProject({projectId:id,updateData:data}),
+    isUpdating:isUpdating,
+    updateError:updateError,
   }
 }

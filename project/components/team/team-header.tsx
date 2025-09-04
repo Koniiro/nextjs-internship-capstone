@@ -98,7 +98,7 @@ export function TeamHeader({teamId,teamData,teamLoading,teamError,userPermission
                 userPermissions && 
                 <DropdownMenu>
                   <DropdownMenuTrigger className="px-3"><MoreHorizontal size={18} /></DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-white">
+                  <DropdownMenuContent align="end" className="bg-white">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuGroup>
                           <AlertDialog>

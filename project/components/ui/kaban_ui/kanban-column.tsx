@@ -19,6 +19,7 @@ import { Dialog, DialogTrigger } from "../dialog";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useCallback, useEffect, useState } from "react";
+import { hasProjectPermission, Role } from "@/lib/role_perms";
 
 
 export interface KanbanColumnProps {
@@ -27,13 +28,13 @@ export interface KanbanColumnProps {
   colLocalPosition:number,
   column: Column,
   taskArray:Task[],
-
+  role:Role
   leftHandler: () => void;
   rightHandler: () => void;
 
 }
 
-export default function KanbanColumn({id,colArrayLength,column,taskArray,colLocalPosition ,leftHandler, rightHandler}:KanbanColumnProps){
+export default function KanbanColumn({id,colArrayLength,column,taskArray,colLocalPosition ,leftHandler, rightHandler,role}:KanbanColumnProps){
 
     const {updateTask,  deleteTask } = useProjectTasks(column.projectId);
     
@@ -158,7 +159,8 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                     {dragTasks.length}
                   </div>
                 </div>
-                <Dialog open={openDiag} onOpenChange={setOpenHandler }>
+                 {hasProjectPermission(role,"manageBoard") &&
+                  <Dialog open={openDiag} onOpenChange={setOpenHandler }>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="p-1 rounded hover:bg-muted">
@@ -200,8 +202,8 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <UpdateColumnModal column={column} setOpen={setOpenDiag} setLocked={setLocked}/>
-                </Dialog>
-                
+                  </Dialog>
+                }
               </div>
               <p className="mt-2 text-xs text-payne's_gray-500 dark:text-french_gray-400 ">
                 {column.description}
@@ -211,7 +213,7 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
               <ScrollArea className="h-72">
                 <SortableContext items={dragTasks} strategy={verticalListSortingStrategy}>
                   {dragTasks.map((task) => (
-                    <TaskCard key={task.id} projectId={column.projectId} id={task.id} task={task} delTaskHandler={()=>deleteTask(task.id)}arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
+                    <TaskCard role={role} key={task.id} projectId={column.projectId} id={task.id} task={task} delTaskHandler={()=>deleteTask(task.id)}arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
                   ))}
                 </SortableContext>
               </ScrollArea>

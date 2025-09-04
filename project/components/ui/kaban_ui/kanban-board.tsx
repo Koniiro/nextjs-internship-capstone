@@ -12,6 +12,7 @@ import {
 } from '@dnd-kit/modifiers';
 import { useProjectTasks } from "@/hooks/use-tasks"
 import { TaskCard } from "@/components/tasks/task-card"
+import { Role } from "@/lib/role_perms"
 // TODO: Task 5.1 - Design responsive Kanban board layout
 // TODO: Task 5.2 - Implement drag-and-drop functionality with dnd-kit
 
@@ -67,8 +68,9 @@ function projectTaskParser(colId: number, projectTasks?:Record<number, Task[]>) 
 type taskCommentCardProps = {
     projectId: string;
     projectTasks:Task[]|undefined
+    role:Role
 };
-export function KanbanBoard({ projectId,projectTasks }: taskCommentCardProps) {
+export function KanbanBoard({ projectId,projectTasks,role }: taskCommentCardProps) {
   const { columns, isLoading, error, updateCol } = useColumns(projectId);
   const [dragColumns, setDragColumns] = useState<Column[]>([]);
   useEffect(() => {
@@ -394,7 +396,7 @@ export function KanbanBoard({ projectId,projectTasks }: taskCommentCardProps) {
           <SortableContext items={dragColumns} strategy={horizontalListSortingStrategy}>
             {dragColumns.map((col) => (
              
-            <KanbanColumn id={col.id} colLocalPosition={getColPos(col.id)} taskArray={projectTaskParser(col.id,groupTasksByColumnId(rawTasksArray))} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
+            <KanbanColumn role={role}id={col.id} colLocalPosition={getColPos(col.id)} taskArray={projectTaskParser(col.id,groupTasksByColumnId(rawTasksArray))} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
 
           ))}
           </SortableContext>

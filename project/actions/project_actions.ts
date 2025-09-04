@@ -26,11 +26,18 @@ export const getProjects = async () => {
 
 export const getProjectsById = async (projectId:string) => {
   try {
-    clerkAuthCheck()
+    const clerkID= await clerkAuthCheck()
+
+    const internalUser = await queries.users.getByClerkId(clerkID)
     const project = await queries.projects.getById(projectId)
+    const role = await queries.teamMember.getTeamMemberRole(internalUser.id,project.teamOwner)
     return {
       success: true,
-      data: project,
+      data: {
+          
+            role:role,
+            projectData: project,
+      },
     };
   } catch (error) {
     console.error("❌ Error fetching projects:", error);
