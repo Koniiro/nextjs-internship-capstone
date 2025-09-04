@@ -14,6 +14,7 @@ import { UpdateTaskModal } from "@/components/modals/update-task-modal"
 import { useTeamData } from "@/hooks/use-teams"
 import { hasProjectPermission, Role } from "@/lib/role_perms"
 import { useTeamMembers } from "@/hooks/use-team-members"
+import { ProjectAnalytics } from "@/components/project/project-analytics"
 
 
 export default function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
@@ -64,6 +65,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
             <CreateColumnModal projectId={id}/>
           }
           <KanbanBoard teamId={project.projectData.teamOwner}projectId={project.projectData.id} projectTasks={projectTasks} role={role}/>
+          <ProjectAnalytics  projectTasks={projectTasks} projectData={project.projectData}/>
           <TaskSheetRoot isClosing={isClosing} isOpening={isOpening} openTask={openTask} closeTask={closeTask}/>
           {hasProjectPermission(role,"manageTasks") &&
             <UpdateTaskModal  projectId={id} projectOwnerTeam={project.projectData.teamOwner}/>

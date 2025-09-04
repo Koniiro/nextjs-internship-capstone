@@ -159,6 +159,7 @@ export const queries = {
         position: taskTable.position,
         created_at: taskTable.created_at,
         updated_at: taskTable.updated_at,
+        done_date:taskTable.done_date,
         due_date: taskTable.due_date,
         openStatus:taskTable.openStatus
 

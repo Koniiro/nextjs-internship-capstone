@@ -84,6 +84,7 @@ export interface Task {
   created_at: Date
   updated_at: Date
   due_date: Date|null
+  done_date:Date|null
   //comments: Comment[]
 }
 export interface TaskCreate {
