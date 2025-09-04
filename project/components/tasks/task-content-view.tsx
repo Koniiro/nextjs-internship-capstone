@@ -18,6 +18,7 @@ import { Button } from "../ui/button"
 import { CircleCheckBig, Loader2Icon, RefreshCcwDot } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { useEffect, useState } from "react"
+import { useDBUser } from "@/hooks/use-users"
 
 
 
@@ -42,7 +43,8 @@ export default function TaskSheetRoot({isOpening,isClosing,openTask,closeTask}:T
     }
   }, [activeTask]);
 
-
+  const {user:taskUser, userLoading,userError} =useDBUser(activeTask?.assigneeId||'')
+  if (userLoading) return <p>Loading...</p>;
   
   const { isLoaded, isSignedIn, user } = useUser();
 
@@ -57,7 +59,7 @@ export default function TaskSheetRoot({isOpening,isClosing,openTask,closeTask}:T
     return <p>Loading...</p>  // still fetching user
   }
 
-  if (!isSignedIn || !user) {
+  if (!isSignedIn || !user|| !taskUser) {
     return <p>Not signed in</p>
   }
 
@@ -97,10 +99,13 @@ export default function TaskSheetRoot({isOpening,isClosing,openTask,closeTask}:T
                     </div>
 
                     <div className="flex flex-row gap-2">
-                      Assignees:
-                      <div className="w-6 h-6 bg-blue_munsell-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                        U
-                      </div>
+                      Assignee:
+                      <Avatar className="h-5 w-5 rounded-full border-outer_space-200 border">
+                      <AvatarImage src={taskUser.avatarURL ?? undefined}  className="h-5 w-5  rounded-full object-cover object-center"/>
+                      <AvatarFallback className="rounded-full">{user?.firstName && user?.lastName
+                        ? `${user?.firstName[0]}${user?.lastName[0]}`
+                        : "人"}</AvatarFallback>
+                  </Avatar>
                     </div>
 
                     <Separator className="my-2 bg-outer_space-200" />
