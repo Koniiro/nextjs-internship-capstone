@@ -3,85 +3,127 @@
  */
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import { Column } from "@/types";
+import { Column, Task, teamMember } from "@/types";
 import userEvent from "@testing-library/user-event";
 import { CreateColumnModal } from '@/components/modals/create-col-modal';
-import { UpdateColumnModal } from '../components/modals/update-col-modal';
-import { updateCol } from '../actions/task-col_actions';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { CreateTaskModal } from '@/components/modals/create-task-modal';
+import { useProjectTasks } from '@/hooks/use-tasks';
 
 
-const mockColumn: Column = {
+const mockTask: Task = {
     id:101,
-    name: "new col",
+    columnId: 10,
+    assigneeId: 'huiuheiqwe',
+    title: "new task",
     description: "something to play with" ,
-    projectId: "mock-proj-123",
-    color:"blue-500",
-    position:0,
+    
+    priority:'low',
+    position: 0,
+    openStatus:true,
     created_at: new Date("2025-01-01T00:00:00Z"),
     updated_at: new Date("2025-01-10T12:00:00Z"),
+    due_date: new Date("2025-01-10T12:00:00Z"),
 };
-
-const updateColumnMock = jest.fn();
-const setOpenMock = jest.fn();
-const setLockedMock = jest.fn();
-
-jest.mock("../hooks/use-columns", () => ({
-    useColumns: () => ({
-        updateCol: updateColumnMock, 
-    }),
+const mockSetLocked = jest.fn() as React.Dispatch<React.SetStateAction<boolean>>;
+const createColumnMock = jest.fn();
+jest.mock("../hooks/use-tasks", () => ({
+    useProjectTasks: jest.fn(),
 }));
+const mockTeamMembers: teamMember[] = [
+  {
+    id: "1",
+    firstName: "Alice",
+    lastName: "Johnson",
+    email: "alice@example.com",
+    avatar: null,
+    role: "Developer",
+    joinedAt: new Date("2023-01-01"),
+    teamManager: false,
+  },
+  {
+    id: "2",
+    firstName: "Bob",
+    lastName: "Smith",
+    email: "bob@example.com",
+    avatar: "https://example.com/avatar/bob.png",
+    role: "Team Leader",
+    joinedAt: new Date("2023-02-15"),
+    teamManager: true,
+  },
+];
+const mockCreateTask = jest.fn();
+const mockUpdateTask = jest.fn();
 
+(useProjectTasks as jest.Mock).mockReturnValue({
+  projectTasks: [],
+  isLoading: false,
+  error: null,
 
-describe("Create Column Modal", () => {
+  isCreating: false,
+  createError: null,
+  createTask: mockCreateTask,   // ✅ mocked
+
+  isPending: false,
+  updateError: null,
+  updateTask: mockUpdateTask,   // ✅ mocked
+
+  isDeleting: false,
+  deleteError: null,
+  deleteTask: jest.fn(),
+
+  isClosing: false,
+  isOpening: false,
+  closeError: null,
+  openError: null,
+  closeTask: jest.fn(),
+  openTask: jest.fn(),
+});
+
+describe("Create Task Modal", () => {
+    beforeEach(() => {
+        jest.clearAllMocks(); // reset calls between tests
+    });
 
     it("renders create column dialog", async () => {
         const user = userEvent.setup();
-        render(<Dialog><DialogTrigger>
-    <button>Edit Column</button>
-  </DialogTrigger><UpdateColumnModal column={mockColumn} setLocked={setLockedMock} setOpen={setOpenMock}/></Dialog>);
+        render(<CreateTaskModal projectId='mockProject' colId={mockTask.columnId} setLocked={mockSetLocked} teamMembers={mockTeamMembers}/>);
 
-        const trigger = screen.getByRole("button", { name: /Edit Column/i })
+        const trigger = screen.getByRole("button", { name: /\+ Add Task/i })
 
         await user.click(trigger);
 
-        expect(screen.getByText("Edit Column")).toBeInTheDocument();
+        expect(screen.getByText("New Task")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Add Task" })).toBeInTheDocument();
         //expect(screen.getByText("Edit Team")).toBeInTheDocument();
     });
-    /*
+
     it("cancel team creation", async () => {
         const user = userEvent.setup();
-        render(<CreateColumnModal projectId={mockColumn.projectId}/>);
+        render(<CreateTaskModal projectId='mockProject' colId={mockTask.columnId} setLocked={mockSetLocked} teamMembers={mockTeamMembers}/>);
 
-        const trigger = screen.getByRole("button", { name: /\+ Add Column/i })
+
+        const trigger = screen.getByRole("button", { name: /\+ Add Task/i })
 
         await user.click(trigger);
 
-        expect(screen.getByText("Add Column Form")).toBeInTheDocument();
+        expect(screen.getByText("New Task")).toBeInTheDocument();
 
         //Click Cancel
         await user.click(screen.getByRole("button", { name: "Cancel" }));
 
         expect(
-            screen.queryByText("Team Creation Form")
+            screen.queryByText("New Task")
         ).not.toBeInTheDocument();
 
         // deleteTeam should NOT have been called
-        expect(createColumnMock).not.toHaveBeenCalledWith(
-            mockColumn.id,
-            {
-                name: mockColumn.name,
-                description:mockColumn.description,
-                color: mockColumn.color,
-            }
-        );
+        expect(mockUpdateTask).not.toHaveBeenCalled()
+
 
     });
 
     
-    it("column creation", async () => {
+    /*it("column creation", async () => {
                const user = userEvent.setup();
         render(<CreateColumnModal projectId={mockColumn.projectId}/>);
 
@@ -105,7 +147,7 @@ describe("Create Column Modal", () => {
         await user.type(columnDescriptionInput, mockColumn.description);
 
         
-        /*const colorTrigger = screen.getByRole("combobox", { name: /color/i });
+        const colorTrigger = screen.getByRole("combobox", { name: /color/i });
         await user.click(colorTrigger);
         
         // select the option
@@ -114,7 +156,7 @@ describe("Create Column Modal", () => {
 
         // assert that the selected value shows up in the button
         expect(colorTrigger).toHaveTextContent("Blue");
-       
+        
         const submitBtn = screen.getAllByRole("button", { name: "Add Column" })
         .find(btn => btn.getAttribute("type") === "submit")!;
 
@@ -135,9 +177,9 @@ describe("Create Column Modal", () => {
             }
         );
 
-    });
+    });*/
     
    
 
-*/
+
 })
