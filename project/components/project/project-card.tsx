@@ -1,17 +1,14 @@
 'use client'
-import { Project, ProjectCardHandler, ProjectCreator } from '../../types/index';
+import { ProjectCardHandler, ProjectCreator } from '../../types/index';
 import Link from 'next/link';
-import { Calendar, MoreHorizontal, UsersRound, UserRoundCog, UserRoundPen, UserRoundX, Pencil, Trash } from "lucide-react"
-import { Button } from '../ui/button';
-import { userRoles } from '@/lib/constants';
+import { Calendar, MoreHorizontal, UsersRound, Pencil, Trash } from "lucide-react"
 import { UpdateProjectModal } from '../modals/update-project-modal';
 import ProjectStatusChip from './project-status-chip';
 import { useCompletionRatio } from '@/hooks/use-utils';
 import { Progress } from '../ui/progress';
 import { useTeamData } from '@/hooks/use-teams';
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { useState } from 'react';
-
 import { AlertDialog,AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction, AlertDialogHeader, AlertDialogFooter } from '../ui/alert-dialog';
 import { Dialog, DialogTrigger } from '../ui/dialog';
 import { hasProjectPermission, Role } from '@/lib/role_perms';
@@ -54,12 +51,12 @@ Features to implement:
 
 export interface ProjectCardProps {
   projectData: ProjectCardHandler
-
+  isUpdating:boolean
   onEdit: (id: string,data:ProjectCreator) => void
   onDelete: (id: string) => void
 }
 
-export default function ProjectCard({projectData,onDelete,onEdit}:ProjectCardProps,) {
+export default function ProjectCard({projectData,onDelete,onEdit,isUpdating}:ProjectCardProps,) {
   const ratio = useCompletionRatio(projectData.project.id);
   const[openDiag,setOpenDiag] = useState(false)
   const{teamData,teamLoading,teamError}=useTeamData(projectData.project.teamOwner)
@@ -137,7 +134,7 @@ export default function ProjectCard({projectData,onDelete,onEdit}:ProjectCardPro
                 </DropdownMenuGroup>              
             </DropdownMenuContent>
             </DropdownMenu>
-            <UpdateProjectModal projectData={projectData.project} setOpen={setOpenDiag}/>
+            <UpdateProjectModal projectData={projectData.project} setOpen={setOpenDiag} isUpdating={isUpdating}updateProject={onEdit}/>
 
           </Dialog>
         

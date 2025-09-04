@@ -3,7 +3,9 @@ type ProjectAction =
   | "edit/delete"
   | "manageBoard"
   | "createTask"
-  | "updateTask";
+  | "updateTask"
+  | "deleteTask"
+  | "markDone";
 
 export type Role =
   | "Developer"
@@ -22,6 +24,7 @@ const rolePermissions: Record<Role, ProjectAction[]> = {
     "manageBoard",
     "createTask",
     "updateTask",
+    "deleteTask"
   ],
   "Product Owner": [
     "view",
@@ -29,6 +32,7 @@ const rolePermissions: Record<Role, ProjectAction[]> = {
     "manageBoard",
     "createTask",
     "updateTask",
+    "deleteTask"
   ],
   "Scrum Master": [
     "view",
@@ -36,6 +40,8 @@ const rolePermissions: Record<Role, ProjectAction[]> = {
     "manageBoard",
     "createTask",
     "updateTask",
+    "deleteTask"
+
   ],
   Developer: ["view", "createTask", "updateTask"],
   QA: ["view", "createTask", "updateTask"],

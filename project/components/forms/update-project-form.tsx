@@ -42,45 +42,18 @@ import { useTeams } from "@/hooks/use-teams";
 type UpdateProjectFormProps = {
   projectData: Project;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  updateProject: (projectId: string, newProjectData: ProjectCreator) => void;
+
+
 };
 
-export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProps){
+export function UpdateProjectForm({ projectData,setOpen,updateProject, }: UpdateProjectFormProps){
   let {
       userTeams,
       isLoading: isLoadingTeams,
       error: errorTeams,
     } = useTeams();  
-
-  if (isLoadingTeams) {
-    return <p>Loading...</p>;
-  }
-  if (errorTeams) {
-  return (
-    <p>
-      Failed to load{" "}
-      {errorTeams instanceof Error
-        ? `teams: ${errorTeams.message}`
-        : "unknown error"}
-    </p>
-  );
-}
-
-
-   if (!userTeams ) {
-    return (
-      <p>Failed to load{" "}</p>
-    )}
-  const managerTeams = userTeams.filter(team => team.permission.isManager);
-
-    const managerTeamRecord: Record<string, string> = Object.fromEntries(
-      managerTeams.map(team => [team.teamData.teamName, team.teamData.id])
-    );
-  
-    const {
-      updateProject,
-    } = useProjects();
-
-    const form = useForm<z.infer<typeof projectUpdateSchema>>({
+  const form = useForm<z.infer<typeof projectUpdateSchema>>({
         resolver: zodResolver(projectUpdateSchema),
           defaultValues: {
           name: projectData.name,
@@ -111,6 +84,34 @@ export function UpdateProjectForm({ projectData,setOpen }: UpdateProjectFormProp
       
       
     }
+
+  if (isLoadingTeams) {
+    return <p>Loading...</p>;
+  }
+  if (errorTeams) {
+  return (
+    <p>
+      Failed to load{" "}
+      {errorTeams instanceof Error
+        ? `teams: ${errorTeams.message}`
+        : "unknown error"}
+    </p>
+  );
+}
+
+
+   if (!userTeams ) {
+    return (
+      <p>Failed to load{" "}</p>
+    )}
+  const managerTeams = userTeams.filter(team => team.permission.isManager);
+
+    const managerTeamRecord: Record<string, string> = Object.fromEntries(
+      managerTeams.map(team => [team.teamData.teamName, team.teamData.id])
+    );
+  
+
+    
 
     return(
          <Form {...form}>
