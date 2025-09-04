@@ -56,6 +56,7 @@ export const usersTable = pgTable("users", {
 export const projectTable = pgTable("project", {
   id: uuid("id").default(sql`gen_random_uuid()`).primaryKey().notNull(),
   projectOwner:uuid('projectOwner').notNull().references(()=>usersTable.id, {onDelete: 'cascade'}),
+  teamOwner:uuid('team_Owner').notNull().references(()=>teamTable.id, {onDelete: 'cascade'}),
   name: varchar('name',{ length: 255 }).notNull().unique(),
   statusId: integer("status_id")
     .references(() => statusTable.id, { onDelete: "set null" })

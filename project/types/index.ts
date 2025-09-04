@@ -29,6 +29,7 @@ export interface UserCreator {
 export interface Project {
   id: string
   projectOwner: string
+  teamOwner: string
   name: string
   statusId:number
   description: string 
@@ -37,9 +38,14 @@ export interface Project {
   updated_at: Date
   due_date?: Date |null
 }
+export interface ProjectCardHandler{
+  project:Project
+  role:string
+}
 export interface ProjectCreator {
   name: string
   description: string
+  teamOwner: string
   statusId:number
   color?:string
   dueDate?: Date
@@ -134,4 +140,28 @@ export interface MemberInviteSchema{
     | "DevOps"
     | "Business Analyst";
   teamManager:boolean
+}
+interface TeamPermission {
+  isManager: boolean;
+}
+export interface TeamPermissionStruct {
+  teamData: Team;
+  permission: TeamPermission;
+}
+
+export interface TeamProjectsStruct {
+  team: Team;
+  role:string
+  projects: Project[];
+}
+
+export interface teamMember{
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+    avatar: string | null;
+    role: string;
+    joinedAt: Date;
+    teamManager: boolean;
 }

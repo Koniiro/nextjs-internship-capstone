@@ -5,13 +5,15 @@ import { MoreHorizontal } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import KanbanColumn from "./kanban-column"
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable"
-import { Column, ColumnCreate, Task, TaskCreate } from "@/types"
+import { Column, ColumnCreate, Task, TaskCreate, teamMember } from "@/types"
 import {DndContext,DragOverlay,PointerSensor,closestCorners, useSensor, useSensors} from "@dnd-kit/core"
 import {
   restrictToHorizontalAxis,
 } from '@dnd-kit/modifiers';
 import { useProjectTasks } from "@/hooks/use-tasks"
 import { TaskCard } from "@/components/tasks/task-card"
+import { Role } from "@/lib/role_perms"
+import { useTeamMembers } from "@/hooks/use-team-members"
 // TODO: Task 5.1 - Design responsive Kanban board layout
 // TODO: Task 5.2 - Implement drag-and-drop functionality with dnd-kit
 
@@ -67,8 +69,12 @@ function projectTaskParser(colId: number, projectTasks?:Record<number, Task[]>) 
 type taskCommentCardProps = {
     projectId: string;
     projectTasks:Task[]|undefined
+    role:Role
+    teamId:string
+
 };
-export function KanbanBoard({ projectId,projectTasks }: taskCommentCardProps) {
+export function KanbanBoard({ projectId,projectTasks,role,teamId }: taskCommentCardProps) {
+  const { teamMembers, membersLoading, membersError } = useTeamMembers(teamId);
   const { columns, isLoading, error, updateCol } = useColumns(projectId);
   const [dragColumns, setDragColumns] = useState<Column[]>([]);
   useEffect(() => {
@@ -147,6 +153,7 @@ export function KanbanBoard({ projectId,projectTasks }: taskCommentCardProps) {
     });
 
   }
+
   function taskUpdateHandler(newTaskArr:Task[]){
     newTaskArr.forEach((task, index) => {
       const taskData:TaskCreate = {
@@ -155,8 +162,7 @@ export function KanbanBoard({ projectId,projectTasks }: taskCommentCardProps) {
       updateTask(task.id, taskData,"order");
   });
     
-}
-
+  }
 
   function leftButtonHandler(colId:number){
     const originalPos = getColPos(colId);
@@ -381,10 +387,25 @@ export function KanbanBoard({ projectId,projectTasks }: taskCommentCardProps) {
     
     
   }, [getColPos]);
+  if (membersLoading || isLoading) {
+    return <p>Loading...</p>;
+  }
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Failed to load columns {error.message}</p>;
-  if (!columns) return <p>Failed to load columns</p>;
+  if (membersError) {
+    return <p>Failed to load team members {membersError.message}</p>;
+  }
+
+  if (error) {
+    return <p>Failed to load columns {error.message}</p>;
+  }
+
+  if (!teamMembers) {
+    return <p>Failed to load team data</p>;
+  }
+
+  if (!columns) {
+    return <p>Failed to load columns</p>;
+  }
 
   return (
     <DndContext collisionDetection={closestCorners} sensors={sensors} onDragEnd={handleDragEnd} onDragStart={handleDragStart} onDragOver={handleDragOver}>
@@ -394,7 +415,7 @@ export function KanbanBoard({ projectId,projectTasks }: taskCommentCardProps) {
           <SortableContext items={dragColumns} strategy={horizontalListSortingStrategy}>
             {dragColumns.map((col) => (
              
-            <KanbanColumn id={col.id} colLocalPosition={getColPos(col.id)} taskArray={projectTaskParser(col.id,groupTasksByColumnId(rawTasksArray))} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
+            <KanbanColumn teamMembers={teamMembers} role={role} id={col.id} colLocalPosition={getColPos(col.id)} taskArray={projectTaskParser(col.id,groupTasksByColumnId(rawTasksArray))} leftHandler={() => leftButtonHandler(col.id)}rightHandler={() => rightButtonHandler(col.id)} colArrayLength={dragColumns.length} column={col} key={col.id}/>
 
           ))}
           </SortableContext>
@@ -404,7 +425,7 @@ export function KanbanBoard({ projectId,projectTasks }: taskCommentCardProps) {
         {activeTask ? (
           <div className="opacity-80 ">
             <p>Col:{activeTask.columnId} Pos:{activeTask.position}</p>
-            <TaskCard id={activeTask.id} projectId={projectId} task={activeTask} isDragging={true}/>
+            <TaskCard role="view" id={activeTask.id} projectId={projectId} task={activeTask} isDragging={true}/>
           </div>
         ) : null}
       </DragOverlay>

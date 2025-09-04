@@ -34,7 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Task, TaskCreate } from "@/types";
+import { Task, TaskCreate, teamMember } from "@/types";
 import { taskPriority } from "@/lib/constants";
 import { useProjectTasks } from "@/hooks/use-tasks";
 import { useUpdateTaskModal } from "../tasks/task-update-modal-context";
@@ -42,12 +42,12 @@ import { useUpdateTaskModal } from "../tasks/task-update-modal-context";
 type UpdateTaskFormProps = {
   task: Task;
   projectId:string,
-
+  teamMembers:teamMember[]
 
 
 };
 
-export function UpdateTaskForm({task,projectId}:UpdateTaskFormProps){
+export function UpdateTaskForm({task,projectId,teamMembers}:UpdateTaskFormProps){
     const {  setTaskToEdit } = useUpdateTaskModal();
     const {updateTask}=useProjectTasks(projectId)
 
@@ -55,6 +55,7 @@ export function UpdateTaskForm({task,projectId}:UpdateTaskFormProps){
         resolver: zodResolver(taskSchema),
           defaultValues: {
           title: task.title,
+          taskOwner:task.assigneeId||"",
           description: task.description||"",
           priority: task.priority,
           dueDate: task.due_date ? new Date(task.due_date) : new Date(),
@@ -65,9 +66,10 @@ export function UpdateTaskForm({task,projectId}:UpdateTaskFormProps){
       console.log("Submit Pressed",data)
       try{
         const newTaskData:TaskCreate={
-          assigneeId:null,
+          assigneeId:data.taskOwner||null,
           position:task.position,
           columnId:task.columnId,
+        
           title:data.title,
           description:data.description||'',
           due_date:data.dueDate || null,
@@ -81,6 +83,10 @@ export function UpdateTaskForm({task,projectId}:UpdateTaskFormProps){
         console.error("Failed to update task", err);
       }
     }
+
+    const teamMemberRecord: Record<string, string> = Object.fromEntries(
+      teamMembers.map(member => [`${member.firstName} ${member.lastName}`, member.id])
+    );
 
     return(
          <Form {...form}>
@@ -110,6 +116,32 @@ export function UpdateTaskForm({task,projectId}:UpdateTaskFormProps){
                     <FormDescription>
                         What's going to happen?
                     </FormDescription>
+                    <FormMessage className="text-red-600"/>
+                  </FormItem>
+                )}
+              /> 
+              <FormField
+                control={form.control} name="taskOwner"
+                render={({field})=>(
+                  <FormItem className="flex flex-col">
+                    <FormLabel >Task Owner</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Who own's this task" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white">
+                            {Object.entries(teamMemberRecord).map(([name, value]) => (
+                                <SelectItem key={value} value={value} className="cursor-pointer" >
+                                <div className="flex flex-row items-center gap-2">
+                                    {name}
+                                </div>                               
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    
                     <FormMessage className="text-red-600"/>
                   </FormItem>
                 )}

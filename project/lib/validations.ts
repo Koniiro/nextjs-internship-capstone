@@ -40,6 +40,7 @@ const today = new Date();
 today.setHours(0, 0, 0, 0);
 export const projectCreationSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  teamOwner: z.string().min(1,'Each project must belong to a team'),
   description: z.string().max(500, 'Description too long').optional(),
   color: z.string().max(50, 'Color too long').optional(),
   dueDate: z.date().min(today, 'Due date must today or be in future').optional(),
@@ -48,6 +49,7 @@ export const projectCreationSchema = z.object({
 export const projectUpdateSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
   description: z.string().max(500, 'Description too long').optional(),
+  teamOwner: z.string().min(1,'Each project must belong to a team'),
   color: z.string().max(50, 'Color too long').optional(),
   dueDate: z.date().optional(),
   statusId: z.number().min(1).max(5).optional()
@@ -57,6 +59,7 @@ export const projectUpdateSchema = z.object({
 const TaskPrio=z.enum(["low","medium","high"])
 export const taskSchema =  z.object({
   title: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  taskOwner: z.string().optional(),
   description: z.string().max(500, 'Description too long').optional(),
   priority: TaskPrio,
   dueDate: z.date().min(today, 'Due date must today or be in future').optional(),

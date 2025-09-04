@@ -7,11 +7,12 @@ import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Home, FolderOpen, Users, Settings, Menu, X, BarChart3, Calendar, Bell, Search } from "lucide-react"
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
+import { usePathname } from "next/navigation"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home, current: true },
   { name: "Projects", href: "/projects", icon: FolderOpen, current: false },
-  { name: "Team", href: "/team", icon: Users, current: false },
+  { name: "Teams", href: "/team", icon: Users, current: false },
   { name: "Analytics", href: "/analytics", icon: BarChart3, current: false },
   { name: "Calendar", href: "/calendar", icon: Calendar, current: false },
   { name: "Settings", href: "/settings", icon: Settings, current: false },
@@ -23,7 +24,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-
+  const pathname = usePathname();
   return (
     <div className="min-h-screen bg-platinum-900 dark:bg-outer_space-600">
       {/* Mobile sidebar overlay */}
@@ -48,19 +49,17 @@ export default function DashboardLayout({
         </div>
 
         <nav className="mt-6 px-3">
-          <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-            <p className="text-xs text-yellow-800 dark:text-yellow-200">
-              📋 <strong>Task 2.6:</strong> Create protected dashboard layout
-            </p>
-          </div>
+  
 
           <ul className="space-y-1">
-            {navigation.map((item) => (
+            {navigation.map((item) =>{
+               const isActive = pathname === item.href; // or startsWith if needed
+               return(
               <li key={item.name}>
                 <Link
                   href={item.href}
                   className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                    item.current
+                    isActive
                       ? "bg-blue_munsell-100 dark:bg-blue_munsell-900 text-blue_munsell-700 dark:text-blue_munsell-300"
                       : "text-outer_space-500 dark:text-platinum-500 hover:bg-platinum-500 dark:hover:bg-payne's_gray-400"
                   }`}
@@ -69,7 +68,9 @@ export default function DashboardLayout({
                   {item.name}
                 </Link>
               </li>
-            ))}
+            )
+            } 
+            )}
           </ul>
         </nav>
       </div>

@@ -66,6 +66,14 @@ export const queries = {
           },
       });
     },
+    getByTeamId: async (teamId: string) => {
+      const result = await db
+          .select()
+          .from(projectTable)
+          .where(eq(projectTable.teamOwner,teamId))
+
+      return result;
+    },
     getById: async (projectId: string) => {
       const result = await db
           .select()
@@ -78,6 +86,7 @@ export const queries = {
     create: async (projectOwner:string,projectData:ProjectCreator) => {
       const data={
         projectOwner:projectOwner,
+        teamOwner:projectData.teamOwner,
         name:projectData.name,
         statusId:projectData.statusId,
         description:projectData.description,
@@ -106,6 +115,7 @@ export const queries = {
         .set({
           name:projectData.name,
           description:projectData.description,
+          teamOwner:projectData.teamOwner,
           color:projectData.color,
           due_date:projectData.dueDate,
           statusId:projectData.statusId,
@@ -163,6 +173,15 @@ export const queries = {
         orderBy:[asc(taskTable.position)]
       })
     },
+    getByUser:async(userId:string)=>{
+      const result = await db
+          .select()
+          .from(taskTable)
+          .where(eq(taskTable.assigneeId,userId))
+
+      return result;
+    },
+    
     create: async (data: TaskCreate) => {
       return db.insert(taskTable).values(data).onConflictDoNothing().returning()
     },
@@ -170,6 +189,7 @@ export const queries = {
       return db.update(taskTable)
         .set({
           title:data.title,
+          assigneeId:data.assigneeId,
           columnId:data.columnId,
           description:data.description,
           priority:data.priority,

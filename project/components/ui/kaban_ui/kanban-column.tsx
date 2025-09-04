@@ -1,7 +1,7 @@
 import { CreateTaskModal } from "@/components/modals/create-task-modal";
 import { TaskCard } from "@/components/tasks/task-card";
 import { useProjectTasks } from "@/hooks/use-tasks";
-import { Column, Task, TaskCreate } from "@/types";
+import { Column, Task, TaskCreate, teamMember } from "@/types";
 import {  MoreHorizontal,ArrowRight, ArrowLeft, Trash, Pencil } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
@@ -19,6 +19,7 @@ import { Dialog, DialogTrigger } from "../dialog";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useCallback, useEffect, useState } from "react";
+import { hasProjectPermission, Role } from "@/lib/role_perms";
 
 
 export interface KanbanColumnProps {
@@ -27,13 +28,13 @@ export interface KanbanColumnProps {
   colLocalPosition:number,
   column: Column,
   taskArray:Task[],
-
+  role:Role
   leftHandler: () => void;
   rightHandler: () => void;
-
+  teamMembers:teamMember[]
 }
 
-export default function KanbanColumn({id,colArrayLength,column,taskArray,colLocalPosition ,leftHandler, rightHandler}:KanbanColumnProps){
+export default function KanbanColumn({id,teamMembers,colArrayLength,column,taskArray,colLocalPosition ,leftHandler, rightHandler,role}:KanbanColumnProps){
 
     const {updateTask,  deleteTask } = useProjectTasks(column.projectId);
     
@@ -152,13 +153,14 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                         `}
                     />
                   <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
-                    {column.name} {column.id} {column.position}
+                    {column.name} 
                   </h3>
                   <div className=" p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
                     {dragTasks.length}
                   </div>
                 </div>
-                <Dialog open={openDiag} onOpenChange={setOpenHandler }>
+                 {hasProjectPermission(role,"manageBoard") &&
+                  <Dialog open={openDiag} onOpenChange={setOpenHandler }>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="p-1 rounded hover:bg-muted">
@@ -200,8 +202,8 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <UpdateColumnModal column={column} setOpen={setOpenDiag} setLocked={setLocked}/>
-                </Dialog>
-                
+                  </Dialog>
+                }
               </div>
               <p className="mt-2 text-xs text-payne's_gray-500 dark:text-french_gray-400 ">
                 {column.description}
@@ -211,11 +213,11 @@ export default function KanbanColumn({id,colArrayLength,column,taskArray,colLoca
               <ScrollArea className="h-72">
                 <SortableContext items={dragTasks} strategy={verticalListSortingStrategy}>
                   {dragTasks.map((task) => (
-                    <TaskCard key={task.id} projectId={column.projectId} id={task.id} task={task} delTaskHandler={()=>deleteTask(task.id)}arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
+                    <TaskCard role={role} key={task.id} projectId={column.projectId} id={task.id} task={task} delTaskHandler={()=>deleteTask(task.id)}arrayPosition={getTaskPos(task.id)} taskArrayLength={dragTasks.length} topHandler={()=>toTopButton(task.id)} bottomHandler={()=>toBottomButton(task.id)}/>
                   ))}
                 </SortableContext>
               </ScrollArea>
-              <CreateTaskModal colId={column.id} projectId={column.projectId} setLocked={setLocked}/>
+              <CreateTaskModal teamMembers={teamMembers} colId={column.id} projectId={column.projectId} setLocked={setLocked}/>
             </div>
           </div>
         </div>

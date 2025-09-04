@@ -26,11 +26,18 @@ export const getProjects = async () => {
 
 export const getProjectsById = async (projectId:string) => {
   try {
-    clerkAuthCheck()
+    const clerkID= await clerkAuthCheck()
+
+    const internalUser = await queries.users.getByClerkId(clerkID)
     const project = await queries.projects.getById(projectId)
+    const role = await queries.teamMember.getTeamMemberRole(internalUser.id,project.teamOwner)
     return {
       success: true,
-      data: project,
+      data: {
+          
+            role:role,
+            projectData: project,
+      },
     };
   } catch (error) {
     console.error("❌ Error fetching projects:", error);
@@ -50,12 +57,25 @@ export const getUserProjects=async()=>{
       if (!internalUser) {
         throw new Error("User not found.");
       }
+      const teams = await queries.teamMember.getUserTeams(internalUser.id)
 
-      const memberships = await queries.projects.getByUser(internalUser.id)
+      const projectsByTeam = await Promise.all(
+        teams.map(async team => {
+          const projects = await queries.projects.getByTeamId(team.teamTable.id);
+          const role = await queries.teamMember.getTeamMemberRole(internalUser.id,team.teamTable.id)
+          return {
+            team: team.teamTable,
+            role:role,
+            projects: projects,
+          };
+        })
+      );
 
-      const userProjects = memberships.map((m) => m.project);
+      //const memberships = await queries.projects.getByUser(internalUser.id)
 
-      return {success: true,data: userProjects}
+      //const userProjects = memberships.map((m) => m.project);
+
+      return {success: true,data: projectsByTeam}
     
   } catch (error) {
 
@@ -81,6 +101,7 @@ export const createProject=async (
   const result =await queries.projects.create(internalUser.id,data);
   if (!result[0]) throw new Error("Project creation failed or duplicate");
   const newProject=result[0]
+  
   const linkCheck=await queries.projects.projectUserLink(newProject.id,internalUser.id,"Project Owner") 
   if (!linkCheck) { 
     await queries.projects.delete(newProject.id); 

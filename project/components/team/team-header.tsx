@@ -50,49 +50,55 @@ export function TeamHeader({teamId,teamData,teamLoading,teamError,userPermission
               >
                 <ArrowLeft size={20} />
               </Link>
-            <div className="w-3 h-3 bg-blue_munsell-500 rounded-full" />
-            <div className="flex-row flex gap-4 items-center">
-              {!editTitleOpen ? (
-                <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-bold text-outer_space-500 dark:text-platinum-500">
-                    {teamData.teamName}
-                  </h1>
-                  <Button
-                    className="text-sm text-white border-2 border-green-700 bg-green-500 hover:bg-green-700 dark:hover:bg-green-200 rounded-lg transition-colors"
-                    onClick={() => setEditTitleOpen(true)}
-                  >
-                    Edit
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <UpdateTeamForm
-                    teamData={teamData}
-                    setOpen={setEditTitleOpen}
-                    updateTeam={updateTeam}
-                  />
-                  <Button
-                    onClick={() => setEditTitleOpen(false)}
-                    variant="outline"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    disabled={isUpdating}
-                    className="text-sm text-white border-2 border-green-700 bg-green-500 hover:bg-green-700 dark:hover:bg-green-200 rounded-lg transition-colors"
-                    type="submit"
-                    variant="outline"
-                    form={`update-team-form-${teamId}`}
-                  >
-                    {isUpdating ? "Saving..." : "Save"}
-                  </Button>
-                </div>
-              )}
-            </div>
-          
+              <div className="w-3 h-3 bg-blue_munsell-500 rounded-full" />
+              <div className="flex-row flex gap-4 items-center">
+                {!editTitleOpen ? (
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-outer_space-500 dark:text-platinum-500">
+                      {teamData.teamName}
+                    </h1>
+                    {
+                      userPermissions && 
+                      <Button
+                        disabled={!userPermissions}
+                        className="text-sm text-white border-2 border-green-700 bg-green-500 hover:bg-green-700 dark:hover:bg-green-200 rounded-lg transition-colors"
+                        onClick={() => setEditTitleOpen(true)}
+                      >
+                        Edit
+                      </Button>
+                    }
+                    
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <UpdateTeamForm
+                      teamData={teamData}
+                      setOpen={setEditTitleOpen}
+                      updateTeam={updateTeam}
+                    />
+                    <Button
+                      onClick={() => setEditTitleOpen(false)}
+                      variant="outline"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      disabled={isUpdating}
+                      className="text-sm text-white border-2 border-green-700 bg-green-500 hover:bg-green-700 dark:hover:bg-green-200 rounded-lg transition-colors"
+                      type="submit"
+                      variant="outline"
+                      form={`update-team-form-${teamId}`}
+                    >
+                      {isUpdating ? "Saving..." : "Save"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+              {
+                userPermissions && 
                 <DropdownMenu>
                   <DropdownMenuTrigger className="px-3"><MoreHorizontal size={18} /></DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-white">
+                  <DropdownMenuContent align="end" className="bg-white">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuGroup>
                           <AlertDialog>
@@ -121,7 +127,9 @@ export function TeamHeader({teamId,teamData,teamLoading,teamError,userPermission
                           </AlertDialog>
                       </DropdownMenuGroup>
                   </DropdownMenuContent>
-                </DropdownMenu>     
+                </DropdownMenu>  
+              }
+                 
             </div>
         </div>
         {userPermissions && <div className="flex items-center space-x-2">
