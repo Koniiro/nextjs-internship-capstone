@@ -13,7 +13,7 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home, current: true },
   { name: "Projects", href: "/projects", icon: FolderOpen, current: false },
   { name: "Teams", href: "/team", icon: Users, current: false },
-  { name: "Analytics", href: "/analytics", icon: BarChart3, current: false },
+  
   { name: "Calendar", href: "/calendar", icon: Calendar, current: false },
   { name: "Settings", href: "/settings", icon: Settings, current: false },
 ]

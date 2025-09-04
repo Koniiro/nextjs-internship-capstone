@@ -1,7 +1,7 @@
 "use client"
 
 import { useColumns } from "@/hooks/use-columns"
-import { MoreHorizontal } from "lucide-react"
+import { MoreHorizontal, Kanban } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from "react"
 import KanbanColumn from "./kanban-column"
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable"
@@ -66,14 +66,14 @@ function projectTaskParser(colId: number, projectTasks?:Record<number, Task[]>) 
 }
 
 
-type taskCommentCardProps = {
+type KanbanboardProps = {
     projectId: string;
     projectTasks:Task[]|undefined
     role:Role
     teamId:string
 
 };
-export function KanbanBoard({ projectId,projectTasks,role,teamId }: taskCommentCardProps) {
+export function KanbanBoard({ projectId,projectTasks,role,teamId }: KanbanboardProps) {
   const { teamMembers, membersLoading, membersError } = useTeamMembers(teamId);
   const { columns, isLoading, error, updateCol } = useColumns(projectId);
   const [dragColumns, setDragColumns] = useState<Column[]>([]);
@@ -424,7 +424,6 @@ export function KanbanBoard({ projectId,projectTasks,role,teamId }: taskCommentC
       <DragOverlay>
         {activeTask ? (
           <div className="opacity-80 ">
-            <p>Col:{activeTask.columnId} Pos:{activeTask.position}</p>
             <TaskCard role="view" id={activeTask.id} projectId={projectId} task={activeTask} isDragging={true}/>
           </div>
         ) : null}
