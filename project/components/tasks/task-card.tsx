@@ -121,7 +121,7 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
           <div onClick={() => setActiveTask(task)}>
             {/* Task content */}
             <h4 className="font-medium hover:underline hover:font-bold hover:text-outer_space-700 hover text-outer_space-500 dark:text-platinum-500 text-sm mb-2 cursor-pointer" >
-                {task.title}-{task.id}-{task.position}-{task.columnId}
+                {task.title}
             </h4>
           </div>
           
@@ -130,13 +130,17 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
               <DropdownMenuTrigger disabled={isDragging}><MoreHorizontal size={16} /></DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white">
                 <DropdownMenuLabel>Task</DropdownMenuLabel>
+                  {hasProjectPermission(role,"updateTask") &&
+                  <div>
                   <DropdownMenuGroup>
+                    
                     <DropdownMenuItem 
                      onClick={editTaskHandler}
                      className="cursor-pointer hover:bg-muted flex flex-row items-center gap-2">
                       <Pencil size={16}/> Edit Task
                     </DropdownMenuItem>
-                    {hasProjectPermission(role,"deleteTask") &&
+                    
+           
                       <DropdownMenuItem
                         onClick={delTaskHandler}
                         className="cursor-pointer flex flex-row items-center gap-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900"
@@ -144,9 +148,13 @@ export function TaskCard( {id,task,arrayPosition, projectId,isDragging,taskArray
                           <Trash size={16} />
                           Delete
                       </DropdownMenuItem>
-                    }
+                    
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
+                  </div>
+                  }
+                  
+                
                   <DropdownMenuLabel>Position</DropdownMenuLabel>
                     <DropdownMenuGroup>
                       <DropdownMenuItem className=" flex flex-row items-center cursor-pointer" disabled={disableCheckTop} onClick={topHandler}>

@@ -65,7 +65,7 @@ export default function ProjectPage({ params }: { params: Promise<{ id: string }
           }
           <KanbanBoard teamId={project.projectData.teamOwner}projectId={project.projectData.id} projectTasks={projectTasks} role={role}/>
           <TaskSheetRoot isClosing={isClosing} isOpening={isOpening} openTask={openTask} closeTask={closeTask}/>
-          {hasProjectPermission(role,"updateTask") &&
+          {hasProjectPermission(role,"manageTasks") &&
             <UpdateTaskModal  projectId={id} projectOwnerTeam={project.projectData.teamOwner}/>
           }
         </div>

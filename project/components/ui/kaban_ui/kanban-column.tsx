@@ -153,7 +153,7 @@ export default function KanbanColumn({id,teamMembers,colArrayLength,column,taskA
                         `}
                     />
                   <h3 className="font-semibold text-outer_space-500 dark:text-platinum-500">
-                    {column.name} {column.id} {column.position}
+                    {column.name} 
                   </h3>
                   <div className=" p-1 px-2 text-xs border-5 bg-white border-black dark:border-payne's_gray-400 dark:bg-payne's_gray-400 rounded-full">
                     {dragTasks.length}
