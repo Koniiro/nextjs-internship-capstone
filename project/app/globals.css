@@ -10,10 +10,22 @@
     --outer-space: #46494c;
     --paynes-gray: #4c5c68;
     --blue-munsell: #1985a1;
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-1-hover: oklch(0.646 0.222 41.116 / 0.7); /* same color, 70% opacity */
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-2-hover: oklch(0.6 0.118 184.704 / 0.7);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-3-hover: oklch(0.398 0.07 227.392 / 0.8);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
   }
 
   .dark {
-    /* Dark theme color adjustments */
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
   }
 }
 
